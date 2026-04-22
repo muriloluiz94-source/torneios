@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogos Universitários UNOPAR Arapongas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+        }
+
+        .btn-success {
+            background: #48bb78;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+        }
+
+        .btn-info {
+            background: #4299e1;
+        }
+
+        .btn-info:hover {
+            background: #3182ce;
+        }
+
+        .btn-warning {
+            background: #ed8936;
+        }
+
+        .btn-warning:hover {
+            background: #dd6b20;
+        }
+
+        .atleta-item {
+            background: #f7f7f7;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .atleta-item input {
+            flex: 1;
+            margin: 0;
+        }
+
+        .modalidade-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modalidade-card h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .team-item {
+            background: #f7f7f7;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .team-item:hover {
+            background: #e0e0e0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h4 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .search-input {
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #667eea;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+        }
+
+        th:hover {
+            background-color: #5a67d8;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .export-buttons, .ordenar-buttons {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .modalidades-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            background: rgba(255,255,255,0.8);
+            height: 20px;
+            transition: width 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            
+            .atleta-item {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                text-align: left;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Jogos Universitários UNOPAR Arapongas</h1>
+            <p>Inscreva seu time e participe das competições!</p>
+        </div>
+
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('inscricao')">Nova Inscrição</button>
+                <button class="tab" onclick="showTab('editar')">Editar/Excluir Inscrição</button>
+                <button class="tab" onclick="showTab('consultar')">Consultar Times</button>
+            </div>
+
+            <!-- Nova Inscrição -->
+            <div id="tab-inscricao" class="tab-content active">
+                <form id="formInscricao">
+                    <div class="form-group">
+                        <label>Nome do Time *</label>
+                        <input type="text" id="nomeTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Curso de Graduação *</label>
+                        <input type="text" id="curso" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>CPF do Responsável *</label>
+                        <input type="text" id="cpfResponsavel" placeholder="Apenas números" maxlength="11" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Modalidades Esportivas *</label>
+                        <div id="modalidades">
+                            <div class="modalidade-card">
+                                <h3>⚽ Futsal Masculino</h3>
+                                <p>Máximo de 10 atletas</p>
+                                <div id="futsalMasc-atletas"></div>
+                                <button type="button" onclick="adicionarAtleta('futsalMasc')" class="btn btn-success">+ Adicionar Atleta</button>
+                            </div>
+
+                            <div class="modalidade-card">
+                                <h3>⚽ Futsal Feminino</h3>
+                                <p>Máximo de 10 atletas</p>
+                                <div id="futsalFem-atletas"></div>
+                                <button type="button" onclick="adicionarAtleta('futsalFem')" class="btn btn-success">+ Adicionar Atleta</button>
+                            </div>
+
+                            <div class="modalidade-card">
+                                <h3>🏀 Basquete 3x3 Masculino</h3>
+                                <p>Máximo de 4 atletas</p>
+                                <div id="basqueteMasc-atletas"></div>
+                                <button type="button" onclick="adicionarAtleta('basqueteMasc')" class="btn btn-success">+ Adicionar Atleta</button>
+                            </div>
+
+                            <div class="modalidade-card">
+                                <h3>🏀 Basquete 3x3 Feminino</h3>
+                                <p>Máximo de 4 atletas</p>
+                                <div id="basqueteFem-atletas"></div>
+                                <button type="button" onclick="adicionarAtleta('basqueteFem')" class="btn btn-success">+ Adicionar Atleta</button>
+                            </div>
+
+                            <div class="modalidade-card">
+                                <h3>🤾 Handebol (Misto)</h3>
+                                <p>Máximo de 14 atletas</p>
+                                <div id="handebol-atletas"></div>
+                                <button type="button" onclick="adicionarAtleta('handebol')" class="btn btn-success">+ Adicionar Atleta</button>
+                            </div>
+
+                            <div class="modalidade-card">
+                                <h3>🏐 Voleibol (Misto)</h3>
+                                <p>Máximo de 12 atletas</p>
+                                <div id="volei-atletas"></div>
+                                <button type="button" onclick="adicionarAtleta('volei')" class="btn btn-success">+ Adicionar Atleta</button>
+                            </div>
+
+                            <div class="modalidade-card">
+                                <h3>🔥 Bola queimada</h3>
+                                <p>Máximo de 8 atletas</p>
+                                <div id="bolaQueimada-atletas"></div>
+                                <button type="button" onclick="adicionarAtleta('bolaQueimada')" class="btn btn-success">+ Adicionar Atleta</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">Salvar Inscrição</button>
+                </form>
+            </div>
+
+            <!-- Editar/Excluir Inscrição -->
+            <div id="tab-editar" class="tab-content">
+                <div class="search-box">
+                    <div class="form-group">
+                        <label>Digite o CPF do Responsável para editar/excluir</label>
+                        <input type="text" id="cpfBuscarEditar" placeholder="Apenas números" maxlength="11">
+                        <button type="button" onclick="buscarParaEditar()" class="btn" style="margin-top: 10px;">Buscar</button>
+                    </div>
+                </div>
+                <div id="editarFormContainer"></div>
+            </div>
+
+            <!-- Consultar Times -->
+            <div id="tab-consultar" class="tab-content">
+                <!-- Estatísticas por Modalidade -->
+                <div class="stats-grid" id="statsModalidades"></div>
+                
+                <div class="search-input">
+                    <div class="form-group">
+                        <label>🔍 Buscar time por nome ou curso:</label>
+                        <input type="text" id="buscarTimeNome" placeholder="Digite o nome do time ou curso..." onkeyup="filtrarTimes()">
+                    </div>
+                </div>
+                
+                <div class="export-buttons">
+                    <button type="button" onclick="exportarParaCSV()" class="btn btn-success">📊 Exportar para CSV</button>
+                    <button type="button" onclick="exportarParaPDF()" class="btn btn-info">📄 Exportar Relatório Geral</button>
+                    <button type="button" onclick="gerarPDFCompletoTimeSelecionado()" class="btn btn-warning">📋 Gerar Ficha do Time</button>
+                </div>
+                
+                <div class="ordenar-buttons">
+                    <button type="button" onclick="ordenarTimesPorNome()" class="btn">🔤 Ordenar por Nome</button>
+                    <button type="button" onclick="ordenarTimesPorCurso()" class="btn">📚 Ordenar por Curso</button>
+                    <button type="button" onclick="ordenarPorModalidades()" class="btn btn-warning">🏆 Ordenar por Modalidades</button>
+                </div>
+                
+                <div class="table-container">
+                    <table id="tabelaTimes">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nome do Time</th>
+                                <th>Curso de Graduação</th>
+                                <th>CPF do Responsável</th>
+                                <th>Data da Inscrição</th>
+                                <th>Modalidades</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaTimesBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let modalidadesAtletas = {
+            futsalMasc: [],
+            futsalFem: [],
+            basqueteMasc: [],
+            basqueteFem: [],
+            handebol: [],
+            volei: [],
+            bolaQueimada: []
+        };
+
+        const limites = {
+            futsalMasc: 10,
+            futsalFem: 10,
+            basqueteMasc: 4,
+            basqueteFem: 4,
+            handebol: 14,
+            volei: 12,
+            bolaQueimada: 8
+        };
+
+        const nomesModalidades = {
+            futsalMasc: 'Futsal Masculino',
+            futsalFem: 'Futsal Feminino',
+            basqueteMasc: 'Basquete 3x3 Masculino',
+            basqueteFem: 'Basquete 3x3 Feminino',
+            handebol: 'Handebol Misto',
+            volei: 'Voleibol Misto',
+            bolaQueimada: 'Bola queimada'
+        };
+
+        let timesFiltrados = [];
+        let ordemAtual = 'nome';
+
+        function adicionarAtleta(modalidade) {
+            if (modalidadesAtletas[modalidade].length >= limites[modalidade]) {
+                alert(`Limite máximo de ${limites[modalidade]} atletas atingido para esta modalidade!`);
+                return;
+            }
+            
+            modalidadesAtletas[modalidade].push('');
+            renderizarAtletas(modalidade);
+        }
+
+        function removerAtleta(modalidade, index) {
+            modalidadesAtletas[modalidade].splice(index, 1);
+            renderizarAtletas(modalidade);
+        }
+
+        function atualizarAtleta(modalidade, index, valor) {
+            modalidadesAtletas[modalidade][index] = valor;
+        }
+
+        function renderizarAtletas(modalidade) {
+            const container = document.getElementById(`${modalidade}-atletas`);
+            if (!container) return;
+            
+            container.innerHTML = '';
+            modalidadesAtletas[modalidade].forEach((atleta, index) => {
+                const div = document.createElement('div');
+                div.className = 'atleta-item';
+                div.innerHTML = `
+                    <input type="text" placeholder="Nome do atleta ${index + 1}" 
+                           value="${atleta}" 
+                           onchange="atualizarAtleta('${modalidade}', ${index}, this.value)">
+                    <button type="button" onclick="removerAtleta('${modalidade}', ${index})" class="btn btn-danger" style="padding: 5px 10px;">Remover</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'consultar') {
+                carregarTabelaTimes();
+                carregarEstatisticasModalidades();
+            }
+        }
+
+        function getInscricoes() {
+            const inscricoes = localStorage.getItem('inscricoesJogosUnopar');
+            return inscricoes ? JSON.parse(inscricoes) : [];
+        }
+
+        function salvarInscricao(inscricao) {
+            const inscricoes = getInscricoes();
+            inscricao.id = Date.now();
+            inscricao.dataCriacao = new Date().toISOString();
+            inscricoes.push(inscricao);
+            localStorage.setItem('inscricoesJogosUnopar', JSON.stringify(inscricoes));
+            return inscricao;
+        }
+
+        function excluirInscricao(id) {
+            if (confirm('Tem certeza que deseja excluir esta inscrição? Esta ação não pode ser desfeita!')) {
+                const inscricoes = getInscricoes();
+                const novasInscricoes = inscricoes.filter(i => i.id != id);
+                localStorage.setItem('inscricoesJogosUnopar', JSON.stringify(novasInscricoes));
+                alert('Inscrição excluída com sucesso!');
+                buscarParaEditar();
+                carregarTabelaTimes();
+                carregarEstatisticasModalidades();
+                return true;
+            }
+            return false;
+        }
+
+        function atualizarInscricao(id, inscricaoAtualizada) {
+            const inscricoes = getInscricoes();
+            const index = inscricoes.findIndex(i => i.id == id);
+            if (index !== -1) {
+                inscricoes[index] = { ...inscricaoAtualizada, id: parseInt(id) };
+                localStorage.setItem('inscricoesJogosUnopar', JSON.stringify(inscricoes));
+                return true;
+            }
+            return false;
+        }
+
+        function getModalidadesInscritas(modalidades) {
+            const inscritas = [];
+            for (let [key, value] of Object.entries(modalidades)) {
+                if (value && value.length > 0) {
+                    inscritas.push(nomesModalidades[key]);
+                }
+            }
+            return inscritas;
+        }
+
+        function gerarPDFCompletoTime(time) {
+            const element = document.createElement('div');
+            element.style.padding = '20px';
+            element.style.fontFamily = 'Arial, sans-serif';
+            
+            let htmlContent = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px;">
+                        <h1 style="margin: 0;">🏆 Jogos Universitários UNOPAR Arapongas</h1>
+                        <h2 style="margin: 10px 0;">FICHA COMPLETA DO TIME</h2>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 30px; background: #f7f7f7; padding: 20px; border-radius: 10px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">📋 Informações do Time</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="padding: 8px;"><strong>Nome do Time:</strong></td>
+                            <td style="padding: 8px;">${time.nomeTime}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;"><strong>Curso:</strong></td>
+                            <td style="padding: 8px;">${time.curso}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;"><strong>CPF do Responsável:</strong></td>
+                            <td style="padding: 8px;">${time.cpfResponsavel}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;"><strong>Data da Inscrição:</strong></td>
+                            <td style="padding: 8px;">${new Date(time.dataCriacao).toLocaleString('pt-BR')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;"><strong>Modalidades Participantes:</strong></td>
+                            <td style="padding: 8px;">${time.quantidadeModalidades}</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+            
+            // Listar cada modalidade com seus atletas
+            for (let [modalidade, atletas] of Object.entries(time.modalidades)) {
+                if (atletas && atletas.length > 0) {
+                    htmlContent += `
+                        <div style="margin-bottom: 25px; border: 2px solid #667eea; border-radius: 10px; overflow: hidden;">
+                            <div style="background: #667eea; color: white; padding: 12px;">
+                                <h3 style="margin: 0;">${nomesModalidades[modalidade]}</h3>
+                                <p style="margin: 5px 0 0 0;">Total de atletas: ${atletas.length}/${limites[modalidade]}</p>
+                            </div>
+                            <div style="padding: 15px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background: #f0f0f0;">
+                                            <th style="padding: 8px; text-align: left;">#</th>
+                                            <th style="padding: 8px; text-align: left;">Nome do Atleta</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+                    
+                    atletas.forEach((atleta, index) => {
+                        htmlContent += `
+                            <tr>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${index + 1}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">${atleta}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    htmlContent += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            htmlContent += `
+                <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #666; background: #f7f7f7; padding: 15px; border-radius: 10px;">
+                    <hr>
+                    <p>Documento oficial de inscrição - Jogos Universitários UNOPAR Arapongas</p>
+                    <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                    <p>Este documento comprova a inscrição do time nas modalidades acima listadas.</p>
+                </div>
+            `;
+            
+            element.innerHTML = htmlContent;
+            
+            const opt = {
+                margin: [0.5, 0.5, 0.5, 0.5],
+                filename: `ficha_time_${time.nomeTime.replace(/[^a-z0-9]/gi, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, letterRendering: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function gerarPDFCompletoTimeSelecionado() {
+            const selectTime = prompt("Digite o nome do time para gerar a ficha completa:\n\nTimes disponíveis:\n" + timesFiltrados.map((t, i) => `${i+1}. ${t.nomeTime}`).join('\n'));
+            
+            if (selectTime) {
+                const timeEncontrado = timesFiltrados.find(t => t.nomeTime.toLowerCase() === selectTime.toLowerCase());
+                if (timeEncontrado) {
+                    gerarPDFCompletoTime(timeEncontrado);
+                } else {
+                    alert("Time não encontrado! Verifique o nome digitado.");
+                }
+            }
+        }
+
+        document.getElementById('formInscricao').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const nomeTime = document.getElementById('nomeTime').value.trim();
+            const curso = document.getElementById('curso').value.trim();
+            const cpfResponsavel = document.getElementById('cpfResponsavel').value.trim();
+            
+            if (!nomeTime || !curso || !cpfResponsavel) {
+                alert('Preencha todos os campos obrigatórios!');
+                return;
+            }
+            
+            if (cpfResponsavel.length !== 11 || !/^\d+$/.test(cpfResponsavel)) {
+                alert('CPF inválido! Digite apenas 11 números.');
+                return;
+            }
+            
+            let temModalidade = false;
+            for (let modalidade in modalidadesAtletas) {
+                if (modalidadesAtletas[modalidade].length > 0) {
+                    temModalidade = true;
+                    break;
+                }
+            }
+            
+            if (!temModalidade) {
+                alert('Adicione pelo menos uma modalidade com atletas!');
+                return;
+            }
+            
+            const inscricao = {
+                nomeTime,
+                curso,
+                cpfResponsavel,
+                modalidades: JSON.parse(JSON.stringify(modalidadesAtletas)),
+                dataCriacao: new Date().toISOString()
+            };
+            
+            const salva = salvarInscricao(inscricao);
+            gerarPDFCompletoTime({
+                ...salva,
+                quantidadeModalidades: Object.values(salva.modalidades).filter(m => m && m.length > 0).length
+            });
+            
+            alert(`Inscrição salva com sucesso!\n\nTime: ${salva.nomeTime}\n\nA ficha completa do time será gerada em PDF.`);
+            
+            document.getElementById('formInscricao').reset();
+            modalidadesAtletas = {
+                futsalMasc: [],
+                futsalFem: [],
+                basqueteMasc: [],
+                basqueteFem: [],
+                handebol: [],
+                volei: [],
+                bolaQueimada: []
+            };
+            for (let modalidade in modalidadesAtletas) {
+                renderizarAtletas(modalidade);
+            }
+        });
+        
+        function buscarParaEditar() {
+            const cpf = document.getElementById('cpfBuscarEditar').value;
+            if (!cpf) {
+                alert('Digite o CPF para buscar!');
+                return;
+            }
+            
+            const inscricoes = getInscricoes();
+            const inscricoesTime = inscricoes.filter(i => i.cpfResponsavel === cpf);
+            
+            if (inscricoesTime.length === 0) {
+                alert('Nenhuma inscrição encontrada para este CPF!');
+                return;
+            }
+            
+            const container = document.getElementById('editarFormContainer');
+            container.innerHTML = '';
+            
+            inscricoesTime.forEach(inscricao => {
+                const div = document.createElement('div');
+                div.className = 'modalidade-card';
+                div.innerHTML = `
+                    <h3>Time: ${inscricao.nomeTime}</h3>
+                    <p><strong>ID:</strong> ${inscricao.id}</p>
+                    <p><strong>Data:</strong> ${new Date(inscricao.dataCriacao).toLocaleString()}</p>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button type="button" onclick="carregarParaEdicao(${inscricao.id})" class="btn">✏️ Editar</button>
+                        <button type="button" onclick="excluirInscricao(${inscricao.id})" class="btn btn-danger">🗑️ Excluir</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function carregarParaEdicao(id) {
+            const inscricoes = getInscricoes();
+            const inscricao = inscricoes.find(i => i.id === id);
+            
+            if (!inscricao) return;
+            
+            const modalidadesList = ['futsalMasc', 'futsalFem', 'basqueteMasc', 'basqueteFem', 'handebol', 'volei', 'bolaQueimada'];
+            
+            const editarHTML = `
+                <div class="search-box">
+                    <div class="form-group">
+                        <label>Digite o CPF do Responsável para editar/excluir</label>
+                        <input type="text" id="cpfBuscarEditar" placeholder="Apenas números" maxlength="11">
+                        <button type="button" onclick="buscarParaEditar()" class="btn" style="margin-top: 10px;">Buscar</button>
+                    </div>
+                </div>
+                <div id="editarFormContainer">
+                    <form id="formEdicao">
+                        <div class="form-group">
+                            <label>Nome do Time</label>
+                            <input type="text" id="editNomeTime" value="${inscricao.nomeTime.replace(/"/g, '&quot;')}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Curso de Graduação</label>
+                            <input type="text" id="editCurso" value="${inscricao.curso.replace(/"/g, '&quot;')}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>CPF do Responsável</label>
+                            <input type="text" id="editCpf" value="${inscricao.cpfResponsavel}" readonly>
+                        </div>
+                        <div id="editModalidades"></div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="submit" class="btn">💾 Salvar Alterações</button>
+                            <button type="button" onclick="excluirInscricao(${id})" class="btn btn-danger">🗑️ Excluir Inscrição</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.getElementById('tab-editar').innerHTML = editarHTML;
+            
+            const editModalidadesDiv = document.getElementById('editModalidades');
+            
+            modalidadesList.forEach(modalidade => {
+                const div = document.createElement('div');
+                div.className = 'modalidade-card';
+                div.innerHTML = `
+                    <h3>${nomesModalidades[modalidade]}</h3>
+                    <p>Máximo de ${limites[modalidade]} atletas</p>
+                    <div id="edit-${modalidade}-atletas"></div>
+                    <button type="button" onclick="adicionarAtletaEdit('${modalidade}')" class="btn btn-success">+ Adicionar Atleta</button>
+                `;
+                editModalidadesDiv.appendChild(div);
+                
+                window[`editAtletas_${modalidade}`] = [...(inscricao.modalidades[modalidade] || [])];
+                renderizarAtletasEdit(modalidade);
+            });
+            
+            document.getElementById('formEdicao').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const inscricaoAtualizada = {
+                    nomeTime: document.getElementById('editNomeTime').value,
+                    curso: document.getElementById('editCurso').value,
+                    cpfResponsavel: document.getElementById('editCpf').value,
+                    modalidades: {},
+                    dataCriacao: inscricao.dataCriacao
+                };
+                
+                modalidadesList.forEach(modalidade => {
+                    inscricaoAtualizada.modalidades[modalidade] = window[`editAtletas_${modalidade}`];
+                });
+                
+                if (atualizarInscricao(id, inscricaoAtualizada)) {
+                    alert('Inscrição atualizada com sucesso!');
+                    location.reload();
+                } else {
+                    alert('Erro ao atualizar inscrição!');
+                }
+            });
+        }
+        
+        function adicionarAtletaEdit(modalidade) {
+            if (window[`editAtletas_${modalidade}`].length >= limites[modalidade]) {
+                alert(`Limite máximo de ${limites[modalidade]} atletas atingido!`);
+                return;
+            }
+            window[`editAtletas_${modalidade}`].push('');
+            renderizarAtletasEdit(modalidade);
+        }
+        
+        function removerAtletaEdit(modalidade, index) {
+            window[`editAtletas_${modalidade}`].splice(index, 1);
+            renderizarAtletasEdit(modalidade);
+        }
+        
+        function atualizarAtletaEdit(modalidade, index, valor) {
+            window[`editAtletas_${modalidade}`][index] = valor;
+        }
+        
+        function renderizarAtletasEdit(modalidade) {
+            const container = document.getElementById(`edit-${modalidade}-atletas`);
+            if (!container) return;
+            
+            container.innerHTML = '';
+            window[`editAtletas_${modalidade}`].forEach((atleta, index) => {
+                const div = document.createElement('div');
+                div.className = 'atleta-item';
+                div.innerHTML = `
+                    <input type="text" placeholder="Nome do atleta ${index + 1}" 
+                           value="${atleta}" 
+                           onchange="atualizarAtletaEdit('${modalidade}', ${index}, this.value)">
+                    <button type="button" onclick="removerAtletaEdit('${modalidade}', ${index})" class="btn btn-danger" style="padding: 5px 10px;">Remover</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        // Funções para consultar times
+        function carregarEstatisticasModalidades() {
+            const inscricoes = getInscricoes();
+            const stats = {};
+            
+            for (let modalidade in nomesModalidades) {
+                stats[modalidade] = 0;
+            }
+            
+            inscricoes.forEach(inscricao => {
+                for (let [modalidade, atletas] of Object.entries(inscricao.modalidades)) {
+                    if (atletas && atletas.length > 0) {
+                        stats[modalidade]++;
+                    }
+                }
+            });
+            
+            const statsContainer = document.getElementById('statsModalidades');
+            statsContainer.innerHTML = '';
+            
+            const maxInscricoes = Math.max(...Object.values(stats), 1);
+            
+            for (let [modalidade, quantidade] of Object.entries(stats)) {
+                const percentual = (quantidade / maxInscricoes) * 100;
+                const card = document.createElement('div');
+                card.className = 'stat-card';
+                card.innerHTML = `
+                    <h4>${nomesModalidades[modalidade]}</h4>
+                    <div class="stat-number">${quantidade}</div>
+                    <p>time(s) inscrito(s)</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${percentual}%;"></div>
+                    </div>
+                `;
+                statsContainer.appendChild(card);
+            }
+        }
+        
+        function carregarTabelaTimes() {
+            const inscricoes = getInscricoes();
+            const timesMap = new Map();
+            
+            inscricoes.forEach(inscricao => {
+                if (!timesMap.has(inscricao.nomeTime)) {
+                    timesMap.set(inscricao.nomeTime, {
+                        nomeTime: inscricao.nomeTime,
+                        curso: inscricao.curso,
+                        cpfResponsavel: inscricao.cpfResponsavel,
+                        dataCriacao: inscricao.dataCriacao,
+                        modalidades: {},
+                        quantidadeModalidades: 0
+                    });
+                }
+                
+                const time = timesMap.get(inscricao.nomeTime);
+                let count = 0;
+                for (let [modalidade, atletas] of Object.entries(inscricao.modalidades)) {
+                    if (atletas && atletas.length > 0) {
+                        if (!time.modalidades[modalidade]) {
+                            time.modalidades[modalidade] = [];
+                        }
+                        time.modalidades[modalidade] = [...atletas];
+                        count++;
+                    }
+                }
+                time.quantidadeModalidades = count;
+            });
+            
+            timesFiltrados = Array.from(timesMap.values());
+            
+            if (ordemAtual === 'nome') ordenarTimesPorNome();
+            else if (ordemAtual === 'curso') ordenarTimesPorCurso();
+            else if (ordemAtual === 'modalidades') ordenarPorModalidades();
+            else atualizarTabela();
+        }
+        
+        function atualizarTabela() {
+            const tbody = document.getElementById('tabelaTimesBody');
+            tbody.innerHTML = '';
+            
+            if (timesFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Nenhum time inscrito ainda</td></tr>';
+                return;
+            }
+            
+            timesFiltrados.forEach((time, index) => {
+                const modalidadesInscritas = getModalidadesInscritas(time.modalidades);
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><strong>${time.nomeTime}</strong></td>
+                    <td>${time.curso}</td>
+                    <td>${time.cpfResponsavel}</td>
+                    <td>${new Date(time.dataCriacao).toLocaleDateString('pt-BR')}</td>
+                    <td>
+                        ${modalidadesInscritas.map(m => `<span class="modalidades-badge">${m}</span>`).join('')}
+                        ${modalidadesInscritas.length === 0 ? '<span style="color: #999;">Nenhuma</span>' : ''}
+                    </td>
+                    <td>
+                        <button type="button" onclick='gerarPDFCompletoTime(${JSON.stringify(time).replace(/'/g, "\\'")})' class="btn btn-info" style="padding: 5px 10px; font-size: 12px;">📋 Ficha Completa</button>
+                    </td>
+                `;
+            });
+        }
+        
+        function filtrarTimes() {
+            const busca = document.getElementById('buscarTimeNome').value.toLowerCase().trim();
+            
+            if (!busca) {
+                carregarTabelaTimes();
+                return;
+            }
+            
+            const timesFiltradosBusca = timesFiltrados.filter(time => 
+                time.nomeTime.toLowerCase().includes(busca) ||
+                time.curso.toLowerCase().includes(busca)
+            );
+            
+            timesFiltrados = timesFiltradosBusca;
+            atualizarTabela();
+        }
+        
+        function ordenarTimesPorNome() {
+            ordemAtual = 'nome';
+            timesFiltrados.sort((a, b) => a.nomeTime.localeCompare(b.nomeTime));
+            atualizarTabela();
+        }
+        
+        function ordenarTimesPorCurso() {
+            ordemAtual = 'curso';
+            timesFiltrados.sort((a, b) => a.curso.localeCompare(b.curso));
+            atualizarTabela();
+        }
+        
+        function ordenarPorModalidades() {
+            ordemAtual = 'modalidades';
+            timesFiltrados.sort((a, b) => b.quantidadeModalidades - a.quantidadeModalidades);
+            atualizarTabela();
+        }
+        
+        function exportarParaCSV() {
+            if (timesFiltrados.length === 0) {
+                alert('Não há dados para exportar!');
+                return;
+            }
+            
+            let csvContent = "Nome do Time,Curso de Graduação,CPF do Responsável,Data da Inscrição,Quantidade de Modalidades,Modalidades\n";
+            
+            timesFiltrados.forEach(time => {
+                const modalidadesInscritas = getModalidadesInscritas(time.modalidades);
+                const modalidadesStr = modalidadesInscritas.join('; ');
+                csvContent += `"${time.nomeTime}","${time.curso}","${time.cpfResponsavel}","${new Date(time.dataCriacao).toLocaleDateString('pt-BR')}","${time.quantidadeModalidades}","${modalidadesStr}"\n`;
+            });
+            
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `times_inscritos_${new Date().toISOString().slice(0,19)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+        
+        function exportarParaPDF() {
+            if (timesFiltrados.length === 0) {
+                alert('Não há dados para exportar!');
+                return;
+            }
+            
+            const element = document.createElement('div');
+            element.style.padding = '20px';
+            element.style.fontFamily = 'Arial, sans-serif';
+            element.style.backgroundColor = 'white';
+            
+            let htmlContent = `
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px;">
+                        <h1 style="margin: 0;">🏆 Jogos Universitários UNOPAR Arapongas</h1>
+                        <h2 style="margin: 10px 0;">Relatório de Times Inscritos</h2>
+                    </div>
+                    <hr style="margin: 20px 0;">
+                    <p><strong>Total de times:</strong> ${timesFiltrados.length}</p>
+                    <p><strong>Data da consulta:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+                    <p><strong>Ordenado por:</strong> ${ordemAtual === 'nome' ? 'Nome do Time' : ordemAtual === 'curso' ? 'Curso' : 'Quantidade de Modalidades'}</p>
+                </div>
+            `;
+            
+            // Lista de times com detalhes dos atletas
+            timesFiltrados.forEach((time, index) => {
+                const modalidadesInscritas = getModalidadesInscritas(time.modalidades);
+                
+                htmlContent += `
+                    <div style="margin-bottom: 30px; page-break-inside: avoid; border: 2px solid #667eea; border-radius: 10px; overflow: hidden;">
+                        <div style="background: #667eea; color: white; padding: 15px;">
+                            <h3 style="margin: 0;">${index + 1}. ${time.nomeTime}</h3>
+                        </div>
+                        <div style="padding: 15px;">
+                            <table style="width: 100%; margin-bottom: 15px;">
+                                <tr><td width="30%"><strong>Curso:</strong></td><td>${time.curso}</td></tr>
+                                <tr><td><strong>CPF Responsável:</strong></td><td>${time.cpfResponsavel}</td></tr>
+                                <tr><td><strong>Data Inscrição:</strong></td><td>${new Date(time.dataCriacao).toLocaleDateString('pt-BR')}</td></tr>
+                                <tr><td><strong>Modalidades:</strong></td><td>${modalidadesInscritas.join(', ')}</td></tr>
+                            </table>
+                `;
+                
+                // Listar atletas por modalidade
+                for (let [modalidade, atletas] of Object.entries(time.modalidades)) {
+                    if (atletas && atletas.length > 0) {
+                        htmlContent += `
+                            <div style="margin-top: 15px;">
+                                <h4 style="color: #764ba2; margin-bottom: 10px;">📌 ${nomesModalidades[modalidade]}</h4>
+                                <table style="width: 100%; border-collapse: collapse; background: #f9f9f9;">
+                                    <thead>
+                                        <tr style="background: #e0e0e0;">
+                                            <th style="padding: 8px; text-align: left;">#</th>
+                                            <th style="padding: 8px; text-align: left;">Nome do Atleta</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+                        
+                        atletas.forEach((atleta, idx) => {
+                            htmlContent += `
+                                <tr>
+                                    <td style="padding: 6px; border-bottom: 1px solid #ddd;">${idx + 1}</td>
+                                    <td style="padding: 6px; border-bottom: 1px solid #ddd;">${atleta}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        htmlContent += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    }
+                }
+                
+                htmlContent += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            htmlContent += `
+                <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #666; background: #f7f7f7; padding: 15px; border-radius: 10px;">
+                    <hr>
+                    <p>Documento gerado pelo Sistema de Inscrição dos Jogos Universitários UNOPAR Arapongas</p>
+                    <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                </div>
+            `;
+            
+            element.innerHTML = htmlContent;
+            
+            document.body.appendChild(element);
+            
+            const opt = {
+                margin: [0.5, 0.5, 0.5, 0.5],
+                filename: `relatorio_completo_times_${new Date().toISOString().slice(0,19)}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, letterRendering: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                document.body.removeChild(element);
+            }).catch(error => {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Erro ao gerar PDF. Tente novamente.');
+                document.body.removeChild(element);
+            });
+        }
+        
+        // Inicializar renderização dos campos de atletas
+        for (let modalidade in modalidadesAtletas) {
+            renderizarAtletas(modalidade);
+        }
+        
+        // Carregar dados de exemplo para teste
+        if (getInscricoes().length === 0) {
+            const exemploInscricao1 = {
+                id: 1700000000001,
+                nomeTime: "FURIA FC",
+                curso: "Educação Física",
+                cpfResponsavel: "12345678900",
+                dataCriacao: new Date().toISOString(),
+                modalidades: {
+                    futsalMasc: ["João Silva", "Pedro Santos", "Lucas Oliveira", "Rafael Costa"],
+                    futsalFem: [],
+                    basqueteMasc: ["Carlos Souza", "André Lima"],
+                    basqueteFem: [],
+                    handebol: [],
+                    volei: ["Marcos Paulo", "Ricardo Alves"],
+                    bolaQueimada: ["Ana Paula", "Maria Silva", "Fernanda Santos"]
+                }
+            };
+            
+            const exemploInscricao2 = {
+                id: 1700000000002,
+                nomeTime: "UNOPAR UNITED",
+                curso: "Engenharia de Software",
+                cpfResponsavel: "98765432100",
+                dataCriacao: new Date(Date.now() - 86400000).toISOString(),
+                modalidades: {
+                    futsalMasc: [],
+                    futsalFem: ["Carla Mendes", "Fernanda Lima", "Juliana Oliveira"],
+                    basqueteMasc: [],
+                    basqueteFem: ["Juliana Costa", "Patrícia Souza"],
+                    handebol: ["Rafael Alves", "Thiago Santos", "Bruno Lima", "Felipe Andrade"],
+                    volei: [],
+                    bolaQueimada: []
+                }
+            };
+            
+            localStorage.setItem('inscricoesJogosUnopar', JSON.stringify([exemploInscricao1, exemploInscricao2]));
+        }
+    </script>
+</body>
+</html>
