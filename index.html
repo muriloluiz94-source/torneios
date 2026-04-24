@@ -1280,7 +1280,7 @@
             renderizarAtletas(modalidade);
         }
         
-        // Carregar dados de exemplo para teste
+        // Carregar dados de exemplo para teste (apenas 2 times)
         if (getInscricoes().length === 0) {
             const exemploInscricao1 = {
                 id: 1700000000001,
@@ -1316,24 +1316,7 @@
                 }
             };
             
-            const exemploInscricao3 = {
-                id: 1700000000003,
-                nomeTime: "ATLETAS DE CRISTO",
-                curso: "Teologia",
-                cpfResponsavel: "55555555555",
-                dataCriacao: new Date(Date.now() - 172800000).toISOString(),
-                modalidades: {
-                    futsalMasc: ["André Luiz", "Marcos Vinicius"],
-                    futsalFem: [],
-                    basqueteMasc: ["Tiago Rodrigues"],
-                    basqueteFem: [],
-                    handebol: [],
-                    volei: ["Samuel Pereira", "Daniel Costa", "José Lima"],
-                    bolaQueimada: ["Luciana Silva", "Patrícia Oliveira"]
-                }
-            };
-            
-            localStorage.setItem('inscricoesJogosUnopar', JSON.stringify([exemploInscricao1, exemploInscricao2, exemploInscricao3]));
+            localStorage.setItem('inscricoesJogosUnopar', JSON.stringify([exemploInscricao1, exemploInscricao2]));
         }
     </script>
 </body>
