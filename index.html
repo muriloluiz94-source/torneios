@@ -34,11 +34,6 @@
             margin-bottom: 10px;
         }
 
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
         .main-content {
             background: white;
             border-radius: 15px;
@@ -54,21 +49,11 @@
             font-size: 14px;
             background: rgba(0,0,0,0.2);
             border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .footer p {
-            margin: 5px 0;
         }
 
         .footer a {
             color: white;
             text-decoration: none;
-            border-bottom: 1px solid rgba(255,255,255,0.5);
-        }
-
-        .footer a:hover {
-            border-bottom-color: white;
         }
 
         .tabs {
@@ -114,7 +99,7 @@
             color: #333;
         }
 
-        input, select, textarea {
+        input, select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -150,24 +135,12 @@
             background: #48bb78;
         }
 
-        .btn-success:hover {
-            background: #38a169;
-        }
-
         .btn-info {
             background: #4299e1;
         }
 
-        .btn-info:hover {
-            background: #3182ce;
-        }
-
         .btn-warning {
             background: #ed8936;
-        }
-
-        .btn-warning:hover {
-            background: #dd6b20;
         }
 
         .atleta-item {
@@ -182,7 +155,6 @@
 
         .atleta-item input {
             flex: 1;
-            margin: 0;
         }
 
         .modalidade-card {
@@ -210,17 +182,12 @@
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            transition: transform 0.3s;
             cursor: pointer;
+            transition: transform 0.3s;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-        }
-
-        .stat-card h4 {
-            font-size: 1.1em;
-            margin-bottom: 10px;
         }
 
         .stat-number {
@@ -249,13 +216,8 @@
         th {
             background-color: #667eea;
             color: white;
-            font-weight: bold;
             position: sticky;
             top: 0;
-        }
-
-        tr:hover {
-            background-color: #f5f5f5;
         }
 
         .modalidades-badge {
@@ -278,7 +240,6 @@
         .progress-fill {
             background: rgba(255,255,255,0.8);
             height: 20px;
-            transition: width 0.3s;
         }
 
         .login-overlay {
@@ -303,24 +264,12 @@
             text-align: center;
         }
 
-        .login-box h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-        }
-
         .cpf-busca-box {
             background: #f0f4ff;
             padding: 30px;
             border-radius: 15px;
             text-align: center;
             margin-bottom: 30px;
-        }
-
-        .cpf-busca-box input {
-            max-width: 300px;
-            margin: 0 auto;
-            text-align: center;
-            font-size: 18px;
         }
 
         .regras-container {
@@ -337,36 +286,18 @@
             padding-left: 20px;
         }
 
-        .regra-modalidade h3 {
-            color: #667eea;
+        .formato-card {
+            background: #f7f7f7;
+            padding: 15px;
+            border-radius: 10px;
             margin-bottom: 15px;
         }
 
-        .regra-modalidade ul {
-            margin-left: 20px;
-        }
-
-        .regra-modalidade li {
-            margin-bottom: 8px;
-        }
-
         @media (max-width: 768px) {
-            .main-content {
-                padding: 20px;
-            }
-            
-            .atleta-item {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                margin-top: 10px;
-            }
-            
-            .tabs {
-                flex-direction: column;
-            }
+            .main-content { padding: 20px; }
+            .atleta-item { flex-direction: column; }
+            .btn { width: 100%; margin-top: 10px; }
+            .tabs { flex-direction: column; }
         }
     </style>
 </head>
@@ -381,7 +312,8 @@
             <div class="tabs">
                 <button class="tab active" onclick="showTab('inscricao')">Nova Inscrição</button>
                 <button class="tab" onclick="showTab('editarTime')">Editar times/inscrição</button>
-                <button class="tab" onclick="showTab('regras')">Regras das Competições</button>
+                <button class="tab" onclick="showTab('tabelaJogos')">Tabela de Jogos</button>
+                <button class="tab" onclick="showTab('regras')">Regras</button>
                 <button class="tab" onclick="showTab('consultar')">Consultar Times</button>
                 <button class="tab" onclick="mostrarLoginAdmin()">👑 Administrador</button>
             </div>
@@ -393,64 +325,23 @@
                         <label>Nome do Time *</label>
                         <input type="text" id="nomeTime" required>
                     </div>
-
                     <div class="form-group">
                         <label>Curso de Graduação *</label>
                         <input type="text" id="curso" required>
                     </div>
-
                     <div class="form-group">
                         <label>CPF do Responsável *</label>
                         <input type="text" id="cpfResponsavel" placeholder="Apenas números" maxlength="11" required>
                     </div>
-
-                    <div class="form-group">
-                        <label>Modalidades Esportivas *</label>
-                        <div id="modalidades">
-                            <div class="modalidade-card">
-                                <h3>⚽ Futsal Masculino</h3>
-                                <p>Máximo de 10 atletas</p>
-                                <div id="futsalMasc-atletas"></div>
-                                <button type="button" onclick="adicionarAtleta('futsalMasc')" class="btn btn-success">+ Adicionar Atleta</button>
-                            </div>
-
-                            <div class="modalidade-card">
-                                <h3>⚽ Futsal Feminino</h3>
-                                <p>Máximo de 10 atletas</p>
-                                <div id="futsalFem-atletas"></div>
-                                <button type="button" onclick="adicionarAtleta('futsalFem')" class="btn btn-success">+ Adicionar Atleta</button>
-                            </div>
-
-                            <div class="modalidade-card">
-                                <h3>🏀 Basquete 3x3 Masculino</h3>
-                                <p>Máximo de 4 atletas</p>
-                                <div id="basqueteMasc-atletas"></div>
-                                <button type="button" onclick="adicionarAtleta('basqueteMasc')" class="btn btn-success">+ Adicionar Atleta</button>
-                            </div>
-
-                            <div class="modalidade-card">
-                                <h3>🏐 Voleibol (Equipes Mistas)</h3>
-                                <p>Máximo de 12 atletas</p>
-                                <div id="volei-atletas"></div>
-                                <button type="button" onclick="adicionarAtleta('volei')" class="btn btn-success">+ Adicionar Atleta</button>
-                            </div>
-
-                            <div class="modalidade-card">
-                                <h3>🤾 Handebol (Equipes Mistas)</h3>
-                                <p>Máximo de 14 atletas</p>
-                                <div id="handebol-atletas"></div>
-                                <button type="button" onclick="adicionarAtleta('handebol')" class="btn btn-success">+ Adicionar Atleta</button>
-                            </div>
-
-                            <div class="modalidade-card">
-                                <h3>🔥 Bola queimada (Equipes Mistas)</h3>
-                                <p>Máximo de 8 atletas</p>
-                                <div id="bolaQueimada-atletas"></div>
-                                <button type="button" onclick="adicionarAtleta('bolaQueimada')" class="btn btn-success">+ Adicionar Atleta</button>
-                            </div>
-                        </div>
+                    <div id="modalidades">
+                        <div class="modalidade-card"><h3>⚽ Futsal Masculino</h3><p>Máximo 10 atletas</p><div id="futsalMasc-atletas"></div><button type="button" onclick="adicionarAtleta('futsalMasc')" class="btn btn-success">+ Adicionar</button></div>
+                        <div class="modalidade-card"><h3>⚽ Futsal Feminino</h3><p>Máximo 10 atletas</p><div id="futsalFem-atletas"></div><button type="button" onclick="adicionarAtleta('futsalFem')" class="btn btn-success">+ Adicionar</button></div>
+                        <div class="modalidade-card"><h3>🏀 Basquete 3x3 Masculino</h3><p>Máximo 4 atletas</p><div id="basqueteMasc-atletas"></div><button type="button" onclick="adicionarAtleta('basqueteMasc')" class="btn btn-success">+ Adicionar</button></div>
+                        <div class="modalidade-card"><h3>🏀 Basquete 3x3 Feminino</h3><p>Máximo 4 atletas</p><div id="basqueteFem-atletas"></div><button type="button" onclick="adicionarAtleta('basqueteFem')" class="btn btn-success">+ Adicionar</button></div>
+                        <div class="modalidade-card"><h3>🏐 Voleibol (Misto)</h3><p>Máximo 12 atletas</p><div id="volei-atletas"></div><button type="button" onclick="adicionarAtleta('volei')" class="btn btn-success">+ Adicionar</button></div>
+                        <div class="modalidade-card"><h3>🤾 Handebol (Misto)</h3><p>Máximo 14 atletas</p><div id="handebol-atletas"></div><button type="button" onclick="adicionarAtleta('handebol')" class="btn btn-success">+ Adicionar</button></div>
+                        <div class="modalidade-card"><h3>🔥 Bola queimada (Misto)</h3><p>Máximo 8 atletas</p><div id="bolaQueimada-atletas"></div><button type="button" onclick="adicionarAtleta('bolaQueimada')" class="btn btn-success">+ Adicionar</button></div>
                     </div>
-
                     <button type="submit" class="btn">Salvar Inscrição</button>
                 </form>
             </div>
@@ -458,122 +349,45 @@
             <!-- Editar times/inscrição -->
             <div id="tab-editarTime" class="tab-content">
                 <div class="cpf-busca-box">
-                    <h3 style="color: #667eea; margin-bottom: 20px;">🔐 Acesso para Edição</h3>
-                    <p style="margin-bottom: 15px;">Digite o CPF do responsável para editar o time cadastrado</p>
-                    <div class="form-group">
-                        <label>CPF do Responsável:</label>
-                        <input type="text" id="cpfEditarBusca" placeholder="Digite apenas os números" maxlength="11" style="text-align: center; font-size: 18px;">
-                    </div>
-                    <button type="button" onclick="buscarTimePorCPF()" class="btn">🔍 Buscar Time</button>
+                    <h3>🔐 Editar Time</h3>
+                    <p>Digite o CPF do responsável</p>
+                    <input type="text" id="cpfEditarBusca" placeholder="Apenas números" maxlength="11" style="text-align:center;font-size:18px;">
+                    <button onclick="buscarTimePorCPF()" class="btn" style="margin-top:15px;">🔍 Buscar</button>
                 </div>
                 <div id="editarTimeContainer"></div>
             </div>
 
-            <!-- Regras das Competições -->
+            <!-- Tabela de Jogos -->
+            <div id="tab-tabelaJogos" class="tab-content">
+                <div class="form-group">
+                    <label>Selecione a Modalidade:</label>
+                    <select id="selectModalidade" onchange="carregarTabelaJogos()">
+                        <option value="">Selecione</option>
+                    </select>
+                </div>
+                <div id="tabelaJogosContainer"></div>
+            </div>
+
+            <!-- Regras -->
             <div id="tab-regras" class="tab-content">
                 <div class="regras-container">
-                    <h2 style="color: #667eea; margin-bottom: 20px;">📋 Regras das Competições</h2>
-                    
-                    <h3 style="color: #764ba2; margin: 20px 0 10px 0;">Modalidades a serem disputadas:</h3>
-                    <ul style="margin-left: 30px; margin-bottom: 20px;">
-                        <li>Futsal Masculino</li>
-                        <li>Futsal Feminino</li>
-                        <li>Basquete 3X3 Masculino</li>
-                        <li>Voleibol (Equipes Mistas)</li>
-                        <li>Handebol (Equipes Mistas)</li>
-                        <li>Bola Queimada (Equipes Mistas)</li>
-                    </ul>
-                    
-                    <p><strong>Formato das Competições:</strong> a serem definidas conforme número de inscritos.</p>
-                    
-                    <div class="regra-modalidade">
-                        <h3>⚽ Futsal Masculino</h3>
-                        <ul>
-                            <li>Cada equipe terá 5 jogadores em quadra e até 5 reservas.</li>
-                            <li>As substituições são ilimitadas e podem ocorrer a qualquer momento com a bola em jogo, desde que o jogador entre e saia da quadra pela zona de substituição designada.</li>
-                            <li>Jogos de apenas 1 período de 10 minutos corridos.</li>
-                            <li>Em caso de empate, os jogos terão a definição do vencedor em Disputa de Pênaltis. A Disputa de Pênaltis já inicia em "Morte Súbita", isto é, com a equipe que marcar o gol e a outra falhar a tornar-se a vencedora.</li>
-                        </ul>
-                    </div>
-
-                    <div class="regra-modalidade">
-                        <h3>⚽ Futsal Feminino</h3>
-                        <ul>
-                            <li>Cada equipe terá 5 jogadores em quadra e até 5 reservas.</li>
-                            <li>As substituições são ilimitadas e podem ocorrer a qualquer momento com a bola em jogo, desde que o jogador entre e saia da quadra pela zona de substituição designada.</li>
-                            <li>Jogos de apenas 1 período de 10 minutos corridos.</li>
-                            <li>Em caso de empate, os jogos terão a definição do vencedor em Disputa de Pênaltis. A Disputa de Pênaltis já inicia em "Morte Súbita", isto é, com a equipe que marcar o gol e a outra falhar a tornar-se a vencedora.</li>
-                        </ul>
-                    </div>
-
-                    <div class="regra-modalidade">
-                        <h3>🤾 Handebol (Equipes Mistas)</h3>
-                        <ul>
-                            <li>Cada equipe terá 7 jogadores em quadra (sendo obrigatoriamente no mínimo 3 homens e 3 mulheres, independente do momento da partida, o (a) goleiro (a) pode ser de qualquer sexo) e até 7 reservas.</li>
-                            <li>As substituições são ilimitadas e podem ocorrer a qualquer momento com a bola em jogo, desde que o jogador entre e saia da quadra pela zona de substituição designada.</li>
-                            <li>Jogos de apenas 1 período de 10 minutos corridos.</li>
-                            <li>Em caso de empate, os jogos terão a definição do vencedor em "Tiros de 7 metros". A disputa já inicia em "Morte Súbita", isto é, com a equipe que marcar o gol e a outra falhar a tornar-se a vencedora.</li>
-                        </ul>
-                    </div>
-
-                    <div class="regra-modalidade">
-                        <h3>🏀 Basquete 3x3 Masculino</h3>
-                        <ul>
-                            <li>Cada equipe tem 3 jogadores em quadra e há um reserva.</li>
-                            <li>A partida é jogada em meia quadra de basquete tradicional.</li>
-                            <li>Jogos de 1 período de 10 minutos corridos.</li>
-                            <li>As substituições são ilimitadas e podem ocorrer a qualquer momento com a bola em jogo, desde que o jogador entre e saia da quadra pela zona de substituição designada.</li>
-                            <li>A equipe que alcançar 21 pontos primeiro vence, mesmo que o tempo não tenha terminado.</li>
-                            <li>Se houver empate no final, vai para prorrogação: a primeira equipe a marcar 2 pontos na prorrogação vence</li>
-                            <li>Pontuação da Partida: 
-                                <ul>
-                                    <li>Cestas dentro da linha de 6,75 m = 1 ponto.</li>
-                                    <li>Cestas de fora da linha de 6,75 m = 2 pontos.</li>
-                                    <li>Lances livres = 1 ponto.</li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="regra-modalidade">
-                        <h3>🔥 Bola queimada (Equipes Mistas)</h3>
-                        <ul>
-                            <li>Cada equipe terá 8 jogadores em quadra, sendo um capitão que iniciará a partida na linha de fundo adversária.</li>
-                            <li>O capitão terá 2 vidas e os outros 7 jogadores da equipe terá apenas 1 vida.</li>
-                            <li>O capitão pode doar suas vidas para algum outro atleta do time no decorrer da partida. O capitão, ou o jogador por ele designado, pode adentrar no campo de jogo somente quando restar 1 atleta de sua equipe em quadra.</li>
-                            <li>A partida terá duração máxima de 15 minutos. Vence a equipe que eliminar ("queimar") todos os jogadores do time adversário, independente do tempo, ou ter "queimado" mais jogadores.</li>
-                        </ul>
-                    </div>
-
-                    <div class="regra-modalidade">
-                        <h3>🏐 Voleibol (Equipes Mistas)</h3>
-                        <ul>
-                            <li>Cada equipe terá 6 jogadores em quadra (sendo obrigatoriamente 3 homens e 3 mulheres, independente do momento da partida) e até 6 reservas.</li>
-                            <li>As substituições são ilimitadas, mas somente podem ocorrer com a bola fora de jogo ou com a partida parada. Os (as) jogadores (as) devem entrar e sair da quadra pela zona de substituição designada.</li>
-                            <li>Cada partida será disputada em apenas um único set de 15 pontos, com vantagem mínima de 2 pontos (Ex.: 15x13, 17x15).</li>
-                            <li>Não haverá tempo técnico nas partidas.</li>
-                        </ul>
-                    </div>
+                    <h2 style="color:#667eea;">📋 Regras das Competições</h2>
+                    <h3>Modalidades:</h3>
+                    <ul><li>Futsal Masculino</li><li>Futsal Feminino</li><li>Basquete 3x3 Masculino</li><li>Basquete 3x3 Feminino</li><li>Voleibol (Misto)</li><li>Handebol (Misto)</li><li>Bola Queimada (Misto)</li></ul>
+                    <p><strong>Formato:</strong> definido conforme número de inscritos.</p>
+                    <div class="regra-modalidade"><h3>⚽ Futsal</h3><ul><li>5 jogadores + 5 reservas</li><li>10 minutos corridos</li><li>Empate = pênaltis (morte súbita)</li></ul></div>
+                    <div class="regra-modalidade"><h3>🤾 Handebol</h3><ul><li>7 jogadores (mín. 3H/3M) + 7 reservas</li><li>10 minutos</li><li>Empate = tiros de 7m (morte súbita)</li></ul></div>
+                    <div class="regra-modalidade"><h3>🏀 Basquete 3x3</h3><ul><li>3 jogadores + 1 reserva</li><li>10 min ou 21 pontos</li><li>Empate = 2 pontos na prorrogação</li><li>Cesta de 1 ponto (dentro do arco) / 2 pontos (fora do arco)</li></ul></div>
+                    <div class="regra-modalidade"><h3>🔥 Bola queimada</h3><ul><li>8 jogadores (capitão tem 2 vidas)</li><li>15 min máx.</li></ul></div>
+                    <div class="regra-modalidade"><h3>🏐 Voleibol</h3><ul><li>6 jogadores (3H/3M) + 6 reservas</li><li>1 set de 15 pontos (diferença 2)</li></ul></div>
                 </div>
             </div>
 
             <!-- Consultar Times -->
             <div id="tab-consultar" class="tab-content">
                 <div class="stats-grid" id="statsModalidades"></div>
-                
-                <div class="form-group">
-                    <label>🔍 Buscar time por nome ou curso:</label>
-                    <input type="text" id="buscarTimeNome" placeholder="Digite o nome do time ou curso..." onkeyup="filtrarTimes()">
-                </div>
-                
-                <div class="table-container">
-                    <table id="tabelaTimes">
-                        <thead>
-                            <tr><th>#</th><th>Nome do Time</th><th>Curso</th><th>Data</th><th>Modalidades</th><th>Ações</th></tr>
-                        </thead>
-                        <tbody id="tabelaTimesBody"></tbody>
-                    </table>
-                </div>
+                <div class="form-group"><label>🔍 Buscar:</label><input type="text" id="buscarTimeNome" placeholder="Nome ou curso..." onkeyup="filtrarTimes()"></div>
+                <div class="table-container"><table id="tabelaTimes"><thead><tr><th>#</th><th>Time</th><th>Curso</th><th>Data</th><th>Modalidades</th><th>Ações</th></tr></thead><tbody id="tabelaTimesBody"></tbody></table></div>
             </div>
 
             <!-- Administrador -->
@@ -582,492 +396,445 @@
 
         <div class="footer">
             <p>Desenvolvido por Prof. Ms. Murilo Luiz Burim</p>
-            <p>📧 E-mail: <a href="mailto:murilo.burim@kroton.com.br">murilo.burim@kroton.com.br</a></p>
-            <p>© 2026 - Todos os direitos reservados</p>
+            <p>📧 murilo.burim@kroton.com.br | © 2026</p>
         </div>
     </div>
 
     <script>
-        // Dados
-        let modalidadesAtletas = {
-            futsalMasc: [], futsalFem: [], basqueteMasc: [], volei: [], handebol: [], bolaQueimada: []
-        };
+        // Dados globais - Adicionado basqueteFem
+        let modalidadesAtletas = { futsalMasc: [], futsalFem: [], basqueteMasc: [], basqueteFem: [], volei: [], handebol: [], bolaQueimada: [] };
+        let formatosDisputa = { futsalMasc: 'Rodízio', futsalFem: 'Eliminatória', basqueteMasc: 'Misto', basqueteFem: 'Misto', volei: 'Misto', handebol: 'Eliminatória Dupla', bolaQueimada: 'Eliminatória' };
+        let resultadosJogos = {};
 
-        const limites = {
-            futsalMasc: 10, futsalFem: 10, basqueteMasc: 4, volei: 12, handebol: 14, bolaQueimada: 8
-        };
-
+        const limites = { futsalMasc:10, futsalFem:10, basqueteMasc:4, basqueteFem:4, volei:12, handebol:14, bolaQueimada:8 };
         const nomesModalidades = {
-            futsalMasc: 'Futsal Masculino',
-            futsalFem: 'Futsal Feminino',
-            basqueteMasc: 'Basquete 3x3 Masculino',
-            volei: 'Voleibol (Equipes Mistas)',
-            handebol: 'Handebol (Equipes Mistas)',
-            bolaQueimada: 'Bola queimada (Equipes Mistas)'
+            futsalMasc: 'Futsal Masculino', futsalFem: 'Futsal Feminino', 
+            basqueteMasc: 'Basquete 3x3 Masculino', basqueteFem: 'Basquete 3x3 Feminino',
+            volei: 'Voleibol (Misto)', handebol: 'Handebol (Misto)', bolaQueimada: 'Bola queimada (Misto)'
         };
 
         let timesFiltrados = [];
 
-        // Funções auxiliares
-        function getInscricoes() {
-            const data = localStorage.getItem('inscricoesJogosUnopar');
-            return data ? JSON.parse(data) : [];
-        }
+        // Funções de storage
+        function getInscricoes() { return JSON.parse(localStorage.getItem('inscricoes') || '[]'); }
+        function salvarInscricoes(data) { localStorage.setItem('inscricoes', JSON.stringify(data)); }
+        function salvarFormatos() { localStorage.setItem('formatos', JSON.stringify(formatosDisputa)); }
+        function carregarFormatos() { let f = localStorage.getItem('formatos'); if(f) formatosDisputa = JSON.parse(f); }
+        function salvarResultados() { localStorage.setItem('resultados', JSON.stringify(resultadosJogos)); }
+        function carregarResultados() { let r = localStorage.getItem('resultados'); if(r) resultadosJogos = JSON.parse(r); }
 
-        function salvarInscricoes(inscricoes) {
-            localStorage.setItem('inscricoesJogosUnopar', JSON.stringify(inscricoes));
-        }
-
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            event.target.classList.add('active');
-            
-            if (tabName === 'consultar') {
-                carregarTabelaTimes();
-                carregarEstatisticas();
-            } else if (tabName === 'editarTime') {
-                document.getElementById('editarTimeContainer').innerHTML = '';
-                document.getElementById('cpfEditarBusca').value = '';
-            }
-        }
-
-        // Renderizar atletas no formulário
+        // Renderizar atletas
         function renderizarAtletas(modalidade) {
-            const container = document.getElementById(`${modalidade}-atletas`);
-            if (!container) return;
+            let container = document.getElementById(`${modalidade}-atletas`);
+            if(!container) return;
             container.innerHTML = '';
-            modalidadesAtletas[modalidade].forEach((atleta, index) => {
-                const div = document.createElement('div');
+            modalidadesAtletas[modalidade].forEach((a, i) => {
+                let div = document.createElement('div');
                 div.className = 'atleta-item';
-                div.innerHTML = `
-                    <input type="text" placeholder="Nome do atleta ${index + 1}" value="${atleta}" onchange="atualizarAtleta('${modalidade}', ${index}, this.value)">
-                    <button type="button" onclick="removerAtleta('${modalidade}', ${index})" class="btn btn-danger" style="padding: 5px 10px;">Remover</button>
-                `;
+                div.innerHTML = `<input type="text" placeholder="Atleta ${i+1}" value="${a}" onchange="atualizarAtleta('${modalidade}',${i},this.value)">
+                                <button onclick="removerAtleta('${modalidade}',${i})" class="btn btn-danger" style="padding:5px 10px;">X</button>`;
                 container.appendChild(div);
             });
         }
 
-        function adicionarAtleta(modalidade) {
-            if (modalidadesAtletas[modalidade].length >= limites[modalidade]) {
-                alert(`Limite máximo de ${limites[modalidade]} atletas!`);
-                return;
-            }
-            modalidadesAtletas[modalidade].push('');
-            renderizarAtletas(modalidade);
-        }
+        function adicionarAtleta(m) { if(modalidadesAtletas[m].length >= limites[m]) { alert(`Máximo ${limites[m]} atletas!`); return; } modalidadesAtletas[m].push(''); renderizarAtletas(m); }
+        function removerAtleta(m,i) { modalidadesAtletas[m].splice(i,1); renderizarAtletas(m); }
+        function atualizarAtleta(m,i,v) { modalidadesAtletas[m][i] = v; }
 
-        function removerAtleta(modalidade, index) {
-            modalidadesAtletas[modalidade].splice(index, 1);
-            renderizarAtletas(modalidade);
-        }
-
-        function atualizarAtleta(modalidade, index, valor) {
-            modalidadesAtletas[modalidade][index] = valor;
-        }
-
-        // Salvar nova inscrição
+        // Nova inscrição
         document.getElementById('formInscricao').addEventListener('submit', (e) => {
             e.preventDefault();
-            const nomeTime = document.getElementById('nomeTime').value.trim();
-            const curso = document.getElementById('curso').value.trim();
-            const cpf = document.getElementById('cpfResponsavel').value.trim();
+            let nome = document.getElementById('nomeTime').value.trim();
+            let curso = document.getElementById('curso').value.trim();
+            let cpf = document.getElementById('cpfResponsavel').value.trim();
+            if(!nome || !curso || !cpf) return alert('Preencha todos os campos!');
+            if(cpf.length!==11 || !/^\d+$/.test(cpf)) return alert('CPF inválido!');
+            let tem = false; for(let m in modalidadesAtletas) if(modalidadesAtletas[m].length>0) tem=true;
+            if(!tem) return alert('Adicione pelo menos uma modalidade!');
             
-            if (!nomeTime || !curso || !cpf) {
-                alert('Preencha todos os campos!');
-                return;
-            }
-            if (cpf.length !== 11 || !/^\d+$/.test(cpf)) {
-                alert('CPF inválido! Digite 11 números.');
-                return;
-            }
-            
-            let temModalidade = false;
-            for (let m in modalidadesAtletas) {
-                if (modalidadesAtletas[m].length > 0) temModalidade = true;
-            }
-            if (!temModalidade) {
-                alert('Adicione pelo menos uma modalidade com atletas!');
-                return;
-            }
-            
-            const inscricoes = getInscricoes();
-            const novaInscricao = {
-                id: Date.now(),
-                nomeTime, curso, cpfResponsavel: cpf,
-                modalidades: JSON.parse(JSON.stringify(modalidadesAtletas)),
-                dataCriacao: new Date().toISOString()
-            };
-            inscricoes.push(novaInscricao);
+            let inscricoes = getInscricoes();
+            inscricoes.push({ id:Date.now(), nomeTime:nome, curso:curso, cpfResponsavel:cpf, modalidades:JSON.parse(JSON.stringify(modalidadesAtletas)), dataCriacao:new Date().toISOString() });
             salvarInscricoes(inscricoes);
-            
-            alert(`Time "${nomeTime}" inscrito com sucesso!`);
-            
-            // Limpar formulário
+            alert(`Time "${nome}" inscrito!`);
             document.getElementById('formInscricao').reset();
-            modalidadesAtletas = { futsalMasc: [], futsalFem: [], basqueteMasc: [], volei: [], handebol: [], bolaQueimada: [] };
-            for (let m in modalidadesAtletas) renderizarAtletas(m);
+            modalidadesAtletas = { futsalMasc:[], futsalFem:[], basqueteMasc:[], basqueteFem:[], volei:[], handebol:[], bolaQueimada:[] };
+            for(let m in modalidadesAtletas) renderizarAtletas(m);
+            carregarTabelaTimes(); carregarEstatisticas();
         });
 
-        // Buscar time por CPF para edição
+        // Editar por CPF
         function buscarTimePorCPF() {
-            const cpf = document.getElementById('cpfEditarBusca').value.trim();
-            if (!cpf) { alert('Digite o CPF!'); return; }
-            if (cpf.length !== 11 || !/^\d+$/.test(cpf)) { alert('CPF inválido!'); return; }
-            
-            const inscricoes = getInscricoes();
-            const time = inscricoes.find(i => i.cpfResponsavel === cpf);
-            
-            if (!time) {
-                alert('Nenhum time encontrado com este CPF!');
-                document.getElementById('editarTimeContainer').innerHTML = '';
-                return;
-            }
-            
-            carregarFormularioEdicao(time);
+            let cpf = document.getElementById('cpfEditarBusca').value.trim();
+            if(!cpf || cpf.length!==11) return alert('Digite CPF válido!');
+            let time = getInscricoes().find(i => i.cpfResponsavel === cpf);
+            if(!time) return alert('Time não encontrado!');
+            carregarEdicao(time);
         }
 
-        function carregarFormularioEdicao(time) {
-            const container = document.getElementById('editarTimeContainer');
-            let html = `
-                <div style="background: #f0f4ff; padding: 20px; border-radius: 15px;">
-                    <h3 style="color: #667eea;">✏️ Editando: ${time.nomeTime}</h3>
-                    <form id="formEdicao">
-                        <div class="form-group"><label>Nome do Time:</label><input type="text" id="editNome" value="${time.nomeTime}"></div>
+        function carregarEdicao(time) {
+            let container = document.getElementById('editarTimeContainer');
+            let html = `<div style="background:#f0f4ff;padding:20px;border-radius:15px;"><h3>Editando: ${time.nomeTime}</h3>
+                        <form id="formEdit"><div class="form-group"><label>Nome:</label><input type="text" id="editNome" value="${time.nomeTime}"></div>
                         <div class="form-group"><label>Curso:</label><input type="text" id="editCurso" value="${time.curso}"></div>
-                        <div class="form-group"><label>CPF:</label><input type="text" id="editCpf" value="${time.cpfResponsavel}" readonly style="background:#eee;"></div>
-            `;
-            
-            const modalidadesList = ['futsalMasc', 'futsalFem', 'basqueteMasc', 'volei', 'handebol', 'bolaQueimada'];
-            
-            modalidadesList.forEach(modalidade => {
-                html += `<div class="modalidade-card"><h3>${nomesModalidades[modalidade]}</h3><p>Máximo ${limites[modalidade]} atletas</p><div id="edit-${modalidade}"></div>
-                        <button type="button" onclick="adicionarAtletaEdit('${modalidade}')" class="btn btn-success">+ Adicionar</button></div>`;
+                        <div class="form-group"><label>CPF:</label><input type="text" id="editCpf" value="${time.cpfResponsavel}" readonly style="background:#ddd;"></div>`;
+            let modals = ['futsalMasc','futsalFem','basqueteMasc','basqueteFem','volei','handebol','bolaQueimada'];
+            modals.forEach(m => {
+                html += `<div class="modalidade-card"><h3>${nomesModalidades[m]}</h3><div id="edit-${m}"></div>
+                        <button type="button" onclick="adicionarEdit('${m}')" class="btn btn-success">+ Atleta</button></div>`;
             });
-            
             html += `<button type="submit" class="btn">💾 Salvar</button>
-                    <button type="button" onclick="excluirTime(${time.id})" class="btn btn-danger">🗑️ Excluir</button>
-                    </form></div>`;
+                    <button type="button" onclick="excluirTime(${time.id})" class="btn btn-danger">🗑️ Excluir</button></form></div>`;
             container.innerHTML = html;
             
-            // Carregar atletas
-            modalidadesList.forEach(modalidade => {
-                window[`editAtletas_${modalidade}`] = [...(time.modalidades[modalidade] || [])];
-                renderizarAtletasEdit(modalidade);
-            });
+            modals.forEach(m => { window[`e_${m}`] = [...(time.modalidades[m]||[])]; renderizarEdit(m); });
             
-            document.getElementById('formEdicao').addEventListener('submit', (e) => {
+            document.getElementById('formEdit').addEventListener('submit', (e) => {
                 e.preventDefault();
-                const timeAtualizado = {
-                    id: time.id,
-                    nomeTime: document.getElementById('editNome').value,
-                    curso: document.getElementById('editCurso').value,
-                    cpfResponsavel: document.getElementById('editCpf').value,
-                    modalidades: {},
-                    dataCriacao: time.dataCriacao
-                };
-                modalidadesList.forEach(m => { timeAtualizado.modalidades[m] = window[`editAtletas_${m}`]; });
-                
-                const inscricoes = getInscricoes();
-                const index = inscricoes.findIndex(i => i.id === time.id);
-                if (index !== -1) {
-                    inscricoes[index] = timeAtualizado;
+                let inscricoes = getInscricoes();
+                let idx = inscricoes.findIndex(i => i.id === time.id);
+                if(idx !== -1) {
+                    inscricoes[idx].nomeTime = document.getElementById('editNome').value;
+                    inscricoes[idx].curso = document.getElementById('editCurso').value;
+                    modals.forEach(m => { inscricoes[idx].modalidades[m] = window[`e_${m}`]; });
                     salvarInscricoes(inscricoes);
-                    alert('Time atualizado com sucesso!');
+                    alert('Time atualizado!');
                     document.getElementById('editarTimeContainer').innerHTML = '';
                     document.getElementById('cpfEditarBusca').value = '';
-                    carregarTabelaTimes();
-                    carregarEstatisticas();
+                    carregarTabelaTimes(); carregarEstatisticas();
                 }
             });
         }
 
-        function adicionarAtletaEdit(modalidade) {
-            if (window[`editAtletas_${modalidade}`].length >= limites[modalidade]) {
-                alert(`Limite máximo de ${limites[modalidade]} atletas!`);
-                return;
-            }
-            window[`editAtletas_${modalidade}`].push('');
-            renderizarAtletasEdit(modalidade);
-        }
-
-        function removerAtletaEdit(modalidade, index) {
-            window[`editAtletas_${modalidade}`].splice(index, 1);
-            renderizarAtletasEdit(modalidade);
-        }
-
-        function atualizarAtletaEdit(modalidade, index, valor) {
-            window[`editAtletas_${modalidade}`][index] = valor;
-        }
-
-        function renderizarAtletasEdit(modalidade) {
-            const container = document.getElementById(`edit-${modalidade}`);
-            if (!container) return;
+        function adicionarEdit(m) { if(window[`e_${m}`].length >= limites[m]) { alert(`Máximo ${limites[m]} atletas!`); return; } window[`e_${m}`].push(''); renderizarEdit(m); }
+        function removerEdit(m,i) { window[`e_${m}`].splice(i,1); renderizarEdit(m); }
+        function atualizarEdit(m,i,v) { window[`e_${m}`][i] = v; }
+        function renderizarEdit(m) {
+            let container = document.getElementById(`edit-${m}`);
+            if(!container) return;
             container.innerHTML = '';
-            window[`editAtletas_${modalidade}`].forEach((atleta, idx) => {
-                const div = document.createElement('div');
+            window[`e_${m}`].forEach((a,i) => {
+                let div = document.createElement('div');
                 div.className = 'atleta-item';
-                div.innerHTML = `<input type="text" value="${atleta}" onchange="atualizarAtletaEdit('${modalidade}', ${idx}, this.value)">
-                                <button onclick="removerAtletaEdit('${modalidade}', ${idx})" class="btn btn-danger" style="padding:5px 10px;">X</button>`;
+                div.innerHTML = `<input type="text" value="${a}" onchange="atualizarEdit('${m}',${i},this.value)">
+                                <button onclick="removerEdit('${m}',${i})" class="btn btn-danger" style="padding:5px 10px;">X</button>`;
                 container.appendChild(div);
             });
         }
 
         function excluirTime(id) {
-            if (confirm('Tem certeza que deseja excluir este time?')) {
-                let inscricoes = getInscricoes();
-                inscricoes = inscricoes.filter(i => i.id !== id);
+            if(confirm('Excluir time?')) {
+                let inscricoes = getInscricoes().filter(i => i.id !== id);
                 salvarInscricoes(inscricoes);
                 alert('Time excluído!');
                 document.getElementById('editarTimeContainer').innerHTML = '';
                 document.getElementById('cpfEditarBusca').value = '';
-                carregarTabelaTimes();
-                carregarEstatisticas();
+                carregarTabelaTimes(); carregarEstatisticas();
             }
+        }
+
+        // Tabela de Jogos
+        function carregarSelectModalidades() {
+            let select = document.getElementById('selectModalidade');
+            select.innerHTML = '<option value="">Selecione</option>';
+            for(let [k,v] of Object.entries(nomesModalidades)) select.innerHTML += `<option value="${k}">${v}</option>`;
+        }
+
+        function carregarTabelaJogos() {
+            let modalidade = document.getElementById('selectModalidade').value;
+            let container = document.getElementById('tabelaJogosContainer');
+            if(!modalidade) { container.innerHTML = '<p>Selecione uma modalidade</p>'; return; }
+            
+            let times = [];
+            getInscricoes().forEach(i => { if(i.modalidades[modalidade]?.length > 0) times.push(i.nomeTime); });
+            if(times.length < 2) { container.innerHTML = '<p>Número insuficiente de times</p>'; return; }
+            
+            let html = `<h3>${nomesModalidades[modalidade]} - ${formatosDisputa[modalidade]}</h3>
+                        <div class="table-container"><table><thead><tr><th>Jogo</th><th>Time A</th><th>vs</th><th>Time B</th><th>Resultado</th></tr></thead><tbody>`;
+            let j=1;
+            for(let i=0; i<times.length; i++) {
+                for(let k=i+1; k<times.length; k++) {
+                    let res = resultadosJogos[`${modalidade}_${i}_${k}`] || '';
+                    html += `<tr><td>${j}</td><td>${times[i]}</td><td>🆚</td><td>${times[k]}</td><td><strong>${res}</strong></td></tr>`;
+                    j++;
+                }
+            }
+            html += `</tbody></table></div>`;
+            container.innerHTML = html;
         }
 
         // Consultar Times
         function carregarTabelaTimes() {
-            const inscricoes = getInscricoes();
-            const timesMap = new Map();
-            inscricoes.forEach(inscricao => {
-                if (!timesMap.has(inscricao.nomeTime)) {
-                    timesMap.set(inscricao.nomeTime, {
-                        nomeTime: inscricao.nomeTime,
-                        curso: inscricao.curso,
-                        dataCriacao: inscricao.dataCriacao,
-                        modalidades: {}
-                    });
-                }
-                const time = timesMap.get(inscricao.nomeTime);
-                for (let [modalidade, atletas] of Object.entries(inscricao.modalidades)) {
-                    if (atletas && atletas.length > 0) {
-                        if (!time.modalidades[modalidade]) time.modalidades[modalidade] = [];
-                        time.modalidades[modalidade] = [...atletas];
-                    }
-                }
+            let map = new Map();
+            getInscricoes().forEach(i => {
+                if(!map.has(i.nomeTime)) map.set(i.nomeTime, { nomeTime:i.nomeTime, curso:i.curso, dataCriacao:i.dataCriacao, modalidades:{} });
+                let t = map.get(i.nomeTime);
+                for(let [m,at] of Object.entries(i.modalidades)) if(at?.length>0) t.modalidades[m] = at;
             });
-            timesFiltrados = Array.from(timesMap.values());
+            timesFiltrados = Array.from(map.values());
             atualizarTabela();
         }
 
         function atualizarTabela() {
-            const tbody = document.getElementById('tabelaTimesBody');
+            let tbody = document.getElementById('tabelaTimesBody');
             tbody.innerHTML = '';
-            timesFiltrados.forEach((time, idx) => {
-                const modalidades = [];
-                for (let [key, atletas] of Object.entries(time.modalidades)) {
-                    if (atletas && atletas.length > 0) modalidades.push(nomesModalidades[key]);
-                }
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${idx+1}</td>
-                    <td><strong>${time.nomeTime}</strong></td>
-                    <td>${time.curso}</td>
-                    <td>${new Date(time.dataCriacao).toLocaleDateString()}</td>
-                    <td>${modalidades.map(m => `<span class="modalidades-badge">${m}</span>`).join('')}</td>
-                    <td><button onclick="verDetalhes(${idx})" class="btn btn-info" style="padding:5px 10px;">👁️ Detalhes</button></td>
-                `;
+            timesFiltrados.forEach((t,i) => {
+                let mods = []; for(let [m,at] of Object.entries(t.modalidades)) if(at?.length>0) mods.push(nomesModalidades[m]);
+                tbody.innerHTML += `<tr><td>${i+1}</td><td><strong>${t.nomeTime}</strong></td><td>${t.curso}</td>
+                                    <td>${new Date(t.dataCriacao).toLocaleDateString()}</td>
+                                    <td>${mods.map(m=>`<span class="modalidades-badge">${m}</span>`).join('')}</td>
+                                    <td><button onclick="verDetalhes(${i})" class="btn btn-info" style="padding:5px 10px;">Detalhes</button></td></tr>`;
             });
         }
 
-        function verDetalhes(index) {
-            const time = timesFiltrados[index];
-            let msg = `🏆 ${time.nomeTime}\n📚 Curso: ${time.curso}\n📅 Data: ${new Date(time.dataCriacao).toLocaleDateString()}\n\n📋 Atletas:\n`;
-            for (let [modalidade, atletas] of Object.entries(time.modalidades)) {
-                if (atletas && atletas.length > 0) {
-                    msg += `\n${nomesModalidades[modalidade]}:\n`;
-                    atletas.forEach((a, i) => msg += `  ${i+1}. ${a}\n`);
-                }
-            }
+        function verDetalhes(i) {
+            let t = timesFiltrados[i];
+            let msg = `🏆 ${t.nomeTime}\nCurso: ${t.curso}\n\nAtletas:\n`;
+            for(let [m,at] of Object.entries(t.modalidades)) if(at?.length>0) msg += `\n${nomesModalidades[m]}:\n${at.map((a,j)=>`  ${j+1}. ${a}`).join('\n')}\n`;
             alert(msg);
         }
 
         function filtrarTimes() {
-            const busca = document.getElementById('buscarTimeNome').value.toLowerCase();
-            if (!busca) { carregarTabelaTimes(); return; }
+            let busca = document.getElementById('buscarTimeNome').value.toLowerCase();
+            if(!busca) { carregarTabelaTimes(); return; }
             timesFiltrados = timesFiltrados.filter(t => t.nomeTime.toLowerCase().includes(busca) || t.curso.toLowerCase().includes(busca));
             atualizarTabela();
         }
 
         function carregarEstatisticas() {
-            const inscricoes = getInscricoes();
-            const stats = {};
-            for (let m in nomesModalidades) stats[m] = 0;
-            inscricoes.forEach(i => {
-                for (let [m, atletas] of Object.entries(i.modalidades)) {
-                    if (atletas && atletas.length > 0) stats[m]++;
-                }
-            });
-            const container = document.getElementById('statsModalidades');
+            let stats = {}; for(let m in nomesModalidades) stats[m]=0;
+            getInscricoes().forEach(i => { for(let [m,at] of Object.entries(i.modalidades)) if(at?.length>0) stats[m]++; });
+            let container = document.getElementById('statsModalidades');
             container.innerHTML = '';
-            const maxVal = Math.max(...Object.values(stats), 1);
-            for (let [m, qtd] of Object.entries(stats)) {
-                const percent = (qtd / maxVal) * 100;
-                const card = document.createElement('div');
+            let maxV = Math.max(...Object.values(stats),1);
+            for(let [m,q] of Object.entries(stats)) {
+                let card = document.createElement('div');
                 card.className = 'stat-card';
                 card.onclick = () => filtrarPorModalidade(m);
-                card.innerHTML = `<h4>${nomesModalidades[m]}</h4><div class="stat-number">${qtd}</div><p>time(s)</p>
-                                <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>`;
+                card.innerHTML = `<h4>${nomesModalidades[m]}</h4><div class="stat-number">${q}</div><p>time(s)</p>
+                                <div class="progress-bar"><div class="progress-fill" style="width:${(q/maxV)*100}%"></div></div>`;
                 container.appendChild(card);
             }
         }
 
         function filtrarPorModalidade(modalidade) {
-            const inscricoes = getInscricoes();
-            const timesMap = new Map();
-            inscricoes.forEach(i => {
-                if (i.modalidades[modalidade] && i.modalidades[modalidade].length > 0) {
-                    if (!timesMap.has(i.nomeTime)) {
-                        timesMap.set(i.nomeTime, { nomeTime: i.nomeTime, curso: i.curso, dataCriacao: i.dataCriacao, modalidades: {} });
-                    }
-                    const time = timesMap.get(i.nomeTime);
-                    time.modalidades[modalidade] = i.modalidades[modalidade];
+            let map = new Map();
+            getInscricoes().forEach(i => {
+                if(i.modalidades[modalidade]?.length > 0) {
+                    if(!map.has(i.nomeTime)) map.set(i.nomeTime, { nomeTime:i.nomeTime, curso:i.curso, dataCriacao:i.dataCriacao, modalidades:{} });
+                    map.get(i.nomeTime).modalidades[modalidade] = i.modalidades[modalidade];
                 }
             });
-            timesFiltrados = Array.from(timesMap.values());
-            atualizarTabela();
-            alert(`Filtrando times da modalidade: ${nomesModalidades[modalidade]}`);
-        }
-
-        function ordenarTimesPorNome() {
-            timesFiltrados.sort((a,b) => a.nomeTime.localeCompare(b.nomeTime));
+            timesFiltrados = Array.from(map.values());
             atualizarTabela();
         }
 
-        function ordenarTimesPorCurso() {
-            timesFiltrados.sort((a,b) => a.curso.localeCompare(b.curso));
-            atualizarTabela();
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            event.target.classList.add('active');
+            if(tab === 'consultar') { carregarTabelaTimes(); carregarEstatisticas(); }
+            if(tab === 'tabelaJogos') { carregarSelectModalidades(); carregarTabelaJogos(); }
         }
 
-        function exportarParaCSV() {
-            let csv = "Nome do Time,Curso,Data da Inscrição,Modalidades\n";
-            timesFiltrados.forEach(t => {
-                const mods = [];
-                for (let [m, at] of Object.entries(t.modalidades)) if (at && at.length > 0) mods.push(nomesModalidades[m]);
-                csv += `"${t.nomeTime}","${t.curso}","${new Date(t.dataCriacao).toLocaleDateString()}","${mods.join('; ')}"\n`;
-            });
-            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `times_inscritos.csv`;
-            link.click();
-            URL.revokeObjectURL(link.href);
-        }
-
-        // Admin
+        // ADMIN - Senha alterada para UNOPAR2026
         function mostrarLoginAdmin() {
-            const overlay = document.createElement('div');
-            overlay.className = 'login-overlay';
-            overlay.id = 'loginOverlay';
-            overlay.innerHTML = `
-                <div class="login-box">
-                    <h2>🔐 Acesso Administrador</h2>
-                    <div class="form-group"><label>Senha:</label><input type="password" id="senhaAdmin"></div>
-                    <button onclick="verificarAdmin()" class="btn">Entrar</button>
-                    <button onclick="fecharLogin()" class="btn btn-danger" style="margin-top:10px;">Cancelar</button>
-                </div>
-            `;
-            document.body.appendChild(overlay);
+            let div = document.createElement('div');
+            div.className = 'login-overlay';
+            div.id = 'loginOverlay';
+            div.innerHTML = `<div class="login-box"><h2>🔐 Acesso Administrador</h2><input type="password" id="senhaAdmin" placeholder="Digite a senha"><br><br>
+                            <button onclick="verificarAdmin()" class="btn">Entrar</button>
+                            <button onclick="fecharLogin()" class="btn btn-danger">Cancelar</button></div>`;
+            document.body.appendChild(div);
         }
-
-        function fecharLogin() {
-            const overlay = document.getElementById('loginOverlay');
-            if (overlay) overlay.remove();
-        }
-
+        function fecharLogin() { let o=document.getElementById('loginOverlay'); if(o) o.remove(); }
         function verificarAdmin() {
-            const senha = document.getElementById('senhaAdmin').value;
-            if (senha === 'admin') {
+            if(document.getElementById('senhaAdmin').value === 'UNOPAR2026') {
                 fecharLogin();
                 carregarAdminPanel();
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
                 document.getElementById('tab-admin').classList.add('active');
                 event.target.classList.add('active');
-            } else {
-                alert('Senha incorreta!');
-            }
+            } else alert('Senha incorreta!');
         }
 
         function carregarAdminPanel() {
-            const adminDiv = document.getElementById('tab-admin');
-            adminDiv.innerHTML = `
-                <h2 style="color:#667eea;">👑 Painel do Administrador</h2>
+            document.getElementById('tab-admin').innerHTML = `
+                <h2 style="color:#667eea;">👑 Painel Administrador</h2>
+                <div style="background:#f0f4ff;padding:20px;border-radius:15px;margin-bottom:20px;">
+                    <h3>📋 Formatos de Disputa</h3>
+                    <div id="formatosContainer"></div>
+                    <button onclick="salvarFormatosAdmin()" class="btn">💾 Salvar Formatos</button>
+                </div>
+                <div style="background:#f0f4ff;padding:20px;border-radius:15px;margin-bottom:20px;">
+                    <h3>🎯 Resultados dos Jogos</h3>
+                    <select id="adminModalidade" onchange="carregarJogosAdmin()"><option value="">Selecione</option></select>
+                    <div id="adminJogosContainer"></div>
+                </div>
+                <div style="background:#f0f4ff;padding:20px;border-radius:15px;margin-bottom:20px;">
+                    <h3>📊 Relatório de Times e Atletas</h3>
+                    <button onclick="gerarRelatorioTimes()" class="btn btn-info">📄 Gerar Relatório</button>
+                    <button onclick="imprimirRelatorio()" class="btn btn-warning">🖨️ Imprimir</button>
+                </div>
                 <div id="adminTimesList"></div>
             `;
+            carregarFormatosAdmin();
+            carregarSelectAdmin();
             carregarAdminTimes();
         }
 
+        function carregarFormatosAdmin() {
+            let container = document.getElementById('formatosContainer');
+            container.innerHTML = '';
+            for(let [m, nome] of Object.entries(nomesModalidades)) {
+                container.innerHTML += `<div class="formato-card"><strong>${nome}</strong><br>
+                    <select id="formato_${m}">
+                        <option ${formatosDisputa[m]==='Rodízio'?'selected':''}>Rodízio</option>
+                        <option ${formatosDisputa[m]==='Eliminatória'?'selected':''}>Eliminatória Simples</option>
+                        <option ${formatosDisputa[m]==='Eliminatória Dupla'?'selected':''}>Eliminatória Dupla</option>
+                        <option ${formatosDisputa[m]==='Misto'?'selected':''}>Sistema Misto</option>
+                    </select>
+                </div>`;
+            }
+        }
+
+        function salvarFormatosAdmin() {
+            for(let m in nomesModalidades) formatosDisputa[m] = document.getElementById(`formato_${m}`).value;
+            salvarFormatos();
+            alert('Formatos salvos!');
+            carregarTabelaJogos();
+        }
+
+        function carregarSelectAdmin() {
+            let select = document.getElementById('adminModalidade');
+            select.innerHTML = '<option value="">Selecione</option>';
+            for(let [k,v] of Object.entries(nomesModalidades)) select.innerHTML += `<option value="${k}">${v}</option>`;
+        }
+
+        function carregarJogosAdmin() {
+            let modalidade = document.getElementById('adminModalidade').value;
+            let container = document.getElementById('adminJogosContainer');
+            if(!modalidade) { container.innerHTML = ''; return; }
+            let times = [];
+            getInscricoes().forEach(i => { if(i.modalidades[modalidade]?.length > 0) times.push(i.nomeTime); });
+            if(times.length < 2) { container.innerHTML = '<p>Times insuficientes</p>'; return; }
+            let html = '<div class="table-container"><table><thead><tr><th>Jogo</th><th>Time A</th><th>vs</th><th>Time B</th><th>Resultado</th><th>Ação</th></tr></thead><tbody>';
+            let j=1;
+            for(let i=0; i<times.length; i++) {
+                for(let k=i+1; k<times.length; k++) {
+                    let id = `${modalidade}_${i}_${k}`;
+                    let val = resultadosJogos[id] || '';
+                    html += `<tr id="row_${id}">
+                        <td>${j}</td><td>${times[i]}</td><td>🆚</td><td>${times[k]}</td>
+                        <td><input type="text" id="res_${id}" value="${val}" placeholder="Ex: 2x1" style="width:80px"></td>
+                        <td><button onclick="salvarResultadoAdmin('${id}')" class="btn btn-success" style="padding:5px 10px;">Salvar</button></td>
+                    </tr>`;
+                    j++;
+                }
+            }
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+
+        function salvarResultadoAdmin(id) {
+            let val = document.getElementById(`res_${id}`).value;
+            if(val) { resultadosJogos[id] = val; salvarResultados(); alert('Resultado salvo!'); carregarTabelaJogos(); }
+            else alert('Digite o resultado!');
+        }
+
         function carregarAdminTimes() {
-            const inscricoes = getInscricoes();
-            const container = document.getElementById('adminTimesList');
-            container.innerHTML = '<h3>Times Inscritos</h3>';
-            inscricoes.forEach(time => {
-                const div = document.createElement('div');
-                div.className = 'modalidade-card';
-                div.innerHTML = `
-                    <h3>${time.nomeTime}</h3>
-                    <p>Curso: ${time.curso}</p>
-                    <p>CPF: ${time.cpfResponsavel}</p>
-                    <p>Data: ${new Date(time.dataCriacao).toLocaleString()}</p>
-                    <button onclick="editarAdmin(${time.id})" class="btn">✏️ Editar</button>
-                    <button onclick="excluirAdmin(${time.id})" class="btn btn-danger">🗑️ Excluir</button>
-                `;
-                container.appendChild(div);
+            let container = document.getElementById('adminTimesList');
+            container.innerHTML = '<h3>📋 Times Inscritos</h3>';
+            getInscricoes().forEach(t => {
+                container.innerHTML += `<div class="modalidade-card"><strong>${t.nomeTime}</strong><br>Curso: ${t.curso}<br>CPF: ${t.cpfResponsavel}<br>
+                    <button onclick="editarAdminTime(${t.id})" class="btn" style="padding:5px 15px;">✏️ Editar</button>
+                    <button onclick="excluirAdminTime(${t.id})" class="btn btn-danger" style="padding:5px 15px;">🗑️ Excluir</button></div>`;
             });
         }
 
-        function editarAdmin(id) {
-            const inscricoes = getInscricoes();
-            const time = inscricoes.find(i => i.id === id);
-            if (!time) return;
-            const novoNome = prompt('Novo nome do time:', time.nomeTime);
-            if (novoNome) time.nomeTime = novoNome;
-            const novoCurso = prompt('Novo curso:', time.curso);
-            if (novoCurso) time.curso = novoCurso;
+        function editarAdminTime(id) {
+            let time = getInscricoes().find(i => i.id === id);
+            if(!time) return;
+            let novoNome = prompt('Novo nome:', time.nomeTime);
+            if(novoNome) time.nomeTime = novoNome;
+            let novoCurso = prompt('Novo curso:', time.curso);
+            if(novoCurso) time.curso = novoCurso;
+            let inscricoes = getInscricoes();
+            let idx = inscricoes.findIndex(i => i.id === id);
+            if(idx !== -1) inscricoes[idx] = time;
             salvarInscricoes(inscricoes);
             carregarAdminTimes();
             carregarTabelaTimes();
             carregarEstatisticas();
-            alert('Time atualizado!');
+            alert('Atualizado!');
         }
 
-        function excluirAdmin(id) {
-            if (confirm('Excluir este time?')) {
-                let inscricoes = getInscricoes();
-                inscricoes = inscricoes.filter(i => i.id !== id);
+        function excluirAdminTime(id) {
+            if(confirm('Excluir time?')) {
+                let inscricoes = getInscricoes().filter(i => i.id !== id);
                 salvarInscricoes(inscricoes);
                 carregarAdminTimes();
                 carregarTabelaTimes();
                 carregarEstatisticas();
-                alert('Time excluído!');
+                alert('Excluído!');
             }
         }
 
+        function gerarRelatorioTimes() {
+            let inscricoes = getInscricoes();
+            let relatorio = "RELATÓRIO DE TIMES E ATLETAS\n" + "=".repeat(50) + "\n\n";
+            inscricoes.forEach(t => {
+                relatorio += `TIME: ${t.nomeTime}\nCURSO: ${t.curso}\nCPF: ${t.cpfResponsavel}\n`;
+                for(let [m, at] of Object.entries(t.modalidades)) {
+                    if(at?.length > 0) {
+                        relatorio += `\n${nomesModalidades[m]} (${at.length} atletas):\n`;
+                        at.forEach((a,i) => relatorio += `  ${i+1}. ${a}\n`);
+                    }
+                }
+                relatorio += "\n" + "-".repeat(50) + "\n\n";
+            });
+            let blob = new Blob([relatorio], {type: 'text/plain'});
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `relatorio_times_${new Date().toISOString().slice(0,19)}.txt`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+            alert('Relatório gerado!');
+        }
+
+        function imprimirRelatorio() {
+            let inscricoes = getInscricoes();
+            let win = window.open('', '_blank');
+            win.document.write('<html><head><title>Relatório Jogos UNOPAR</title><style>body{font-family:Arial;padding:20px}</style></head><body>');
+            win.document.write('<h1 style="color:#667eea;">Jogos Universitários UNOPAR Arapongas</h1><h2>Relatório de Times e Atletas</h2>');
+            inscricoes.forEach(t => {
+                win.document.write(`<div style="border:1px solid #ccc;margin:20px 0;padding:15px;border-radius:10px;">
+                    <h3>🏅 ${t.nomeTime}</h3><p><strong>Curso:</strong> ${t.curso}</p><p><strong>CPF:</strong> ${t.cpfResponsavel}</p>`);
+                for(let [m, at] of Object.entries(t.modalidades)) {
+                    if(at?.length > 0) {
+                        win.document.write(`<h4>${nomesModalidades[m]}</h4><ul>`);
+                        at.forEach(a => win.document.write(`<li>${a}</li>`));
+                        win.document.write(`</ul>`);
+                    }
+                }
+                win.document.write(`</div>`);
+            });
+            win.document.write('</body></html>');
+            win.document.close();
+            win.print();
+        }
+
         // Inicialização
-        for (let m in modalidadesAtletas) renderizarAtletas(m);
+        for(let m in modalidadesAtletas) renderizarAtletas(m);
+        carregarFormatos();
+        carregarResultados();
         carregarTabelaTimes();
         carregarEstatisticas();
-
-        // Dados de exemplo
-        if (getInscricoes().length === 0) {
-            const exemplo = {
-                id: 1700000000001,
-                nomeTime: "FURIA FC",
-                curso: "Educação Física",
-                cpfResponsavel: "12345678900",
-                dataCriacao: new Date().toISOString(),
-                modalidades: {
-                    futsalMasc: ["João Silva", "Pedro Santos", "Lucas Oliveira"],
-                    futsalFem: [],
-                    basqueteMasc: ["Carlos Souza"],
-                    volei: ["Marcos Paulo"],
-                    handebol: [],
-                    bolaQueimada: ["Ana Paula"]
-                }
-            };
+        
+        if(getInscricoes().length === 0) {
+            let exemplo = { id:Date.now(), nomeTime:"FURIA FC", curso:"Educação Física", cpfResponsavel:"12345678900", dataCriacao:new Date().toISOString(),
+                modalidades:{ futsalMasc:["João Silva","Pedro Santos"], futsalFem:[], basqueteMasc:["Carlos Souza"], basqueteFem:[], volei:[], handebol:[], bolaQueimada:["Ana Paula"] } };
             salvarInscricoes([exemplo]);
             carregarTabelaTimes();
             carregarEstatisticas();
