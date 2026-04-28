@@ -389,6 +389,22 @@
             text-align: center;
         }
 
+        .cpf-busca-box {
+            background: #f0f4ff;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .cpf-busca-box input {
+            max-width: 300px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+
         @media print {
             body * {
                 visibility: hidden;
@@ -451,6 +467,7 @@
         <div class="main-content">
             <div class="tabs">
                 <button class="tab active" onclick="showTab('inscricao')">Nova Inscrição</button>
+                <button class="tab" onclick="showTab('editarTime')">Editar times/inscrição</button>
                 <button class="tab" onclick="showTab('tabelaJogos')">Tabela de Jogos e Resultados</button>
                 <button class="tab" onclick="showTab('regras')">Regras das Competições</button>
                 <button class="tab" onclick="showTab('consultar')">Consultar Times</button>
@@ -524,6 +541,20 @@
 
                     <button type="submit" class="btn">Salvar Inscrição</button>
                 </form>
+            </div>
+
+            <!-- Editar times/inscrição -->
+            <div id="tab-editarTime" class="tab-content">
+                <div class="cpf-busca-box">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">🔐 Acesso para Edição</h3>
+                    <p style="margin-bottom: 15px;">Digite o CPF do responsável para editar o time cadastrado</p>
+                    <div class="form-group">
+                        <label>CPF do Responsável:</label>
+                        <input type="text" id="cpfEditarBusca" placeholder="Digite apenas os números" maxlength="11" style="text-align: center; font-size: 18px;">
+                    </div>
+                    <button type="button" onclick="buscarTimePorCPF()" class="btn">🔍 Buscar Time</button>
+                </div>
+                <div id="editarTimeContainer"></div>
             </div>
 
             <!-- Tabela de Jogos e Resultados -->
@@ -688,7 +719,6 @@
             bolaQueimada: 'Eliminatória Simples'
         };
 
-        // Armazenar resultados dos jogos
         let resultadosJogos = {};
 
         const descricoesFormatos = {
@@ -773,6 +803,9 @@
             } else if (tabName === 'tabelaJogos') {
                 carregarSelectModalidades();
                 carregarTabelaJogos();
+            } else if (tabName === 'editarTime') {
+                document.getElementById('editarTimeContainer').innerHTML = '';
+                document.getElementById('cpfEditarBusca').value = '';
             }
         }
 
@@ -790,13 +823,18 @@
             return inscricao;
         }
 
-        function excluirInscricao(id) {
+        function excluirInscricao(id, isAdmin = false) {
             if (confirm('Tem certeza que deseja excluir esta inscrição? Esta ação não pode ser desfeita!')) {
                 const inscricoes = getInscricoes();
                 const novasInscricoes = inscricoes.filter(i => i.id != id);
                 localStorage.setItem('inscricoesJogosUnopar', JSON.stringify(novasInscricoes));
                 alert('Inscrição excluída com sucesso!');
-                if (document.getElementById('adminTimesContainer')) carregarAdminTimes();
+                if (isAdmin) {
+                    if (document.getElementById('adminTimesContainer')) carregarAdminTimes();
+                } else {
+                    document.getElementById('editarTimeContainer').innerHTML = '';
+                    document.getElementById('cpfEditarBusca').value = '';
+                }
                 carregarTabelaTimes();
                 carregarEstatisticasModalidades();
                 return true;
@@ -839,6 +877,146 @@
                 if (value && value.length > 0) inscritas.push(nomesModalidades[key]);
             }
             return inscritas;
+        }
+
+        // Função para buscar time por CPF e permitir edição
+        function buscarTimePorCPF() {
+            const cpf = document.getElementById('cpfEditarBusca').value.trim();
+            if (!cpf) {
+                alert('Digite o CPF do responsável!');
+                return;
+            }
+            if (cpf.length !== 11 || !/^\d+$/.test(cpf)) {
+                alert('CPF inválido! Digite apenas 11 números.');
+                return;
+            }
+            
+            const inscricoes = getInscricoes();
+            const timeEncontrado = inscricoes.find(i => i.cpfResponsavel === cpf);
+            
+            if (!timeEncontrado) {
+                alert('Nenhum time encontrado com este CPF!');
+                document.getElementById('editarTimeContainer').innerHTML = '';
+                return;
+            }
+            
+            carregarFormularioEdicao(timeEncontrado);
+        }
+
+        function carregarFormularioEdicao(time) {
+            const container = document.getElementById('editarTimeContainer');
+            
+            let html = `
+                <div style="background: #f0f4ff; padding: 20px; border-radius: 15px; margin-top: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 20px;">✏️ Editar Time: ${time.nomeTime}</h3>
+                    <form id="formEdicaoTime">
+                        <div class="form-group">
+                            <label>Nome do Time:</label>
+                            <input type="text" id="editNomeTime" value="${time.nomeTime.replace(/"/g, '&quot;')}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Curso de Graduação:</label>
+                            <input type="text" id="editCurso" value="${time.curso.replace(/"/g, '&quot;')}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>CPF do Responsável:</label>
+                            <input type="text" id="editCpf" value="${time.cpfResponsavel}" readonly style="background: #f0f0f0;">
+                        </div>
+            `;
+            
+            // Adicionar campos para cada modalidade
+            const modalidadesList = ['futsalMasc', 'futsalFem', 'basqueteMasc', 'volei', 'handebol', 'bolaQueimada'];
+            
+            modalidadesList.forEach(modalidade => {
+                const atletasAtuais = time.modalidades[modalidade] || [];
+                html += `
+                    <div class="modalidade-card">
+                        <h3>${nomesModalidades[modalidade]}</h3>
+                        <p>Máximo de ${limites[modalidade]} atletas</p>
+                        <div id="edit-${modalidade}-atletas"></div>
+                        <button type="button" onclick="adicionarAtletaEdit('${modalidade}')" class="btn btn-success">+ Adicionar Atleta</button>
+                    </div>
+                `;
+            });
+            
+            html += `
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="submit" class="btn">💾 Salvar Alterações</button>
+                            <button type="button" onclick="excluirInscricao(${time.id}, false)" class="btn btn-danger">🗑️ Excluir Inscrição</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            
+            // Carregar os atletas para edição
+            modalidadesList.forEach(modalidade => {
+                window[`editAtletas_${modalidade}`] = [...(time.modalidades[modalidade] || [])];
+                renderizarAtletasEdit(modalidade);
+            });
+            
+            document.getElementById('formEdicaoTime').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const timeAtualizado = {
+                    nomeTime: document.getElementById('editNomeTime').value,
+                    curso: document.getElementById('editCurso').value,
+                    cpfResponsavel: document.getElementById('editCpf').value,
+                    modalidades: {},
+                    dataCriacao: time.dataCriacao
+                };
+                
+                modalidadesList.forEach(modalidade => {
+                    timeAtualizado.modalidades[modalidade] = window[`editAtletas_${modalidade}`];
+                });
+                
+                if (atualizarInscricao(time.id, timeAtualizado)) {
+                    alert('Time atualizado com sucesso!');
+                    document.getElementById('editarTimeContainer').innerHTML = '';
+                    document.getElementById('cpfEditarBusca').value = '';
+                    carregarTabelaTimes();
+                    carregarEstatisticasModalidades();
+                } else {
+                    alert('Erro ao atualizar time!');
+                }
+            });
+        }
+
+        function adicionarAtletaEdit(modalidade) {
+            if (window[`editAtletas_${modalidade}`].length >= limites[modalidade]) {
+                alert(`Limite máximo de ${limites[modalidade]} atletas atingido!`);
+                return;
+            }
+            window[`editAtletas_${modalidade}`].push('');
+            renderizarAtletasEdit(modalidade);
+        }
+
+        function removerAtletaEdit(modalidade, index) {
+            window[`editAtletas_${modalidade}`].splice(index, 1);
+            renderizarAtletasEdit(modalidade);
+        }
+
+        function atualizarAtletaEdit(modalidade, index, valor) {
+            window[`editAtletas_${modalidade}`][index] = valor;
+        }
+
+        function renderizarAtletasEdit(modalidade) {
+            const container = document.getElementById(`edit-${modalidade}-atletas`);
+            if (!container) return;
+            
+            container.innerHTML = '';
+            window[`editAtletas_${modalidade}`].forEach((atleta, index) => {
+                const div = document.createElement('div');
+                div.className = 'atleta-item';
+                div.innerHTML = `
+                    <input type="text" placeholder="Nome do atleta ${index + 1}" 
+                           value="${atleta}" 
+                           onchange="atualizarAtletaEdit('${modalidade}', ${index}, this.value)">
+                    <button type="button" onclick="removerAtletaEdit('${modalidade}', ${index})" class="btn btn-danger" style="padding: 5px 10px;">Remover</button>
+                `;
+                container.appendChild(div);
+            });
         }
 
         // Funções do Administrador
@@ -941,346 +1119,4 @@
                     html += `<tr>
                         <td>${jogoNum}</td>
                         <td>${timesNaModalidade[i]}</td>
-                        <td>🆚</td>
-                        <td>${timesNaModalidade[j]}</td>
-                        <td>
-                            <input type="text" id="res_${jogoId}" placeholder="Ex: 2x1" value="${resultado.timeA && resultado.timeB ? `${resultado.timeA}x${resultado.timeB}` : ''}" style="width: 100px;">
-                        </td>
-                        <td><button type="button" onclick="salvarResultado('${modalidade}', '${timesNaModalidade[i]}', '${timesNaModalidade[j]}', '${jogoId}')" class="btn btn-success" style="padding: 5px 10px;">Salvar</button></td>
-                    </tr>`;
-                    jogoNum++;
-                }
-            }
-            html += '</tbody></table></div>';
-            container.innerHTML = html;
-        }
-
-        function salvarResultado(modalidade, timeA, timeB, jogoId) {
-            const resultadoInput = document.getElementById(`res_${jogoId}`).value;
-            if (resultadoInput) {
-                const partes = resultadoInput.split('x');
-                if (partes.length === 2) {
-                    resultadosJogos[jogoId] = { timeA, timeB, resultado: resultadoInput, vencedor: '' };
-                    salvarResultados();
-                    alert(`Resultado ${resultadoInput} registrado para ${timeA} vs ${timeB}`);
-                    carregarJogosParaResultado();
-                    carregarTabelaJogos();
-                } else {
-                    alert('Formato inválido! Use: 2x1');
-                }
-            }
-        }
-
-        function carregarFormatosAdmin() {
-            const container = document.getElementById('formatosDisputaContainer');
-            container.innerHTML = '';
-            for (let [modalidade, nome] of Object.entries(nomesModalidades)) {
-                const div = document.createElement('div');
-                div.className = 'formato-disputa-card';
-                div.innerHTML = `
-                    <h4>${nome}</h4>
-                    <select id="formato_${modalidade}" onchange="atualizarFormatoDisputa('${modalidade}', this.value)">
-                        <option value="Rodízio (Turno e Returno)" ${formatosDisputa[modalidade] === 'Rodízio (Turno e Returno)' ? 'selected' : ''}>🔄 Rodízio (Turno e Returno)</option>
-                        <option value="Eliminatória Simples" ${formatosDisputa[modalidade] === 'Eliminatória Simples' ? 'selected' : ''}>⚡ Eliminatória Simples</option>
-                        <option value="Eliminatória Dupla (Repescagem)" ${formatosDisputa[modalidade] === 'Eliminatória Dupla (Repescagem)' ? 'selected' : ''}>🔄 Eliminatória Dupla</option>
-                        <option value="Sistema Misto (Grupos + Mata-Mata)" ${formatosDisputa[modalidade] === 'Sistema Misto (Grupos + Mata-Mata)' ? 'selected' : ''}>🏆 Sistema Misto</option>
-                    </select>
-                    <p style="margin-top: 10px; font-size: 12px; color: #666;">${descricoesFormatos[formatosDisputa[modalidade]]}</p>
-                `;
-                container.appendChild(div);
-            }
-        }
-
-        function atualizarFormatoDisputa(modalidade, formato) {
-            formatosDisputa[modalidade] = formato;
-            salvarFormatosDisputa();
-            const descricao = document.querySelector(`#formato_${modalidade}`).closest('.formato-disputa-card').querySelector('p');
-            descricao.textContent = descricoesFormatos[formato];
-            alert(`Formato da ${nomesModalidades[modalidade]} atualizado para: ${formato}`);
-            carregarTabelaJogos();
-        }
-
-        function carregarAdminTimes() {
-            const inscricoes = getInscricoes();
-            const container = document.getElementById('adminTimesContainer');
-            container.innerHTML = '';
-            if (inscricoes.length === 0) { container.innerHTML = '<p>Nenhum time inscrito ainda.</p>'; return; }
-            
-            const timesMap = new Map();
-            inscricoes.forEach(inscricao => {
-                if (!timesMap.has(inscricao.nomeTime)) timesMap.set(inscricao.nomeTime, []);
-                timesMap.get(inscricao.nomeTime).push(inscricao);
-            });
-            
-            for (let [nomeTime, inscricoesTime] of timesMap) {
-                const div = document.createElement('div');
-                div.className = 'modalidade-card';
-                div.innerHTML = `
-                    <h3>🏅 ${nomeTime}</h3>
-                    <p><strong>Curso:</strong> ${inscricoesTime[0].curso}</p>
-                    <p><strong>CPF Responsável:</strong> ${inscricoesTime[0].cpfResponsavel}</p>
-                    <p><strong>Data:</strong> ${new Date(inscricoesTime[0].dataCriacao).toLocaleString()}</p>
-                    <p><strong>Modalidades:</strong> ${getModalidadesInscritas(inscricoesTime[0].modalidades).join(', ')}</p>
-                    <div style="display: flex; gap: 10px; margin-top: 15px;">
-                        <button type="button" onclick="editarTimeAdmin(${inscricoesTime[0].id})" class="btn">✏️ Editar</button>
-                        <button type="button" onclick="excluirInscricao(${inscricoesTime[0].id})" class="btn btn-danger">🗑️ Excluir</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            }
-        }
-
-        function editarTimeAdmin(id) {
-            const inscricoes = getInscricoes();
-            const inscricao = inscricoes.find(i => i.id === id);
-            if (!inscricao) return;
-            const novoNome = prompt('Digite o novo nome do time:', inscricao.nomeTime);
-            if (novoNome && novoNome.trim()) {
-                inscricao.nomeTime = novoNome.trim();
-                const novoCurso = prompt('Digite o novo curso:', inscricao.curso);
-                if (novoCurso && novoCurso.trim()) {
-                    inscricao.curso = novoCurso.trim();
-                    atualizarInscricao(id, inscricao);
-                    alert('Time atualizado com sucesso!');
-                    carregarAdminTimes();
-                    carregarTabelaTimes();
-                }
-            }
-        }
-
-        // Funções para Tabela de Jogos
-        function carregarSelectModalidades() {
-            const select = document.getElementById('selectModalidade');
-            select.innerHTML = '<option value="">Selecione uma modalidade</option>';
-            for (let [key, nome] of Object.entries(nomesModalidades)) {
-                select.innerHTML += `<option value="${key}">${nome}</option>`;
-            }
-        }
-
-        function carregarTabelaJogos() {
-            const modalidade = document.getElementById('selectModalidade').value;
-            const container = document.getElementById('tabelaJogosContainer');
-            if (!modalidade) { container.innerHTML = '<p style="text-align: center; padding: 40px;">Selecione uma modalidade para visualizar a tabela de jogos.</p>'; return; }
-            
-            const inscricoes = getInscricoes();
-            const timesNaModalidade = [];
-            inscricoes.forEach(inscricao => {
-                if (inscricao.modalidades[modalidade] && inscricao.modalidades[modalidade].length > 0) {
-                    timesNaModalidade.push(inscricao.nomeTime);
-                }
-            });
-            
-            if (timesNaModalidade.length === 0) { container.innerHTML = `<p style="text-align: center; padding: 40px;">Nenhum time inscrito na modalidade ${nomesModalidades[modalidade]} ainda.</p>`; return; }
-            
-            const formato = formatosDisputa[modalidade];
-            let html = `<div style="background: #f7f7f7; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                <h3 style="color: #667eea;">🎯 ${nomesModalidades[modalidade]}</h3>
-                <p><strong>Formato de Disputa:</strong> ${formato}</p>
-                <p><strong>Times participantes:</strong> ${timesNaModalidade.length}</p>
-                <p><strong>Times:</strong> ${timesNaModalidade.join(', ')}</p>
-            </div>`;
-            
-            if (formato === 'Rodízio (Turno e Returno)') {
-                html += gerarTabelaRodizio(timesNaModalidade, modalidade);
-            } else if (formato === 'Eliminatória Simples') {
-                html += gerarTabelaEliminatoriaSimples(timesNaModalidade, modalidade);
-            } else if (formato === 'Eliminatória Dupla (Repescagem)') {
-                html += gerarTabelaEliminatoriaDupla(timesNaModalidade, modalidade);
-            } else if (formato === 'Sistema Misto (Grupos + Mata-Mata)') {
-                html += gerarTabelaSistemaMisto(timesNaModalidade, modalidade);
-            }
-            container.innerHTML = html;
-        }
-
-        function gerarTabelaRodizio(times, modalidade) {
-            let html = '<h4 style="margin-top: 20px;">📅 Tabela de Jogos - Rodízio</h4><div class="table-container"><table><thead><tr><th>Jogo</th><th>Equipe A</th><th>vs</th><th>Equipe B</th><th>Data/Horário</th><th>Local</th><th>Resultado</th></tr></thead><tbody>';
-            let jogoNum = 1;
-            for (let i = 0; i < times.length; i++) {
-                for (let j = i + 1; j < times.length; j++) {
-                    const jogoId = `${modalidade}_${i}_${j}`;
-                    const resultado = resultadosJogos[jogoId];
-                    html += `<tr><td>${jogoNum}</td><td>${times[i]}</td><td>🆚</td><td>${times[j]}</td>
-                        <td><input type="text" placeholder="Definir data" style="width: 100%;"></td>
-                        <td><input type="text" placeholder="Local" style="width: 100%;"></td>
-                        <td><strong>${resultado ? resultado.resultado : 'Aguardando'}</strong></td></tr>`;
-                    jogoNum++;
-                    html += `<tr style="background-color: #f9f9f9;"><td>${jogoNum}</td><td>${times[j]}</td><td>🆚</td><td>${times[i]}</td>
-                        <td><input type="text" placeholder="Definir data" style="width: 100%;"></td>
-                        <td><input type="text" placeholder="Local" style="width: 100%;"></td>
-                        <td><strong>${resultado ? resultado.resultado : 'Aguardando'}</strong></td></tr>`;
-                    jogoNum++;
-                }
-            }
-            html += '</tbody></table></div>';
-            return html;
-        }
-
-        function gerarTabelaEliminatoriaSimples(times, modalidade) {
-            let html = '<h4 style="margin-top: 20px;">🏆 Tabela - Eliminatória Simples</h4><div class="table-container"><table><thead><tr><th>Fase</th><th>Jogo</th><th>Equipe A</th><th>vs</th><th>Equipe B</th><th>Data/Horário</th><th>Local</th><th>Resultado</th></tr></thead><tbody>';
-            const shuffled = [...times];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            let jogoNum = 1;
-            let fase = 'Oitavas de Final';
-            let participantes = [...shuffled];
-            while (participantes.length > 1) {
-                if (participantes.length === 2) fase = 'Final';
-                else if (participantes.length === 4) fase = 'Semifinal';
-                else if (participantes.length === 8) fase = 'Quartas de Final';
-                for (let i = 0; i < participantes.length; i += 2) {
-                    if (i + 1 < participantes.length) {
-                        html += `<tr><td>${fase}</td><td>${jogoNum}</td><td>${participantes[i]}</td><td>🆚</td><td>${participantes[i + 1]}</td>
-                            <td><input type="text" placeholder="Data" style="width: 100%;"></td>
-                            <td><input type="text" placeholder="Local" style="width: 100%;"></td>
-                            <td><strong>Aguardando</strong></td></tr>`;
-                        jogoNum++;
-                    }
-                }
-                participantes = participantes.slice(0, Math.ceil(participantes.length / 2));
-            }
-            html += '</tbody></table></div>';
-            return html;
-        }
-
-        function gerarTabelaEliminatoriaDupla(times, modalidade) {
-            return gerarTabelaEliminatoriaSimples(times, modalidade) + '<p style="margin-top: 10px; font-style: italic;">* Sistema com repescagem: perdedores vão para chave inferior com segunda chance.</p>';
-        }
-
-        function gerarTabelaSistemaMisto(times, modalidade) {
-            const timesPorGrupo = Math.ceil(times.length / 2);
-            const grupoA = times.slice(0, timesPorGrupo);
-            const grupoB = times.slice(timesPorGrupo);
-            let html = '<h4 style="margin-top: 20px;">📋 Fase de Grupos</h4><div class="table-container"><table><thead><tr><th>Grupo</th><th>Equipes</th></tr></thead><tbody>';
-            html += `<tr><td><strong>Grupo A</strong></td><td>${grupoA.join(', ')}</td></tr>`;
-            html += `<tr><td><strong>Grupo B</strong></td><td>${grupoB.join(', ')}</td></tr>`;
-            html += '</tbody></table></div>';
-            html += '<p style="margin-top: 10px;">* Os primeiros de cada grupo avançam para a fase eliminatória.</p>';
-            html += gerarTabelaEliminatoriaSimples(['1º Grupo A', '2º Grupo B', '1º Grupo B', '2º Grupo A'], modalidade);
-            return html;
-        }
-
-        // Funções existentes
-        document.getElementById('formInscricao').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const nomeTime = document.getElementById('nomeTime').value.trim();
-            const curso = document.getElementById('curso').value.trim();
-            const cpfResponsavel = document.getElementById('cpfResponsavel').value.trim();
-            if (!nomeTime || !curso || !cpfResponsavel) { alert('Preencha todos os campos obrigatórios!'); return; }
-            if (cpfResponsavel.length !== 11 || !/^\d+$/.test(cpfResponsavel)) { alert('CPF inválido!'); return; }
-            let temModalidade = false;
-            for (let modalidade in modalidadesAtletas) if (modalidadesAtletas[modalidade].length > 0) { temModalidade = true; break; }
-            if (!temModalidade) { alert('Adicione pelo menos uma modalidade com atletas!'); return; }
-            const inscricao = { nomeTime, curso, cpfResponsavel, modalidades: JSON.parse(JSON.stringify(modalidadesAtletas)), dataCriacao: new Date().toISOString() };
-            salvarInscricao(inscricao);
-            alert(`Inscrição salva com sucesso!\n\nTime: ${nomeTime}`);
-            document.getElementById('formInscricao').reset();
-            modalidadesAtletas = { futsalMasc: [], futsalFem: [], basqueteMasc: [], volei: [], handebol: [], bolaQueimada: [] };
-            for (let modalidade in modalidadesAtletas) renderizarAtletas(modalidade);
-        });
-
-        function carregarEstatisticasModalidades() {
-            const inscricoes = getInscricoes();
-            const stats = {};
-            for (let modalidade in nomesModalidades) stats[modalidade] = 0;
-            inscricoes.forEach(inscricao => {
-                for (let [modalidade, atletas] of Object.entries(inscricao.modalidades)) if (atletas && atletas.length > 0) stats[modalidade]++;
-            });
-            const statsContainer = document.getElementById('statsModalidades');
-            statsContainer.innerHTML = '';
-            const maxInscricoes = Math.max(...Object.values(stats), 1);
-            for (let [modalidade, quantidade] of Object.entries(stats)) {
-                const percentual = (quantidade / maxInscricoes) * 100;
-                const card = document.createElement('div');
-                card.className = 'stat-card';
-                card.onclick = () => filtrarPorModalidade(modalidade);
-                card.innerHTML = `<h4>${nomesModalidades[modalidade]}</h4><div class="stat-number">${quantidade}</div><p>time(s) inscrito(s)</p><div class="progress-bar"><div class="progress-fill" style="width: ${percentual}%;"></div></div>`;
-                statsContainer.appendChild(card);
-            }
-        }
-
-        function filtrarPorModalidade(modalidade) {
-            const timesNaModalidade = timesFiltrados.filter(time => time.modalidades[modalidade] && time.modalidades[modalidade].length > 0);
-            if (timesNaModalidade.length > 0) { timesFiltrados = timesNaModalidade; atualizarTabela(); alert(`Filtrando times da modalidade: ${nomesModalidades[modalidade]}\nEncontrados ${timesNaModalidade.length} time(s).`); }
-            else { alert(`Nenhum time encontrado na modalidade: ${nomesModalidades[modalidade]}`); }
-        }
-
-        function carregarTabelaTimes() {
-            const inscricoes = getInscricoes();
-            const timesMap = new Map();
-            inscricoes.forEach(inscricao => {
-                if (!timesMap.has(inscricao.nomeTime)) timesMap.set(inscricao.nomeTime, { nomeTime: inscricao.nomeTime, curso: inscricao.curso, dataCriacao: inscricao.dataCriacao, modalidades: {}, quantidadeModalidades: 0 });
-                const time = timesMap.get(inscricao.nomeTime);
-                let count = 0;
-                for (let [modalidade, atletas] of Object.entries(inscricao.modalidades)) if (atletas && atletas.length > 0) { if (!time.modalidades[modalidade]) time.modalidades[modalidade] = []; time.modalidades[modalidade] = [...atletas]; count++; }
-                time.quantidadeModalidades = count;
-            });
-            timesFiltrados = Array.from(timesMap.values());
-            if (ordemAtual === 'nome') ordenarTimesPorNome();
-            else if (ordemAtual === 'curso') ordenarTimesPorCurso();
-            else if (ordemAtual === 'modalidades') ordenarPorModalidades();
-            else atualizarTabela();
-        }
-
-        function atualizarTabela() {
-            const tbody = document.getElementById('tabelaTimesBody');
-            tbody.innerHTML = '';
-            if (timesFiltrados.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum time inscrito ainda</td></tr>'; return; }
-            timesFiltrados.forEach((time, index) => {
-                const modalidadesInscritas = getModalidadesInscritas(time.modalidades);
-                const row = tbody.insertRow();
-                row.innerHTML = `<td>${index + 1}</td><td><strong>${time.nomeTime}</strong></td><td>${time.curso}</td><td>${new Date(time.dataCriacao).toLocaleDateString('pt-BR')}</td><td>${modalidadesInscritas.map(m => `<span class="modalidades-badge">${m}</span>`).join('')}</td><td><button type="button" onclick='verDetalhesTime(${JSON.stringify(time).replace(/'/g, "\\'")})' class="btn btn-info" style="padding: 5px 10px;">👁️ Ver Detalhes</button></td>`;
-            });
-        }
-
-        function verDetalhesTime(time) {
-            let detalhes = `🏆 ${time.nomeTime}\n\n📚 Curso: ${time.curso}\n📅 Data Inscrição: ${new Date(time.dataCriacao).toLocaleDateString('pt-BR')}\n\n📋 Modalidades e Atletas:\n\n`;
-            for (let [modalidade, atletas] of Object.entries(time.modalidades)) if (atletas && atletas.length > 0) { detalhes += `${nomesModalidades[modalidade]} (${atletas.length}/${limites[modalidade]}):\n`; atletas.forEach((atleta, idx) => detalhes += `  ${idx + 1}. ${atleta}\n`); detalhes += `\n`; }
-            alert(detalhes);
-        }
-
-        function filtrarTimes() {
-            const busca = document.getElementById('buscarTimeNome').value.toLowerCase().trim();
-            if (!busca) { carregarTabelaTimes(); return; }
-            timesFiltrados = timesFiltrados.filter(time => time.nomeTime.toLowerCase().includes(busca) || time.curso.toLowerCase().includes(busca));
-            atualizarTabela();
-        }
-
-        function ordenarTimesPorNome() { ordemAtual = 'nome'; timesFiltrados.sort((a, b) => a.nomeTime.localeCompare(b.nomeTime)); atualizarTabela(); }
-        function ordenarTimesPorCurso() { ordemAtual = 'curso'; timesFiltrados.sort((a, b) => a.curso.localeCompare(b.curso)); atualizarTabela(); }
-        function ordenarPorModalidades() { ordemAtual = 'modalidades'; timesFiltrados.sort((a, b) => b.quantidadeModalidades - a.quantidadeModalidades); atualizarTabela(); }
-
-        function exportarParaCSV() {
-            if (timesFiltrados.length === 0) { alert('Não há dados para exportar!'); return; }
-            let csvContent = "Nome do Time,Curso de Graduação,Data da Inscrição,Quantidade de Modalidades,Modalidades\n";
-            timesFiltrados.forEach(time => { const modalidadesInscritas = getModalidadesInscritas(time.modalidades); csvContent += `"${time.nomeTime}","${time.curso}","${new Date(time.dataCriacao).toLocaleDateString('pt-BR')}","${time.quantidadeModalidades}","${modalidadesInscritas.join('; ')}"\n`; });
-            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            link.href = url;
-            link.download = `times_inscritos_${new Date().toISOString().slice(0,19)}.csv`;
-            link.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function gerarPDFCompleto() {
-            alert('Função de PDF disponível na versão completa');
-        }
-
-        function imprimirRelatorio() {
-            alert('Função de impressão disponível na versão completa');
-        }
-
-        for (let modalidade in modalidadesAtletas) renderizarAtletas(modalidade);
-        carregarFormatosDisputa();
-        carregarResultados();
-        
-        if (getInscricoes().length === 0) {
-            const exemploInscricao1 = { id: 1700000000001, nomeTime: "FURIA FC", curso: "Educação Física", cpfResponsavel: "12345678900", dataCriacao: new Date().toISOString(), modalidades: { futsalMasc: ["João Silva", "Pedro Santos", "Lucas Oliveira"], futsalFem: [], basqueteMasc: ["Carlos Souza"], volei: ["Marcos Paulo"], handebol: [], bolaQueimada: ["Ana Paula"] } };
-            const exemploInscricao2 = { id: 1700000000002, nomeTime: "UNOPAR UNITED", curso: "Engenharia de Software", cpfResponsavel: "98765432100", dataCriacao: new Date(Date.now() - 86400000).toISOString(), modalidades: { futsalMasc: [], futsalFem: ["Carla Mendes", "Fernanda Lima"], basqueteMasc: [], volei: [], handebol: ["Rafael Alves", "Thiago Santos"], bolaQueimada: [] } };
-            localStorage.setItem('inscricoesJogosUnopar', JSON.stringify([exemploInscricao1, exemploInscricao2]));
-        }
-    </script>
-</body>
-</html>
+                        <td>🆚</td
