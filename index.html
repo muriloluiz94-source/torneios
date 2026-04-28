@@ -16,14 +16,11 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            flex: 1;
         }
 
         .header {
@@ -125,11 +122,6 @@
             font-size: 14px;
         }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
         .btn {
             background: #667eea;
             color: white;
@@ -205,22 +197,6 @@
             color: #667eea;
         }
 
-        .search-box {
-            margin-bottom: 20px;
-        }
-
-        .team-item {
-            background: #f7f7f7;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
-
-        .team-item:hover {
-            background: #e0e0e0;
-        }
-
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -252,10 +228,6 @@
             font-weight: bold;
         }
 
-        .search-input {
-            margin-bottom: 20px;
-        }
-
         .table-container {
             overflow-x: auto;
             max-height: 500px;
@@ -280,22 +252,10 @@
             font-weight: bold;
             position: sticky;
             top: 0;
-            cursor: pointer;
-        }
-
-        th:hover {
-            background-color: #5a67d8;
         }
 
         tr:hover {
             background-color: #f5f5f5;
-        }
-
-        .export-buttons, .ordenar-buttons {
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
         }
 
         .modalidades-badge {
@@ -348,15 +308,19 @@
             margin-bottom: 20px;
         }
 
-        .formato-disputa-card {
-            background: #f7f7f7;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+        .cpf-busca-box {
+            background: #f0f4ff;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        .formato-disputa-card select {
-            margin-top: 10px;
+        .cpf-busca-box input {
+            max-width: 300px;
+            margin: 0 auto;
+            text-align: center;
+            font-size: 18px;
         }
 
         .regras-container {
@@ -378,54 +342,12 @@
             margin-bottom: 15px;
         }
 
-        .regra-modalidade ul, .regra-modalidade p {
-            margin-bottom: 10px;
-            line-height: 1.6;
+        .regra-modalidade ul {
+            margin-left: 20px;
         }
 
-        .resultado-input {
-            width: 80px;
-            padding: 5px;
-            text-align: center;
-        }
-
-        .cpf-busca-box {
-            background: #f0f4ff;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .cpf-busca-box input {
-            max-width: 300px;
-            margin: 0 auto;
-            text-align: center;
-            font-size: 18px;
-            letter-spacing: 2px;
-        }
-
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            .print-area, .print-area * {
-                visibility: visible;
-            }
-            .print-area {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                margin: 0;
-                padding: 20px;
-            }
-            .no-print {
-                display: none;
-            }
-            .footer {
-                display: none;
-            }
+        .regra-modalidade li {
+            margin-bottom: 8px;
         }
 
         @media (max-width: 768px) {
@@ -445,17 +367,8 @@
             .tabs {
                 flex-direction: column;
             }
-            
-            .tab {
-                text-align: left;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -468,7 +381,6 @@
             <div class="tabs">
                 <button class="tab active" onclick="showTab('inscricao')">Nova Inscrição</button>
                 <button class="tab" onclick="showTab('editarTime')">Editar times/inscrição</button>
-                <button class="tab" onclick="showTab('tabelaJogos')">Tabela de Jogos e Resultados</button>
                 <button class="tab" onclick="showTab('regras')">Regras das Competições</button>
                 <button class="tab" onclick="showTab('consultar')">Consultar Times</button>
                 <button class="tab" onclick="mostrarLoginAdmin()">👑 Administrador</button>
@@ -555,17 +467,6 @@
                     <button type="button" onclick="buscarTimePorCPF()" class="btn">🔍 Buscar Time</button>
                 </div>
                 <div id="editarTimeContainer"></div>
-            </div>
-
-            <!-- Tabela de Jogos e Resultados -->
-            <div id="tab-tabelaJogos" class="tab-content">
-                <div class="form-group">
-                    <label>Selecione a Modalidade:</label>
-                    <select id="selectModalidade" onchange="carregarTabelaJogos()">
-                        <option value="">Selecione uma modalidade</option>
-                    </select>
-                </div>
-                <div id="tabelaJogosContainer"></div>
             </div>
 
             <!-- Regras das Competições -->
@@ -660,44 +561,22 @@
             <div id="tab-consultar" class="tab-content">
                 <div class="stats-grid" id="statsModalidades"></div>
                 
-                <div class="search-input">
-                    <div class="form-group">
-                        <label>🔍 Buscar time por nome ou curso:</label>
-                        <input type="text" id="buscarTimeNome" placeholder="Digite o nome do time ou curso..." onkeyup="filtrarTimes()">
-                    </div>
-                </div>
-                
-                <div class="export-buttons">
-                    <button type="button" onclick="exportarParaCSV()" class="btn btn-success">📊 Exportar para CSV</button>
-                    <button type="button" onclick="gerarPDFCompleto()" class="btn btn-info">📄 Gerar PDF Completo</button>
-                    <button type="button" onclick="imprimirRelatorio()" class="btn btn-warning">🖨️ Imprimir Relatório</button>
-                </div>
-                
-                <div class="ordenar-buttons">
-                    <button type="button" onclick="ordenarTimesPorNome()" class="btn">🔤 Ordenar por Nome</button>
-                    <button type="button" onclick="ordenarTimesPorCurso()" class="btn">📚 Ordenar por Curso</button>
-                    <button type="button" onclick="ordenarPorModalidades()" class="btn btn-warning">🏆 Ordenar por Modalidades</button>
+                <div class="form-group">
+                    <label>🔍 Buscar time por nome ou curso:</label>
+                    <input type="text" id="buscarTimeNome" placeholder="Digite o nome do time ou curso..." onkeyup="filtrarTimes()">
                 </div>
                 
                 <div class="table-container">
                     <table id="tabelaTimes">
                         <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Nome do Time</th>
-                                <th>Curso de Graduação</th>
-                                <th>Data da Inscrição</th>
-                                <th>Modalidades</th>
-                                <th>Ações</th>
-                            </tr>
+                            <tr><th>#</th><th>Nome do Time</th><th>Curso</th><th>Data</th><th>Modalidades</th><th>Ações</th></tr>
                         </thead>
-                        <tbody id="tabelaTimesBody">
-                        </tbody>
+                        <tbody id="tabelaTimesBody"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Administrador (será preenchido via JavaScript após login) -->
+            <!-- Administrador -->
             <div id="tab-admin" class="tab-content"></div>
         </div>
 
@@ -709,41 +588,13 @@
     </div>
 
     <script>
-        // Configurações dos formatos de disputa
-        let formatosDisputa = {
-            futsalMasc: 'Rodízio (Turno e Returno)',
-            futsalFem: 'Eliminatória Simples',
-            basqueteMasc: 'Sistema Misto (Grupos + Mata-Mata)',
-            volei: 'Sistema Misto (Grupos + Mata-Mata)',
-            handebol: 'Eliminatória Dupla (Repescagem)',
-            bolaQueimada: 'Eliminatória Simples'
-        };
-
-        let resultadosJogos = {};
-
-        const descricoesFormatos = {
-            'Rodízio (Turno e Returno)': 'Todos jogam contra todos em turno e returno. O campeão é quem acumula mais pontos ao final. Ideal para ligas.',
-            'Eliminatória Simples': 'Perdeu, está fora. Rápido e emocionante, ideal para copas com muitos participantes.',
-            'Eliminatória Dupla (Repescagem)': 'A equipe só é eliminada após duas derrotas, garantindo uma "segunda chance".',
-            'Sistema Misto (Grupos + Mata-Mata)': 'Fase inicial de rodízio (grupos) seguida de fase eliminatória. Combina regularidade e emoção.'
-        };
-
+        // Dados
         let modalidadesAtletas = {
-            futsalMasc: [],
-            futsalFem: [],
-            basqueteMasc: [],
-            volei: [],
-            handebol: [],
-            bolaQueimada: []
+            futsalMasc: [], futsalFem: [], basqueteMasc: [], volei: [], handebol: [], bolaQueimada: []
         };
 
         const limites = {
-            futsalMasc: 10,
-            futsalFem: 10,
-            basqueteMasc: 4,
-            volei: 12,
-            handebol: 14,
-            bolaQueimada: 8
+            futsalMasc: 10, futsalFem: 10, basqueteMasc: 4, volei: 12, handebol: 14, bolaQueimada: 8
         };
 
         const nomesModalidades = {
@@ -756,26 +607,33 @@
         };
 
         let timesFiltrados = [];
-        let ordemAtual = 'nome';
 
-        function adicionarAtleta(modalidade) {
-            if (modalidadesAtletas[modalidade].length >= limites[modalidade]) {
-                alert(`Limite máximo de ${limites[modalidade]} atletas atingido para esta modalidade!`);
-                return;
+        // Funções auxiliares
+        function getInscricoes() {
+            const data = localStorage.getItem('inscricoesJogosUnopar');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function salvarInscricoes(inscricoes) {
+            localStorage.setItem('inscricoesJogosUnopar', JSON.stringify(inscricoes));
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'consultar') {
+                carregarTabelaTimes();
+                carregarEstatisticas();
+            } else if (tabName === 'editarTime') {
+                document.getElementById('editarTimeContainer').innerHTML = '';
+                document.getElementById('cpfEditarBusca').value = '';
             }
-            modalidadesAtletas[modalidade].push('');
-            renderizarAtletas(modalidade);
         }
 
-        function removerAtleta(modalidade, index) {
-            modalidadesAtletas[modalidade].splice(index, 1);
-            renderizarAtletas(modalidade);
-        }
-
-        function atualizarAtleta(modalidade, index, valor) {
-            modalidadesAtletas[modalidade][index] = valor;
-        }
-
+        // Renderizar atletas no formulário
         function renderizarAtletas(modalidade) {
             const container = document.getElementById(`${modalidade}-atletas`);
             if (!container) return;
@@ -791,201 +649,143 @@
             });
         }
 
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            event.target.classList.add('active');
+        function adicionarAtleta(modalidade) {
+            if (modalidadesAtletas[modalidade].length >= limites[modalidade]) {
+                alert(`Limite máximo de ${limites[modalidade]} atletas!`);
+                return;
+            }
+            modalidadesAtletas[modalidade].push('');
+            renderizarAtletas(modalidade);
+        }
+
+        function removerAtleta(modalidade, index) {
+            modalidadesAtletas[modalidade].splice(index, 1);
+            renderizarAtletas(modalidade);
+        }
+
+        function atualizarAtleta(modalidade, index, valor) {
+            modalidadesAtletas[modalidade][index] = valor;
+        }
+
+        // Salvar nova inscrição
+        document.getElementById('formInscricao').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nomeTime = document.getElementById('nomeTime').value.trim();
+            const curso = document.getElementById('curso').value.trim();
+            const cpf = document.getElementById('cpfResponsavel').value.trim();
             
-            if (tabName === 'consultar') {
-                carregarTabelaTimes();
-                carregarEstatisticasModalidades();
-            } else if (tabName === 'tabelaJogos') {
-                carregarSelectModalidades();
-                carregarTabelaJogos();
-            } else if (tabName === 'editarTime') {
-                document.getElementById('editarTimeContainer').innerHTML = '';
-                document.getElementById('cpfEditarBusca').value = '';
-            }
-        }
-
-        function getInscricoes() {
-            const inscricoes = localStorage.getItem('inscricoesJogosUnopar');
-            return inscricoes ? JSON.parse(inscricoes) : [];
-        }
-
-        function salvarInscricao(inscricao) {
-            const inscricoes = getInscricoes();
-            inscricao.id = Date.now();
-            inscricao.dataCriacao = new Date().toISOString();
-            inscricoes.push(inscricao);
-            localStorage.setItem('inscricoesJogosUnopar', JSON.stringify(inscricoes));
-            return inscricao;
-        }
-
-        function excluirInscricao(id, isAdmin = false) {
-            if (confirm('Tem certeza que deseja excluir esta inscrição? Esta ação não pode ser desfeita!')) {
-                const inscricoes = getInscricoes();
-                const novasInscricoes = inscricoes.filter(i => i.id != id);
-                localStorage.setItem('inscricoesJogosUnopar', JSON.stringify(novasInscricoes));
-                alert('Inscrição excluída com sucesso!');
-                if (isAdmin) {
-                    if (document.getElementById('adminTimesContainer')) carregarAdminTimes();
-                } else {
-                    document.getElementById('editarTimeContainer').innerHTML = '';
-                    document.getElementById('cpfEditarBusca').value = '';
-                }
-                carregarTabelaTimes();
-                carregarEstatisticasModalidades();
-                return true;
-            }
-            return false;
-        }
-
-        function atualizarInscricao(id, inscricaoAtualizada) {
-            const inscricoes = getInscricoes();
-            const index = inscricoes.findIndex(i => i.id == id);
-            if (index !== -1) {
-                inscricoes[index] = { ...inscricaoAtualizada, id: parseInt(id) };
-                localStorage.setItem('inscricoesJogosUnopar', JSON.stringify(inscricoes));
-                return true;
-            }
-            return false;
-        }
-
-        function salvarResultados() {
-            localStorage.setItem('resultadosJogos', JSON.stringify(resultadosJogos));
-        }
-
-        function carregarResultados() {
-            const saved = localStorage.getItem('resultadosJogos');
-            if (saved) resultadosJogos = JSON.parse(saved);
-        }
-
-        function salvarFormatosDisputa() {
-            localStorage.setItem('formatosDisputa', JSON.stringify(formatosDisputa));
-        }
-
-        function carregarFormatosDisputa() {
-            const saved = localStorage.getItem('formatosDisputa');
-            if (saved) formatosDisputa = JSON.parse(saved);
-        }
-
-        function getModalidadesInscritas(modalidades) {
-            const inscritas = [];
-            for (let [key, value] of Object.entries(modalidades)) {
-                if (value && value.length > 0) inscritas.push(nomesModalidades[key]);
-            }
-            return inscritas;
-        }
-
-        // Função para buscar time por CPF e permitir edição
-        function buscarTimePorCPF() {
-            const cpf = document.getElementById('cpfEditarBusca').value.trim();
-            if (!cpf) {
-                alert('Digite o CPF do responsável!');
+            if (!nomeTime || !curso || !cpf) {
+                alert('Preencha todos os campos!');
                 return;
             }
             if (cpf.length !== 11 || !/^\d+$/.test(cpf)) {
-                alert('CPF inválido! Digite apenas 11 números.');
+                alert('CPF inválido! Digite 11 números.');
+                return;
+            }
+            
+            let temModalidade = false;
+            for (let m in modalidadesAtletas) {
+                if (modalidadesAtletas[m].length > 0) temModalidade = true;
+            }
+            if (!temModalidade) {
+                alert('Adicione pelo menos uma modalidade com atletas!');
                 return;
             }
             
             const inscricoes = getInscricoes();
-            const timeEncontrado = inscricoes.find(i => i.cpfResponsavel === cpf);
+            const novaInscricao = {
+                id: Date.now(),
+                nomeTime, curso, cpfResponsavel: cpf,
+                modalidades: JSON.parse(JSON.stringify(modalidadesAtletas)),
+                dataCriacao: new Date().toISOString()
+            };
+            inscricoes.push(novaInscricao);
+            salvarInscricoes(inscricoes);
             
-            if (!timeEncontrado) {
+            alert(`Time "${nomeTime}" inscrito com sucesso!`);
+            
+            // Limpar formulário
+            document.getElementById('formInscricao').reset();
+            modalidadesAtletas = { futsalMasc: [], futsalFem: [], basqueteMasc: [], volei: [], handebol: [], bolaQueimada: [] };
+            for (let m in modalidadesAtletas) renderizarAtletas(m);
+        });
+
+        // Buscar time por CPF para edição
+        function buscarTimePorCPF() {
+            const cpf = document.getElementById('cpfEditarBusca').value.trim();
+            if (!cpf) { alert('Digite o CPF!'); return; }
+            if (cpf.length !== 11 || !/^\d+$/.test(cpf)) { alert('CPF inválido!'); return; }
+            
+            const inscricoes = getInscricoes();
+            const time = inscricoes.find(i => i.cpfResponsavel === cpf);
+            
+            if (!time) {
                 alert('Nenhum time encontrado com este CPF!');
                 document.getElementById('editarTimeContainer').innerHTML = '';
                 return;
             }
             
-            carregarFormularioEdicao(timeEncontrado);
+            carregarFormularioEdicao(time);
         }
 
         function carregarFormularioEdicao(time) {
             const container = document.getElementById('editarTimeContainer');
-            
             let html = `
-                <div style="background: #f0f4ff; padding: 20px; border-radius: 15px; margin-top: 20px;">
-                    <h3 style="color: #667eea; margin-bottom: 20px;">✏️ Editar Time: ${time.nomeTime}</h3>
-                    <form id="formEdicaoTime">
-                        <div class="form-group">
-                            <label>Nome do Time:</label>
-                            <input type="text" id="editNomeTime" value="${time.nomeTime.replace(/"/g, '&quot;')}" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Curso de Graduação:</label>
-                            <input type="text" id="editCurso" value="${time.curso.replace(/"/g, '&quot;')}" required>
-                        </div>
-                        <div class="form-group">
-                            <label>CPF do Responsável:</label>
-                            <input type="text" id="editCpf" value="${time.cpfResponsavel}" readonly style="background: #f0f0f0;">
-                        </div>
+                <div style="background: #f0f4ff; padding: 20px; border-radius: 15px;">
+                    <h3 style="color: #667eea;">✏️ Editando: ${time.nomeTime}</h3>
+                    <form id="formEdicao">
+                        <div class="form-group"><label>Nome do Time:</label><input type="text" id="editNome" value="${time.nomeTime}"></div>
+                        <div class="form-group"><label>Curso:</label><input type="text" id="editCurso" value="${time.curso}"></div>
+                        <div class="form-group"><label>CPF:</label><input type="text" id="editCpf" value="${time.cpfResponsavel}" readonly style="background:#eee;"></div>
             `;
             
-            // Adicionar campos para cada modalidade
             const modalidadesList = ['futsalMasc', 'futsalFem', 'basqueteMasc', 'volei', 'handebol', 'bolaQueimada'];
             
             modalidadesList.forEach(modalidade => {
-                const atletasAtuais = time.modalidades[modalidade] || [];
-                html += `
-                    <div class="modalidade-card">
-                        <h3>${nomesModalidades[modalidade]}</h3>
-                        <p>Máximo de ${limites[modalidade]} atletas</p>
-                        <div id="edit-${modalidade}-atletas"></div>
-                        <button type="button" onclick="adicionarAtletaEdit('${modalidade}')" class="btn btn-success">+ Adicionar Atleta</button>
-                    </div>
-                `;
+                html += `<div class="modalidade-card"><h3>${nomesModalidades[modalidade]}</h3><p>Máximo ${limites[modalidade]} atletas</p><div id="edit-${modalidade}"></div>
+                        <button type="button" onclick="adicionarAtletaEdit('${modalidade}')" class="btn btn-success">+ Adicionar</button></div>`;
             });
             
-            html += `
-                        <div style="display: flex; gap: 10px; margin-top: 20px;">
-                            <button type="submit" class="btn">💾 Salvar Alterações</button>
-                            <button type="button" onclick="excluirInscricao(${time.id}, false)" class="btn btn-danger">🗑️ Excluir Inscrição</button>
-                        </div>
-                    </form>
-                </div>
-            `;
-            
+            html += `<button type="submit" class="btn">💾 Salvar</button>
+                    <button type="button" onclick="excluirTime(${time.id})" class="btn btn-danger">🗑️ Excluir</button>
+                    </form></div>`;
             container.innerHTML = html;
             
-            // Carregar os atletas para edição
+            // Carregar atletas
             modalidadesList.forEach(modalidade => {
                 window[`editAtletas_${modalidade}`] = [...(time.modalidades[modalidade] || [])];
                 renderizarAtletasEdit(modalidade);
             });
             
-            document.getElementById('formEdicaoTime').addEventListener('submit', (e) => {
+            document.getElementById('formEdicao').addEventListener('submit', (e) => {
                 e.preventDefault();
-                
                 const timeAtualizado = {
-                    nomeTime: document.getElementById('editNomeTime').value,
+                    id: time.id,
+                    nomeTime: document.getElementById('editNome').value,
                     curso: document.getElementById('editCurso').value,
                     cpfResponsavel: document.getElementById('editCpf').value,
                     modalidades: {},
                     dataCriacao: time.dataCriacao
                 };
+                modalidadesList.forEach(m => { timeAtualizado.modalidades[m] = window[`editAtletas_${m}`]; });
                 
-                modalidadesList.forEach(modalidade => {
-                    timeAtualizado.modalidades[modalidade] = window[`editAtletas_${modalidade}`];
-                });
-                
-                if (atualizarInscricao(time.id, timeAtualizado)) {
+                const inscricoes = getInscricoes();
+                const index = inscricoes.findIndex(i => i.id === time.id);
+                if (index !== -1) {
+                    inscricoes[index] = timeAtualizado;
+                    salvarInscricoes(inscricoes);
                     alert('Time atualizado com sucesso!');
                     document.getElementById('editarTimeContainer').innerHTML = '';
                     document.getElementById('cpfEditarBusca').value = '';
                     carregarTabelaTimes();
-                    carregarEstatisticasModalidades();
-                } else {
-                    alert('Erro ao atualizar time!');
+                    carregarEstatisticas();
                 }
             });
         }
 
         function adicionarAtletaEdit(modalidade) {
             if (window[`editAtletas_${modalidade}`].length >= limites[modalidade]) {
-                alert(`Limite máximo de ${limites[modalidade]} atletas atingido!`);
+                alert(`Limite máximo de ${limites[modalidade]} atletas!`);
                 return;
             }
             window[`editAtletas_${modalidade}`].push('');
@@ -1002,121 +802,276 @@
         }
 
         function renderizarAtletasEdit(modalidade) {
-            const container = document.getElementById(`edit-${modalidade}-atletas`);
+            const container = document.getElementById(`edit-${modalidade}`);
             if (!container) return;
-            
             container.innerHTML = '';
-            window[`editAtletas_${modalidade}`].forEach((atleta, index) => {
+            window[`editAtletas_${modalidade}`].forEach((atleta, idx) => {
                 const div = document.createElement('div');
                 div.className = 'atleta-item';
-                div.innerHTML = `
-                    <input type="text" placeholder="Nome do atleta ${index + 1}" 
-                           value="${atleta}" 
-                           onchange="atualizarAtletaEdit('${modalidade}', ${index}, this.value)">
-                    <button type="button" onclick="removerAtletaEdit('${modalidade}', ${index})" class="btn btn-danger" style="padding: 5px 10px;">Remover</button>
-                `;
+                div.innerHTML = `<input type="text" value="${atleta}" onchange="atualizarAtletaEdit('${modalidade}', ${idx}, this.value)">
+                                <button onclick="removerAtletaEdit('${modalidade}', ${idx})" class="btn btn-danger" style="padding:5px 10px;">X</button>`;
                 container.appendChild(div);
             });
         }
 
-        // Funções do Administrador
-        function mostrarLoginAdmin() {
-            const loginHTML = `
-                <div id="loginOverlay" class="login-overlay">
-                    <div class="login-box">
-                        <h2>🔐 Acesso Administrador</h2>
-                        <div class="form-group"><label>Senha:</label><input type="password" id="senhaAdmin" placeholder="Digite a senha"></div>
-                        <button type="button" onclick="verificarSenhaAdmin()" class="btn">Entrar</button>
-                        <button type="button" onclick="fecharLoginAdmin()" class="btn btn-danger" style="margin-top: 10px;">Cancelar</button>
-                    </div>
-                </div>
-            `;
-            document.body.insertAdjacentHTML('beforeend', loginHTML);
+        function excluirTime(id) {
+            if (confirm('Tem certeza que deseja excluir este time?')) {
+                let inscricoes = getInscricoes();
+                inscricoes = inscricoes.filter(i => i.id !== id);
+                salvarInscricoes(inscricoes);
+                alert('Time excluído!');
+                document.getElementById('editarTimeContainer').innerHTML = '';
+                document.getElementById('cpfEditarBusca').value = '';
+                carregarTabelaTimes();
+                carregarEstatisticas();
+            }
         }
 
-        function fecharLoginAdmin() {
+        // Consultar Times
+        function carregarTabelaTimes() {
+            const inscricoes = getInscricoes();
+            const timesMap = new Map();
+            inscricoes.forEach(inscricao => {
+                if (!timesMap.has(inscricao.nomeTime)) {
+                    timesMap.set(inscricao.nomeTime, {
+                        nomeTime: inscricao.nomeTime,
+                        curso: inscricao.curso,
+                        dataCriacao: inscricao.dataCriacao,
+                        modalidades: {}
+                    });
+                }
+                const time = timesMap.get(inscricao.nomeTime);
+                for (let [modalidade, atletas] of Object.entries(inscricao.modalidades)) {
+                    if (atletas && atletas.length > 0) {
+                        if (!time.modalidades[modalidade]) time.modalidades[modalidade] = [];
+                        time.modalidades[modalidade] = [...atletas];
+                    }
+                }
+            });
+            timesFiltrados = Array.from(timesMap.values());
+            atualizarTabela();
+        }
+
+        function atualizarTabela() {
+            const tbody = document.getElementById('tabelaTimesBody');
+            tbody.innerHTML = '';
+            timesFiltrados.forEach((time, idx) => {
+                const modalidades = [];
+                for (let [key, atletas] of Object.entries(time.modalidades)) {
+                    if (atletas && atletas.length > 0) modalidades.push(nomesModalidades[key]);
+                }
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${idx+1}</td>
+                    <td><strong>${time.nomeTime}</strong></td>
+                    <td>${time.curso}</td>
+                    <td>${new Date(time.dataCriacao).toLocaleDateString()}</td>
+                    <td>${modalidades.map(m => `<span class="modalidades-badge">${m}</span>`).join('')}</td>
+                    <td><button onclick="verDetalhes(${idx})" class="btn btn-info" style="padding:5px 10px;">👁️ Detalhes</button></td>
+                `;
+            });
+        }
+
+        function verDetalhes(index) {
+            const time = timesFiltrados[index];
+            let msg = `🏆 ${time.nomeTime}\n📚 Curso: ${time.curso}\n📅 Data: ${new Date(time.dataCriacao).toLocaleDateString()}\n\n📋 Atletas:\n`;
+            for (let [modalidade, atletas] of Object.entries(time.modalidades)) {
+                if (atletas && atletas.length > 0) {
+                    msg += `\n${nomesModalidades[modalidade]}:\n`;
+                    atletas.forEach((a, i) => msg += `  ${i+1}. ${a}\n`);
+                }
+            }
+            alert(msg);
+        }
+
+        function filtrarTimes() {
+            const busca = document.getElementById('buscarTimeNome').value.toLowerCase();
+            if (!busca) { carregarTabelaTimes(); return; }
+            timesFiltrados = timesFiltrados.filter(t => t.nomeTime.toLowerCase().includes(busca) || t.curso.toLowerCase().includes(busca));
+            atualizarTabela();
+        }
+
+        function carregarEstatisticas() {
+            const inscricoes = getInscricoes();
+            const stats = {};
+            for (let m in nomesModalidades) stats[m] = 0;
+            inscricoes.forEach(i => {
+                for (let [m, atletas] of Object.entries(i.modalidades)) {
+                    if (atletas && atletas.length > 0) stats[m]++;
+                }
+            });
+            const container = document.getElementById('statsModalidades');
+            container.innerHTML = '';
+            const maxVal = Math.max(...Object.values(stats), 1);
+            for (let [m, qtd] of Object.entries(stats)) {
+                const percent = (qtd / maxVal) * 100;
+                const card = document.createElement('div');
+                card.className = 'stat-card';
+                card.onclick = () => filtrarPorModalidade(m);
+                card.innerHTML = `<h4>${nomesModalidades[m]}</h4><div class="stat-number">${qtd}</div><p>time(s)</p>
+                                <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>`;
+                container.appendChild(card);
+            }
+        }
+
+        function filtrarPorModalidade(modalidade) {
+            const inscricoes = getInscricoes();
+            const timesMap = new Map();
+            inscricoes.forEach(i => {
+                if (i.modalidades[modalidade] && i.modalidades[modalidade].length > 0) {
+                    if (!timesMap.has(i.nomeTime)) {
+                        timesMap.set(i.nomeTime, { nomeTime: i.nomeTime, curso: i.curso, dataCriacao: i.dataCriacao, modalidades: {} });
+                    }
+                    const time = timesMap.get(i.nomeTime);
+                    time.modalidades[modalidade] = i.modalidades[modalidade];
+                }
+            });
+            timesFiltrados = Array.from(timesMap.values());
+            atualizarTabela();
+            alert(`Filtrando times da modalidade: ${nomesModalidades[modalidade]}`);
+        }
+
+        function ordenarTimesPorNome() {
+            timesFiltrados.sort((a,b) => a.nomeTime.localeCompare(b.nomeTime));
+            atualizarTabela();
+        }
+
+        function ordenarTimesPorCurso() {
+            timesFiltrados.sort((a,b) => a.curso.localeCompare(b.curso));
+            atualizarTabela();
+        }
+
+        function exportarParaCSV() {
+            let csv = "Nome do Time,Curso,Data da Inscrição,Modalidades\n";
+            timesFiltrados.forEach(t => {
+                const mods = [];
+                for (let [m, at] of Object.entries(t.modalidades)) if (at && at.length > 0) mods.push(nomesModalidades[m]);
+                csv += `"${t.nomeTime}","${t.curso}","${new Date(t.dataCriacao).toLocaleDateString()}","${mods.join('; ')}"\n`;
+            });
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `times_inscritos.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        // Admin
+        function mostrarLoginAdmin() {
+            const overlay = document.createElement('div');
+            overlay.className = 'login-overlay';
+            overlay.id = 'loginOverlay';
+            overlay.innerHTML = `
+                <div class="login-box">
+                    <h2>🔐 Acesso Administrador</h2>
+                    <div class="form-group"><label>Senha:</label><input type="password" id="senhaAdmin"></div>
+                    <button onclick="verificarAdmin()" class="btn">Entrar</button>
+                    <button onclick="fecharLogin()" class="btn btn-danger" style="margin-top:10px;">Cancelar</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function fecharLogin() {
             const overlay = document.getElementById('loginOverlay');
             if (overlay) overlay.remove();
         }
 
-        function verificarSenhaAdmin() {
+        function verificarAdmin() {
             const senha = document.getElementById('senhaAdmin').value;
             if (senha === 'admin') {
-                fecharLoginAdmin();
+                fecharLogin();
                 carregarAdminPanel();
-                document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById('tab-admin').classList.add('active');
                 event.target.classList.add('active');
             } else {
-                alert('Senha incorreta! Acesso negado.');
+                alert('Senha incorreta!');
             }
         }
 
         function carregarAdminPanel() {
             const adminDiv = document.getElementById('tab-admin');
             adminDiv.innerHTML = `
-                <h2 style="color: #667eea; margin-bottom: 20px;">👑 Painel do Administrador</h2>
-                
-                <div class="stats-grid" style="margin-bottom: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px;">
-                    <div style="text-align: center;"><h3>Configuração dos Formatos de Disputa</h3><p>Defina o formato de competição para cada modalidade</p></div>
-                </div>
-                <div id="formatosDisputaContainer"></div>
-                
-                <hr style="margin: 30px 0;">
-                
-                <h3 style="color: #667eea; margin-bottom: 20px;">📋 Gerenciar Times Inscritos</h3>
-                <div id="adminTimesContainer"></div>
-                
-                <hr style="margin: 30px 0;">
-                
-                <h3 style="color: #667eea; margin-bottom: 20px;">🎯 Registrar Resultados dos Jogos</h3>
-                <div class="form-group"><label>Selecione a Modalidade:</label><select id="adminSelectModalidade" onchange="carregarJogosParaResultado()"><option value="">Selecione</option></select></div>
-                <div id="resultadosJogosContainer"></div>
+                <h2 style="color:#667eea;">👑 Painel do Administrador</h2>
+                <div id="adminTimesList"></div>
             `;
-            
-            carregarFormatosAdmin();
             carregarAdminTimes();
-            carregarSelectAdminModalidades();
         }
 
-        function carregarSelectAdminModalidades() {
-            const select = document.getElementById('adminSelectModalidade');
-            for (let [key, nome] of Object.entries(nomesModalidades)) {
-                select.innerHTML += `<option value="${key}">${nome}</option>`;
-            }
-        }
-
-        function carregarJogosParaResultado() {
-            const modalidade = document.getElementById('adminSelectModalidade').value;
-            const container = document.getElementById('resultadosJogosContainer');
-            
-            if (!modalidade) {
-                container.innerHTML = '<p>Selecione uma modalidade</p>';
-                return;
-            }
-            
+        function carregarAdminTimes() {
             const inscricoes = getInscricoes();
-            const timesNaModalidade = [];
-            inscricoes.forEach(inscricao => {
-                if (inscricao.modalidades[modalidade] && inscricao.modalidades[modalidade].length > 0) {
-                    timesNaModalidade.push(inscricao.nomeTime);
-                }
+            const container = document.getElementById('adminTimesList');
+            container.innerHTML = '<h3>Times Inscritos</h3>';
+            inscricoes.forEach(time => {
+                const div = document.createElement('div');
+                div.className = 'modalidade-card';
+                div.innerHTML = `
+                    <h3>${time.nomeTime}</h3>
+                    <p>Curso: ${time.curso}</p>
+                    <p>CPF: ${time.cpfResponsavel}</p>
+                    <p>Data: ${new Date(time.dataCriacao).toLocaleString()}</p>
+                    <button onclick="editarAdmin(${time.id})" class="btn">✏️ Editar</button>
+                    <button onclick="excluirAdmin(${time.id})" class="btn btn-danger">🗑️ Excluir</button>
+                `;
+                container.appendChild(div);
             });
-            
-            if (timesNaModalidade.length < 2) {
-                container.innerHTML = '<p>Número insuficiente de times para gerar jogos.</p>';
-                return;
+        }
+
+        function editarAdmin(id) {
+            const inscricoes = getInscricoes();
+            const time = inscricoes.find(i => i.id === id);
+            if (!time) return;
+            const novoNome = prompt('Novo nome do time:', time.nomeTime);
+            if (novoNome) time.nomeTime = novoNome;
+            const novoCurso = prompt('Novo curso:', time.curso);
+            if (novoCurso) time.curso = novoCurso;
+            salvarInscricoes(inscricoes);
+            carregarAdminTimes();
+            carregarTabelaTimes();
+            carregarEstatisticas();
+            alert('Time atualizado!');
+        }
+
+        function excluirAdmin(id) {
+            if (confirm('Excluir este time?')) {
+                let inscricoes = getInscricoes();
+                inscricoes = inscricoes.filter(i => i.id !== id);
+                salvarInscricoes(inscricoes);
+                carregarAdminTimes();
+                carregarTabelaTimes();
+                carregarEstatisticas();
+                alert('Time excluído!');
             }
-            
-            let html = '<div class="table-container"><table><thead><tr><th>Jogo</th><th>Equipe A</th><th>vs</th><th>Equipe B</th><th>Resultado</th><th>Ações</th></tr></thead><tbody>';
-            
-            let jogoNum = 1;
-            for (let i = 0; i < timesNaModalidade.length; i++) {
-                for (let j = i + 1; j < timesNaModalidade.length; j++) {
-                    const jogoId = `${modalidade}_${i}_${j}`;
-                    const resultado = resultadosJogos[jogoId] || { timeA: '', timeB: '', vencedor: '' };
-                    html += `<tr>
-                        <td>${jogoNum}</td>
-                        <td>${timesNaModalidade[i]}</td>
-                        <td>🆚</td
+        }
+
+        // Inicialização
+        for (let m in modalidadesAtletas) renderizarAtletas(m);
+        carregarTabelaTimes();
+        carregarEstatisticas();
+
+        // Dados de exemplo
+        if (getInscricoes().length === 0) {
+            const exemplo = {
+                id: 1700000000001,
+                nomeTime: "FURIA FC",
+                curso: "Educação Física",
+                cpfResponsavel: "12345678900",
+                dataCriacao: new Date().toISOString(),
+                modalidades: {
+                    futsalMasc: ["João Silva", "Pedro Santos", "Lucas Oliveira"],
+                    futsalFem: [],
+                    basqueteMasc: ["Carlos Souza"],
+                    volei: ["Marcos Paulo"],
+                    handebol: [],
+                    bolaQueimada: ["Ana Paula"]
+                }
+            };
+            salvarInscricoes([exemplo]);
+            carregarTabelaTimes();
+            carregarEstatisticas();
+        }
+    </script>
+</body>
+</html>
