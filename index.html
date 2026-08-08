@@ -293,6 +293,15 @@
             margin-bottom: 15px;
         }
 
+        .info-box {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #0050b3;
+        }
+
         @media (max-width: 768px) {
             .main-content { padding: 20px; }
             .atleta-item { flex-direction: column; }
@@ -322,7 +331,7 @@
             <div id="tab-inscricao" class="tab-content active">
                 <form id="formInscricao">
                     <div class="form-group">
-                        <label>Nome do Time *</label>
+                        <label>Nome do Time / Jogador *</label>
                         <input type="text" id="nomeTime" required>
                     </div>
                     <div class="form-group">
@@ -341,6 +350,15 @@
                         <div class="modalidade-card"><h3>🏐 Voleibol (Misto)</h3><p>Máximo 12 atletas</p><div id="volei-atletas"></div><button type="button" onclick="adicionarAtleta('volei')" class="btn btn-success">+ Adicionar</button></div>
                         <div class="modalidade-card"><h3>🤾 Handebol (Misto)</h3><p>Máximo 14 atletas</p><div id="handebol-atletas"></div><button type="button" onclick="adicionarAtleta('handebol')" class="btn btn-success">+ Adicionar</button></div>
                         <div class="modalidade-card"><h3>🔥 Bola queimada (Misto)</h3><p>Máximo 8 atletas</p><div id="bolaQueimada-atletas"></div><button type="button" onclick="adicionarAtleta('bolaQueimada')" class="btn btn-success">+ Adicionar</button></div>
+                        <div class="modalidade-card" style="border-color: #f39c12;">
+                            <h3>♟️ Xadrez (Individual)</h3>
+                            <div class="info-box">
+                                <strong>⚠️ Modalidade Individual:</strong> Cada jogador se inscreve individualmente. O campo "Nome do Time" será considerado como o nome do jogador.
+                            </div>
+                            <p>Cadastre o nome do jogador no campo "Nome do Time"</p>
+                            <div id="xadrez-atletas"></div>
+                            <button type="button" onclick="adicionarAtleta('xadrez')" class="btn btn-success">+ Adicionar Jogador</button>
+                        </div>
                     </div>
                     <button type="submit" class="btn">Salvar Inscrição</button>
                 </form>
@@ -373,13 +391,33 @@
                 <div class="regras-container">
                     <h2 style="color:#667eea;">📋 Regras das Competições</h2>
                     <h3>Modalidades:</h3>
-                    <ul><li>Futsal Masculino</li><li>Futsal Feminino</li><li>Basquete 3x3 Masculino</li><li>Basquete 3x3 Feminino</li><li>Voleibol (Misto)</li><li>Handebol (Misto)</li><li>Bola Queimada (Misto)</li></ul>
+                    <ul>
+                        <li>Futsal Masculino</li>
+                        <li>Futsal Feminino</li>
+                        <li>Basquete 3x3 Masculino</li>
+                        <li>Basquete 3x3 Feminino</li>
+                        <li>Voleibol (Misto)</li>
+                        <li>Handebol (Misto)</li>
+                        <li>Bola Queimada (Misto)</li>
+                        <li>♟️ Xadrez (Individual)</li>
+                    </ul>
                     <p><strong>Formato:</strong> definido conforme número de inscritos.</p>
+                    
                     <div class="regra-modalidade"><h3>⚽ Futsal</h3><ul><li>5 jogadores + 5 reservas</li><li>10 minutos corridos</li><li>Empate = pênaltis (morte súbita)</li></ul></div>
                     <div class="regra-modalidade"><h3>🤾 Handebol</h3><ul><li>7 jogadores (mín. 3H/3M) + 7 reservas</li><li>10 minutos</li><li>Empate = tiros de 7m (morte súbita)</li></ul></div>
                     <div class="regra-modalidade"><h3>🏀 Basquete 3x3</h3><ul><li>3 jogadores + 1 reserva</li><li>10 min ou 21 pontos</li><li>Empate = 2 pontos na prorrogação</li><li>Cesta de 1 ponto (dentro do arco) / 2 pontos (fora do arco)</li></ul></div>
                     <div class="regra-modalidade"><h3>🔥 Bola queimada</h3><ul><li>8 jogadores (capitão tem 2 vidas)</li><li>15 min máx.</li></ul></div>
                     <div class="regra-modalidade"><h3>🏐 Voleibol</h3><ul><li>6 jogadores (3H/3M) + 6 reservas</li><li>1 set de 15 pontos (diferença 2)</li></ul></div>
+                    <div class="regra-modalidade" style="border-color: #f39c12;">
+                        <h3>♟️ Xadrez (Individual)</h3>
+                        <ul>
+                            <li><strong>Modalidade individual</strong> - cada jogador compete sozinho</li>
+                            <li>Partidas no sistema <strong>Suíço</strong> ou <strong>Eliminatória</strong> (definido pelo administrador)</li>
+                            <li>Cada jogador tem <strong>10 minutos</strong> para cada partida (ritmo rápido)</li>
+                            <li>Em caso de empate na partida, considera-se <strong>meio ponto</strong> para cada</li>
+                            <li>O campeão é definido pela <strong>maior pontuação</strong> ao final do torneio</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -387,7 +425,7 @@
             <div id="tab-consultar" class="tab-content">
                 <div class="stats-grid" id="statsModalidades"></div>
                 <div class="form-group"><label>🔍 Buscar:</label><input type="text" id="buscarTimeNome" placeholder="Nome ou curso..." onkeyup="filtrarTimes()"></div>
-                <div class="table-container"><table id="tabelaTimes"><thead><tr><th>#</th><th>Time</th><th>Curso</th><th>Data</th><th>Modalidades</th><th>Ações</th></tr></thead><tbody id="tabelaTimesBody"></tbody></table></div>
+                <div class="table-container"><table id="tabelaTimes"><thead><tr><th>#</th><th>Time/Jogador</th><th>Curso</th><th>Data</th><th>Modalidades</th><th>Ações</th></tr></thead><tbody id="tabelaTimesBody"></tbody></table></div>
             </div>
 
             <!-- Administrador -->
@@ -401,16 +439,35 @@
     </div>
 
     <script>
-        // Dados globais - Adicionado basqueteFem
-        let modalidadesAtletas = { futsalMasc: [], futsalFem: [], basqueteMasc: [], basqueteFem: [], volei: [], handebol: [], bolaQueimada: [] };
-        let formatosDisputa = { futsalMasc: 'Rodízio', futsalFem: 'Eliminatória', basqueteMasc: 'Misto', basqueteFem: 'Misto', volei: 'Misto', handebol: 'Eliminatória Dupla', bolaQueimada: 'Eliminatória' };
+        // Dados globais - Adicionado xadrez
+        let modalidadesAtletas = { 
+            futsalMasc: [], futsalFem: [], basqueteMasc: [], basqueteFem: [], 
+            volei: [], handebol: [], bolaQueimada: [], xadrez: [] 
+        };
+        
+        let formatosDisputa = { 
+            futsalMasc: 'Rodízio', futsalFem: 'Eliminatória', 
+            basqueteMasc: 'Misto', basqueteFem: 'Misto', 
+            volei: 'Misto', handebol: 'Eliminatória Dupla', 
+            bolaQueimada: 'Eliminatória', xadrez: 'Suíço' 
+        };
+        
         let resultadosJogos = {};
 
-        const limites = { futsalMasc:10, futsalFem:10, basqueteMasc:4, basqueteFem:4, volei:12, handebol:14, bolaQueimada:8 };
+        const limites = { 
+            futsalMasc:10, futsalFem:10, basqueteMasc:4, basqueteFem:4, 
+            volei:12, handebol:14, bolaQueimada:8, xadrez:1 
+        };
+        
         const nomesModalidades = {
-            futsalMasc: 'Futsal Masculino', futsalFem: 'Futsal Feminino', 
-            basqueteMasc: 'Basquete 3x3 Masculino', basqueteFem: 'Basquete 3x3 Feminino',
-            volei: 'Voleibol (Misto)', handebol: 'Handebol (Misto)', bolaQueimada: 'Bola queimada (Misto)'
+            futsalMasc: 'Futsal Masculino', 
+            futsalFem: 'Futsal Feminino', 
+            basqueteMasc: 'Basquete 3x3 Masculino', 
+            basqueteFem: 'Basquete 3x3 Feminino',
+            volei: 'Voleibol (Misto)', 
+            handebol: 'Handebol (Misto)', 
+            bolaQueimada: 'Bola queimada (Misto)',
+            xadrez: '♟️ Xadrez (Individual)'
         };
 
         let timesFiltrados = [];
@@ -431,13 +488,21 @@
             modalidadesAtletas[modalidade].forEach((a, i) => {
                 let div = document.createElement('div');
                 div.className = 'atleta-item';
-                div.innerHTML = `<input type="text" placeholder="Atleta ${i+1}" value="${a}" onchange="atualizarAtleta('${modalidade}',${i},this.value)">
+                div.innerHTML = `<input type="text" placeholder="${modalidade === 'xadrez' ? 'Nome do Jogador' : 'Atleta '+(i+1)}" value="${a}" onchange="atualizarAtleta('${modalidade}',${i},this.value)">
                                 <button onclick="removerAtleta('${modalidade}',${i})" class="btn btn-danger" style="padding:5px 10px;">X</button>`;
                 container.appendChild(div);
             });
         }
 
-        function adicionarAtleta(m) { if(modalidadesAtletas[m].length >= limites[m]) { alert(`Máximo ${limites[m]} atletas!`); return; } modalidadesAtletas[m].push(''); renderizarAtletas(m); }
+        function adicionarAtleta(m) { 
+            if(modalidadesAtletas[m].length >= limites[m]) { 
+                alert(`Máximo ${limites[m]} atletas!`); 
+                return; 
+            } 
+            modalidadesAtletas[m].push(''); 
+            renderizarAtletas(m); 
+        }
+        
         function removerAtleta(m,i) { modalidadesAtletas[m].splice(i,1); renderizarAtletas(m); }
         function atualizarAtleta(m,i,v) { modalidadesAtletas[m][i] = v; }
 
@@ -449,15 +514,33 @@
             let cpf = document.getElementById('cpfResponsavel').value.trim();
             if(!nome || !curso || !cpf) return alert('Preencha todos os campos!');
             if(cpf.length!==11 || !/^\d+$/.test(cpf)) return alert('CPF inválido!');
-            let tem = false; for(let m in modalidadesAtletas) if(modalidadesAtletas[m].length>0) tem=true;
+            
+            let tem = false; 
+            for(let m in modalidadesAtletas) if(modalidadesAtletas[m].length>0) tem=true;
             if(!tem) return alert('Adicione pelo menos uma modalidade!');
             
+            // Verifica se é xadrez e se há mais de um jogador
+            if(modalidadesAtletas.xadrez.length > 0 && modalidadesAtletas.xadrez.length > 1) {
+                alert('Para Xadrez (Individual), cada jogador deve se inscrever separadamente. Cadastre apenas 1 jogador por inscrição.');
+                return;
+            }
+            
             let inscricoes = getInscricoes();
-            inscricoes.push({ id:Date.now(), nomeTime:nome, curso:curso, cpfResponsavel:cpf, modalidades:JSON.parse(JSON.stringify(modalidadesAtletas)), dataCriacao:new Date().toISOString() });
+            inscricoes.push({ 
+                id:Date.now(), 
+                nomeTime:nome, 
+                curso:curso, 
+                cpfResponsavel:cpf, 
+                modalidades:JSON.parse(JSON.stringify(modalidadesAtletas)), 
+                dataCriacao:new Date().toISOString() 
+            });
             salvarInscricoes(inscricoes);
-            alert(`Time "${nome}" inscrito!`);
+            alert(`Inscrição realizada com sucesso!`);
             document.getElementById('formInscricao').reset();
-            modalidadesAtletas = { futsalMasc:[], futsalFem:[], basqueteMasc:[], basqueteFem:[], volei:[], handebol:[], bolaQueimada:[] };
+            modalidadesAtletas = { 
+                futsalMasc:[], futsalFem:[], basqueteMasc:[], basqueteFem:[], 
+                volei:[], handebol:[], bolaQueimada:[], xadrez:[] 
+            };
             for(let m in modalidadesAtletas) renderizarAtletas(m);
             carregarTabelaTimes(); carregarEstatisticas();
         });
@@ -477,10 +560,10 @@
                         <form id="formEdit"><div class="form-group"><label>Nome:</label><input type="text" id="editNome" value="${time.nomeTime}"></div>
                         <div class="form-group"><label>Curso:</label><input type="text" id="editCurso" value="${time.curso}"></div>
                         <div class="form-group"><label>CPF:</label><input type="text" id="editCpf" value="${time.cpfResponsavel}" readonly style="background:#ddd;"></div>`;
-            let modals = ['futsalMasc','futsalFem','basqueteMasc','basqueteFem','volei','handebol','bolaQueimada'];
+            let modals = ['futsalMasc','futsalFem','basqueteMasc','basqueteFem','volei','handebol','bolaQueimada','xadrez'];
             modals.forEach(m => {
                 html += `<div class="modalidade-card"><h3>${nomesModalidades[m]}</h3><div id="edit-${m}"></div>
-                        <button type="button" onclick="adicionarEdit('${m}')" class="btn btn-success">+ Atleta</button></div>`;
+                        <button type="button" onclick="adicionarEdit('${m}')" class="btn btn-success">+ ${m === 'xadrez' ? 'Jogador' : 'Atleta'}</button></div>`;
             });
             html += `<button type="submit" class="btn">💾 Salvar</button>
                     <button type="button" onclick="excluirTime(${time.id})" class="btn btn-danger">🗑️ Excluir</button></form></div>`;
@@ -505,9 +588,22 @@
             });
         }
 
-        function adicionarEdit(m) { if(window[`e_${m}`].length >= limites[m]) { alert(`Máximo ${limites[m]} atletas!`); return; } window[`e_${m}`].push(''); renderizarEdit(m); }
+        function adicionarEdit(m) { 
+            if(window[`e_${m}`].length >= limites[m]) { 
+                alert(`Máximo ${limites[m]} atletas!`); 
+                return; 
+            } 
+            if(m === 'xadrez' && window[`e_${m}`].length > 0) {
+                alert('Xadrez é individual! Cada inscrição deve ter apenas 1 jogador.');
+                return;
+            }
+            window[`e_${m}`].push(''); 
+            renderizarEdit(m); 
+        }
+        
         function removerEdit(m,i) { window[`e_${m}`].splice(i,1); renderizarEdit(m); }
         function atualizarEdit(m,i,v) { window[`e_${m}`][i] = v; }
+        
         function renderizarEdit(m) {
             let container = document.getElementById(`edit-${m}`);
             if(!container) return;
@@ -545,11 +641,27 @@
             if(!modalidade) { container.innerHTML = '<p>Selecione uma modalidade</p>'; return; }
             
             let times = [];
-            getInscricoes().forEach(i => { if(i.modalidades[modalidade]?.length > 0) times.push(i.nomeTime); });
-            if(times.length < 2) { container.innerHTML = '<p>Número insuficiente de times</p>'; return; }
+            getInscricoes().forEach(i => { 
+                if(i.modalidades[modalidade]?.length > 0) {
+                    if(modalidade === 'xadrez') {
+                        times.push(i.nomeTime); // Para xadrez, cada jogador é individual
+                    } else {
+                        times.push(i.nomeTime);
+                    }
+                }
+            });
+            
+            if(times.length < 2) { 
+                if(modalidade === 'xadrez') {
+                    container.innerHTML = '<p>Número insuficiente de jogadores para gerar a tabela. Mínimo de 2 jogadores.</p>';
+                } else {
+                    container.innerHTML = '<p>Número insuficiente de times</p>';
+                }
+                return; 
+            }
             
             let html = `<h3>${nomesModalidades[modalidade]} - ${formatosDisputa[modalidade]}</h3>
-                        <div class="table-container"><table><thead><tr><th>Jogo</th><th>Time A</th><th>vs</th><th>Time B</th><th>Resultado</th></tr></thead><tbody>`;
+                        <div class="table-container"><table><thead><tr><th>Jogo</th><th>Jogador A</th><th>vs</th><th>Jogador B</th><th>Resultado</th></tr></thead><tbody>`;
             let j=1;
             for(let i=0; i<times.length; i++) {
                 for(let k=i+1; k<times.length; k++) {
@@ -578,7 +690,16 @@
             let tbody = document.getElementById('tabelaTimesBody');
             tbody.innerHTML = '';
             timesFiltrados.forEach((t,i) => {
-                let mods = []; for(let [m,at] of Object.entries(t.modalidades)) if(at?.length>0) mods.push(nomesModalidades[m]);
+                let mods = []; 
+                for(let [m,at] of Object.entries(t.modalidades)) {
+                    if(at?.length>0) {
+                        if(m === 'xadrez') {
+                            mods.push('♟️ Xadrez (Individual)');
+                        } else {
+                            mods.push(nomesModalidades[m]);
+                        }
+                    }
+                }
                 tbody.innerHTML += `<tr><td>${i+1}</td><td><strong>${t.nomeTime}</strong></td><td>${t.curso}</td>
                                     <td>${new Date(t.dataCriacao).toLocaleDateString()}</td>
                                     <td>${mods.map(m=>`<span class="modalidades-badge">${m}</span>`).join('')}</td>
@@ -589,7 +710,15 @@
         function verDetalhes(i) {
             let t = timesFiltrados[i];
             let msg = `🏆 ${t.nomeTime}\nCurso: ${t.curso}\n\nAtletas:\n`;
-            for(let [m,at] of Object.entries(t.modalidades)) if(at?.length>0) msg += `\n${nomesModalidades[m]}:\n${at.map((a,j)=>`  ${j+1}. ${a}`).join('\n')}\n`;
+            for(let [m,at] of Object.entries(t.modalidades)) {
+                if(at?.length>0) {
+                    if(m === 'xadrez') {
+                        msg += `\n♟️ Xadrez (Individual):\n  Jogador: ${at.join(', ')}\n`;
+                    } else {
+                        msg += `\n${nomesModalidades[m]}:\n${at.map((a,j)=>`  ${j+1}. ${a}`).join('\n')}\n`;
+                    }
+                }
+            }
             alert(msg);
         }
 
@@ -601,8 +730,19 @@
         }
 
         function carregarEstatisticas() {
-            let stats = {}; for(let m in nomesModalidades) stats[m]=0;
-            getInscricoes().forEach(i => { for(let [m,at] of Object.entries(i.modalidades)) if(at?.length>0) stats[m]++; });
+            let stats = {}; 
+            for(let m in nomesModalidades) stats[m]=0;
+            getInscricoes().forEach(i => { 
+                for(let [m,at] of Object.entries(i.modalidades)) {
+                    if(at?.length>0) {
+                        if(m === 'xadrez') {
+                            stats[m] += at.length; // Conta cada jogador individualmente
+                        } else {
+                            stats[m]++; 
+                        }
+                    }
+                }
+            });
             let container = document.getElementById('statsModalidades');
             container.innerHTML = '';
             let maxV = Math.max(...Object.values(stats),1);
@@ -610,7 +750,8 @@
                 let card = document.createElement('div');
                 card.className = 'stat-card';
                 card.onclick = () => filtrarPorModalidade(m);
-                card.innerHTML = `<h4>${nomesModalidades[m]}</h4><div class="stat-number">${q}</div><p>time(s)</p>
+                let label = m === 'xadrez' ? '♟️ Xadrez (Individual)' : nomesModalidades[m];
+                card.innerHTML = `<h4>${label}</h4><div class="stat-number">${q}</div><p>${m === 'xadrez' ? 'jogador(es)' : 'time(s)'}</p>
                                 <div class="progress-bar"><div class="progress-fill" style="width:${(q/maxV)*100}%"></div></div>`;
                 container.appendChild(card);
             }
@@ -637,7 +778,7 @@
             if(tab === 'tabelaJogos') { carregarSelectModalidades(); carregarTabelaJogos(); }
         }
 
-        // ADMIN - Senha alterada para UNOPAR2026
+        // ADMIN - Senha UNOPAR2026
         function mostrarLoginAdmin() {
             let div = document.createElement('div');
             div.className = 'login-overlay';
@@ -694,6 +835,7 @@
                         <option ${formatosDisputa[m]==='Eliminatória'?'selected':''}>Eliminatória Simples</option>
                         <option ${formatosDisputa[m]==='Eliminatória Dupla'?'selected':''}>Eliminatória Dupla</option>
                         <option ${formatosDisputa[m]==='Misto'?'selected':''}>Sistema Misto</option>
+                        <option ${formatosDisputa[m]==='Suíço'?'selected':''}>Sistema Suíço</option>
                     </select>
                 </div>`;
             }
@@ -717,9 +859,17 @@
             let container = document.getElementById('adminJogosContainer');
             if(!modalidade) { container.innerHTML = ''; return; }
             let times = [];
-            getInscricoes().forEach(i => { if(i.modalidades[modalidade]?.length > 0) times.push(i.nomeTime); });
-            if(times.length < 2) { container.innerHTML = '<p>Times insuficientes</p>'; return; }
-            let html = '<div class="table-container"><table><thead><tr><th>Jogo</th><th>Time A</th><th>vs</th><th>Time B</th><th>Resultado</th><th>Ação</th></tr></thead><tbody>';
+            getInscricoes().forEach(i => { 
+                if(i.modalidades[modalidade]?.length > 0) {
+                    if(modalidade === 'xadrez') {
+                        times.push(i.nomeTime);
+                    } else {
+                        times.push(i.nomeTime);
+                    }
+                }
+            });
+            if(times.length < 2) { container.innerHTML = '<p>Jogadores/ times insuficientes</p>'; return; }
+            let html = '<div class="table-container"><table><thead><tr><th>Jogo</th><th>Jogador A</th><th>vs</th><th>Jogador B</th><th>Resultado</th><th>Ação</th></tr></thead><tbody>';
             let j=1;
             for(let i=0; i<times.length; i++) {
                 for(let k=i+1; k<times.length; k++) {
@@ -745,9 +895,11 @@
 
         function carregarAdminTimes() {
             let container = document.getElementById('adminTimesList');
-            container.innerHTML = '<h3>📋 Times Inscritos</h3>';
+            container.innerHTML = '<h3>📋 Times / Jogadores Inscritos</h3>';
             getInscricoes().forEach(t => {
-                container.innerHTML += `<div class="modalidade-card"><strong>${t.nomeTime}</strong><br>Curso: ${t.curso}<br>CPF: ${t.cpfResponsavel}<br>
+                let temXadrez = t.modalidades.xadrez && t.modalidades.xadrez.length > 0;
+                let displayName = temXadrez ? `♟️ ${t.nomeTime}` : t.nomeTime;
+                container.innerHTML += `<div class="modalidade-card"><strong>${displayName}</strong><br>Curso: ${t.curso}<br>CPF: ${t.cpfResponsavel}<br>
                     <button onclick="editarAdminTime(${t.id})" class="btn" style="padding:5px 15px;">✏️ Editar</button>
                     <button onclick="excluirAdminTime(${t.id})" class="btn btn-danger" style="padding:5px 15px;">🗑️ Excluir</button></div>`;
             });
@@ -833,9 +985,43 @@
         carregarEstatisticas();
         
         if(getInscricoes().length === 0) {
-            let exemplo = { id:Date.now(), nomeTime:"FURIA FC", curso:"Educação Física", cpfResponsavel:"12345678900", dataCriacao:new Date().toISOString(),
-                modalidades:{ futsalMasc:["João Silva","Pedro Santos"], futsalFem:[], basqueteMasc:["Carlos Souza"], basqueteFem:[], volei:[], handebol:[], bolaQueimada:["Ana Paula"] } };
-            salvarInscricoes([exemplo]);
+            let exemplo = { 
+                id:Date.now(), 
+                nomeTime:"FURIA FC", 
+                curso:"Educação Física", 
+                cpfResponsavel:"12345678900", 
+                dataCriacao:new Date().toISOString(),
+                modalidades:{ 
+                    futsalMasc:["João Silva","Pedro Santos"], 
+                    futsalFem:[], 
+                    basqueteMasc:["Carlos Souza"], 
+                    basqueteFem:[], 
+                    volei:[], 
+                    handebol:[], 
+                    bolaQueimada:["Ana Paula"],
+                    xadrez:[]
+                } 
+            };
+            
+            let exemploXadrez = {
+                id:Date.now()+1,
+                nomeTime:"Mateus Silva",
+                curso:"Matemática",
+                cpfResponsavel:"98765432100",
+                dataCriacao:new Date().toISOString(),
+                modalidades:{
+                    futsalMasc:[],
+                    futsalFem:[],
+                    basqueteMasc:[],
+                    basqueteFem:[],
+                    volei:[],
+                    handebol:[],
+                    bolaQueimada:[],
+                    xadrez:["Mateus Silva"]
+                }
+            };
+            
+            salvarInscricoes([exemplo, exemploXadrez]);
             carregarTabelaTimes();
             carregarEstatisticas();
         }
