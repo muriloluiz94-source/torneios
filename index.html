@@ -8,998 +8,5940 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     
     <style>
         /* ===== ESTILOS COMPACTOS ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
-        .container { max-width: 1400px; margin: 0 auto; }
-        .header { text-align: center; color: white; margin-bottom: 30px; }
-        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
-        .status { display: inline-block; padding: 8px 20px; border-radius: 20px; font-size: 14px; margin-top: 10px; }
-        .status.online { background: rgba(0, 200, 0, 0.3); color: #90ff90; }
-        .status.offline { background: rgba(255, 165, 0, 0.3); color: #ffcc80; }
-        .main-content { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 30px; }
-        .footer { text-align: center; color: white; padding: 20px; font-size: 14px; background: rgba(0,0,0,0.2); border-radius: 10px; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 30px; border-bottom: 2px solid #e0e0e0; flex-wrap: wrap; }
-        .tab { padding: 10px 20px; background: none; border: none; font-size: 16px; cursor: pointer; transition: all 0.3s; color: #666; }
-        .tab.active { color: #667eea; border-bottom: 3px solid #667eea; font-weight: bold; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
-        .btn { background: #667eea; color: white; padding: 12px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; transition: all 0.3s; }
-        .btn:hover { background: #5a67d8; transform: translateY(-2px); }
-        .btn-danger { background: #e53e3e; }
-        .btn-success { background: #48bb78; }
-        .btn-info { background: #4299e1; }
-        .btn-warning { background: #ed8936; }
-        .atleta-item { background: #f7f7f7; padding: 10px; margin: 10px 0; border-radius: 5px; display: flex; gap: 10px; align-items: center; }
-        .atleta-item input { flex: 1; }
-        .modalidade-card { border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
-        .modalidade-card h3 { margin-bottom: 15px; color: #667eea; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; transition: transform 0.3s; }
-        .stat-card:hover { transform: translateY(-5px); }
-        .stat-number { font-size: 2em; font-weight: bold; }
-        .table-container { overflow-x: auto; max-height: 500px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #667eea; color: white; position: sticky; top: 0; }
-        .modalidades-badge { display: inline-block; background: #667eea; color: white; padding: 3px 8px; border-radius: 5px; font-size: 11px; margin: 2px; }
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        .loading-box { background: white; padding: 30px; border-radius: 15px; text-align: center; max-width: 350px; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .cache-info { font-size: 12px; color: #888; margin-top: 5px; }
-        .whatsapp-wrapper { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; }
-        .whatsapp-wrapper span { background: #25D366; color: white; padding: 10px 12px; font-weight: bold; }
-        .whatsapp-wrapper input { border: none; padding: 10px; flex: 1; }
-        .whatsapp-wrapper input:focus { outline: none; }
-        .privacy-badge { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 2px 10px; border-radius: 12px; font-size: 11px; margin-left: 5px; }
-        .admin-panel { background: #f8f9ff; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #667eea; }
-        .admin-panel h3 { color: #667eea; margin-bottom: 15px; }
-        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .login-box { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
-        .login-box input { text-align: center; font-size: 18px; margin-bottom: 15px; width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; }
-        .login-box input:focus { outline: none; border-color: #667eea; }
-        .formato-card { background: #f7f7f7; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
-        .formato-card select { margin-top: 8px; padding: 8px; width: 100%; border-radius: 5px; border: 1px solid #ddd; }
-        @media (max-width: 768px) { .main-content { padding: 20px; } .atleta-item { flex-direction: column; } .btn { width: 100%; margin-top: 10px; } .tabs { flex-direction: column; } }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .status.online {
+            background: rgba(0, 200, 0, 0.3);
+            color: #90ff90;
+        }
+
+        .status.offline {
+            background: rgba(255, 165, 0, 0.3);
+            color: #ffcc80;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            font-size: 14px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+        }
+
+        .btn-success {
+            background: #48bb78;
+        }
+
+        .btn-info {
+            background: #4299e1;
+        }
+
+        .btn-warning {
+            background: #ed8936;
+        }
+
+        .atleta-item {
+            background: #f7f7f7;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .atleta-item input {
+            flex: 1;
+        }
+
+        .modalidade-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modalidade-card h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #667eea;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .modalidades-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 11px;
+            margin: 2px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .loading-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 350px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cache-info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .whatsapp-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .whatsapp-wrapper span {
+            background: #25D366;
+            color: white;
+            padding: 10px 12px;
+            font-weight: bold;
+        }
+
+        .whatsapp-wrapper input {
+            border: none;
+            padding: 10px;
+            flex: 1;
+        }
+
+        .whatsapp-wrapper input:focus {
+            outline: none;
+        }
+
+        .privacy-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+
+        .admin-panel {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #667eea;
+        }
+
+        .admin-panel h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-box input {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 15px;
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .formato-card {
+            background: #f7f7f7;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .formato-card select {
+            margin-top: 8px;
+            padding: 8px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+
+            .atleta-item {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
+
 <body>
+
     <!-- Loading -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-box">
             <div class="spinner"></div>
             <p id="loadingText">Carregando dados...</p>
-            <p id="loadingProgress" style="font-size:12px;color:#888;margin-top:5px;"></p>
+            <p id="loadingProgress"
+               style="font-size:12px;color:#888;margin-top:5px;"></p>
         </div>
     </div>
 
     <div class="container">
+
         <div class="header">
             <h1>🏆 Jogos Universitários UNOPAR Arapongas</h1>
             <p>Inscreva seu time e participe das competições!</p>
-            <div id="statusIndicator" class="status offline">⚠️ Carregando...</div>
-            <div id="cacheInfo" class="cache-info">🔄 Carregando...</div>
+
+            <div id="statusIndicator"
+                 class="status offline">
+                ⚠️ Carregando...
+            </div>
+
+            <div id="cacheInfo"
+                 class="cache-info">
+                🔄 Carregando...
+            </div>
         </div>
+
 
         <div class="main-content">
+
             <div class="tabs">
-                <button class="tab active" onclick="showTab('inscricao')">Nova Inscrição</button>
-                <button class="tab" onclick="showTab('editarTime')">Editar</button>
-                <button class="tab" onclick="showTab('tabelaJogos')">Tabela de Jogos</button>
-                <button class="tab" onclick="showTab('regras')">Regras</button>
-                <button class="tab" onclick="showTab('consultar')">Consultar Times</button>
-                <button class="tab" onclick="abrirLoginAdmin()">👑 Admin</button>
+
+                <button class="tab active"
+                        onclick="showTab('inscricao')">
+                    Nova Inscrição
+                </button>
+
+                <button class="tab"
+                        onclick="showTab('editarTime')">
+                    Editar
+                </button>
+
+                <button class="tab"
+                        onclick="showTab('tabelaJogos')">
+                    Tabela de Jogos
+                </button>
+
+                <button class="tab"
+                        onclick="showTab('regras')">
+                    Regras
+                </button>
+
+                <button class="tab"
+                        onclick="showTab('consultar')">
+                    Consultar Times
+                </button>
+
+                <button class="tab"
+                        onclick="abrirLoginAdmin()">
+                    👑 Admin
+                </button>
+
             </div>
 
-            <!-- Conteúdo simplificado - mesmo HTML de antes, mas com JS otimizado -->
-            <div id="tab-inscricao" class="tab-content active">
+
+            <!-- NOVA INSCRIÇÃO -->
+
+            <div id="tab-inscricao"
+                 class="tab-content active">
+
                 <form id="formInscricao">
-                    <div class="form-group"><label>Nome do Time / Atleta *</label><input type="text" id="nomeTime" required></div>
-                    <div class="form-group"><label>Curso *</label><input type="text" id="curso" required></div>
-                    <div class="form-group"><label>CPF * <span class="privacy-badge">🔒</span></label><input type="text" id="cpfResponsavel" placeholder="Apenas números" maxlength="11" required><small>🔒 Privado</small></div>
-                    <div class="form-group"><label>WhatsApp * <span class="privacy-badge">🔒</span></label><div class="whatsapp-wrapper"><span>📱 +55</span><input type="text" id="whatsapp" placeholder="41999999999" maxlength="12" required></div><small>🔒 Privado</small></div>
-                    <div id="modalidades">
-                        <div class="modalidade-card"><h3>⚽ Futsal Masculino</h3><p>Máx 10</p><div id="futsalMasc-atletas"></div><button type="button" onclick="adicionarAtleta('futsalMasc')" class="btn btn-success">+</button></div>
-                        <div class="modalidade-card"><h3>⚽ Futsal Feminino</h3><p>Máx 10</p><div id="futsalFem-atletas"></div><button type="button" onclick="adicionarAtleta('futsalFem')" class="btn btn-success">+</button></div>
-                        <div class="modalidade-card"><h3>🏀 Basquete 3x3 Masculino</h3><p>Máx 4</p><div id="basqueteMasc-atletas"></div><button type="button" onclick="adicionarAtleta('basqueteMasc')" class="btn btn-success">+</button></div>
-                        <div class="modalidade-card"><h3>🏀 Basquete 3x3 Feminino</h3><p>Máx 4</p><div id="basqueteFem-atletas"></div><button type="button" onclick="adicionarAtleta('basqueteFem')" class="btn btn-success">+</button></div>
-                        <div class="modalidade-card"><h3>🏐 Voleibol (Misto)</h3><p>Máx 12</p><div id="volei-atletas"></div><button type="button" onclick="adicionarAtleta('volei')" class="btn btn-success">+</button></div>
-                        <div class="modalidade-card"><h3>🤾 Handebol (Misto)</h3><p>Máx 14</p><div id="handebol-atletas"></div><button type="button" onclick="adicionarAtleta('handebol')" class="btn btn-success">+</button></div>
-                        <div class="modalidade-card"><h3>🔥 Bola queimada (Misto)</h3><p>Máx 8</p><div id="bolaQueimada-atletas"></div><button type="button" onclick="adicionarAtleta('bolaQueimada')" class="btn btn-success">+</button></div>
-                        <div class="modalidade-card" style="border-color:#f39c12;"><h3>♟️ Xadrez (Individual)</h3><div id="xadrez-atletas"></div><button type="button" onclick="adicionarAtleta('xadrez')" class="btn btn-success">+</button></div>
-                        <div class="modalidade-card" style="border-color:#1a8cff;"><h3>🏊 Natação 30m Masc</h3><div id="natacaoMasc-atletas"></div><button type="button" onclick="adicionarAtleta('natacaoMasc')" class="btn btn-success">+</button></div>
-                        <div class="modalidade-card" style="border-color:#ff6b9d;"><h3>🏊 Natação 30m Fem</h3><div id="natacaoFem-atletas"></div><button type="button" onclick="adicionarAtleta('natacaoFem')" class="btn btn-success">+</button></div>
+
+                    <div class="form-group">
+                        <label>
+                            Nome do Time / Atleta *
+                        </label>
+
+                        <input type="text"
+                               id="nomeTime"
+                               required>
                     </div>
-                    <button type="submit" class="btn">Salvar</button>
+
+
+                    <div class="form-group">
+                        <label>
+                            Curso *
+                        </label>
+
+                        <input type="text"
+                               id="curso"
+                               required>
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            CPF *
+                            <span class="privacy-badge">
+                                🔒
+                            </span>
+                        </label>
+
+                        <input type="text"
+                               id="cpfResponsavel"
+                               placeholder="Apenas números"
+                               maxlength="11"
+                               required>
+
+                        <small>🔒 Privado</small>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            WhatsApp *
+                            <span class="privacy-badge">
+                                🔒
+                            </span>
+                        </label>
+
+                        <div class="whatsapp-wrapper">
+
+                            <span>
+                                📱 +55
+                            </span>
+
+                            <input type="text"
+                                   id="whatsapp"
+                                   placeholder="41999999999"
+                                   maxlength="12"
+                                   required>
+
+                        </div>
+
+                        <small>🔒 Privado</small>
+
+                    </div>
+
+
+                    <div id="modalidades">
+
+
+                        <div class="modalidade-card">
+
+                            <h3>
+                                ⚽ Futsal Masculino
+                            </h3>
+
+                            <p>Máx 10</p>
+
+                            <div id="futsalMasc-atletas"></div>
+
+                            <button type="button"
+                                    onclick="adicionarAtleta('futsalMasc')"
+                                    class="btn btn-success">
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <div class="modalidade-card">
+
+                            <h3>
+                                ⚽ Futsal Feminino
+                            </h3>
+
+                            <p>Máx 10</p>
+
+                            <div id="futsalFem-atletas"></div>
+
+                            <button type="button"
+                                    onclick="adicionarAtleta('futsalFem')"
+                                    class="btn btn-success">
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <div class="modalidade-card">
+
+                            <h3>
+                                🏀 Basquete 3x3 Masculino
+                            </h3>
+
+                            <p>Máx 4</p>
+
+                            <div id="basqueteMasc-atletas"></div>
+
+                            <button type="button"
+                                    onclick="adicionarAtleta('basqueteMasc')"
+                                    class="btn btn-success">
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <div class="modalidade-card">
+
+                            <h3>
+                                🏀 Basquete 3x3 Feminino
+                            </h3>
+
+                            <p>Máx 4</p>
+
+                            <div id="basqueteFem-atletas"></div>
+
+                            <button type="button"
+                                    onclick="adicionarAtleta('basqueteFem')"
+                                    class="btn btn-success">
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <div class="modalidade-card">
+
+                            <h3>
+                                🏐 Voleibol (Misto)
+                            </h3>
+
+                            <p>Máx 12</p>
+
+                            <div id="volei-atletas"></div>
+
+                            <button type="button"
+                                    onclick="adicionarAtleta('volei')"
+                                    class="btn btn-success">
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <div class="modalidade-card">
+
+                            <h3>
+                                🤾 Handebol (Misto)
+                            </h3>
+
+                            <p>Máx 14</p>
+
+                            <div id="handebol-atletas"></div>
+
+                            <button type="button"
+                                    onclick="adicionarAtleta('handebol')"
+                                    class="btn btn-success">
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <div class="modalidade-card">
+
+                            <h3>
+                                🔥 Bola queimada (Misto)
+                            </h3>
+
+                            <p>Máx 8</p>
+
+                            <div id="bolaQueimada-atletas"></div>
+
+                            <button type="button"
+                                    onclick="adicionarAtleta('bolaQueimada')"
+                                    class="btn btn-success">
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <div class="modalidade-card"
+                             style="border-color:#f39c12;">
+
+                            <h3>
+                                ♟️ Xadrez (Individual)
+                            </h3>
+
+                            <div id="xadrez-atletas"></div>
+
+                            <button type="button"
+                                    onclick="adicionarAtleta('xadrez')"
+                                    class="btn btn-success">
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <div class="modalidade-card"
+                             style="border-color:#1a8cff;">
+
+                            <h3>
+                                🏊 Natação 30m Masc
+                            </h3>
+
+                            <div id="natacaoMasc-atletas"></div>
+
+                            <button type="button"
+                                    onclick="adicionarAtleta('natacaoMasc')"
+                                    class="btn btn-success">
+                                +
+                            </button>
+
+                        </div>
+
+
+                        <div class="modalidade-card"
+                             style="border-color:#ff6b9d;">
+
+                            <h3>
+                                🏊 Natação 30m Fem
+                            </h3>
+
+                            <div id="natacaoFem-atletas"></div>
+
+                            <button type="button"
+                                    onclick="adicionarAtleta('natacaoFem')"
+                                    class="btn btn-success">
+                                +
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="btn">
+                        Salvar
+                    </button>
+
                 </form>
+
             </div>
 
-            <div id="tab-editarTime" class="tab-content">
-                <div class="cpf-busca-box"><h3>🔐 Editar</h3><p>Digite o CPF</p><input type="text" id="cpfEditarBusca" placeholder="Apenas números" maxlength="11"><button onclick="buscarTimePorCPF()" class="btn">🔍 Buscar</button></div>
-                <div id="editarTimeContainer"></div>
-            </div>
 
-            <div id="tab-tabelaJogos" class="tab-content">
-                <div class="form-group"><label>Modalidade:</label><select id="selectModalidade" onchange="carregarTabelaJogos()"><option value="">Selecione</option></select></div>
-                <div id="tabelaJogosContainer"></div>
-            </div>
+            <!-- EDITAR -->
 
-            <div id="tab-regras" class="tab-content">
-                <div class="regras-container" style="max-height:400px;overflow-y:auto;padding:20px;">
-                    <h2 style="color:#667eea;">📋 Regras</h2>
-                    <ul><li>Futsal Masculino</li><li>Futsal Feminino</li><li>Basquete 3x3</li><li>Voleibol (Misto)</li><li>Handebol (Misto)</li><li>Bola Queimada (Misto)</li><li>Xadrez (Individual)</li><li>Natação 30m (Masc/Fem)</li></ul>
-                    <p><strong>Futsal:</strong> 5 jogadores, 10min, pênaltis</p>
-                    <p><strong>Handebol:</strong> 7 jogadores (3H/3M), 10min</p>
-                    <p><strong>Basquete:</strong> 3 jogadores, 10min ou 21 pontos</p>
-                    <p><strong>Voleibol:</strong> 6 jogadores (3H/3M), 1 set 15 pontos</p>
-                    <p><strong>Bola queimada:</strong> 8 jogadores, capitão 2 vidas</p>
-                    <p><strong>Xadrez:</strong> Individual, sistema suíço</p>
-                    <p><strong>Natação:</strong> 30m livre, menor tempo vence</p>
+            <div id="tab-editarTime"
+                 class="tab-content">
+
+                <div class="cpf-busca-box">
+
+                    <h3>
+                        🔐 Editar
+                    </h3>
+
+                    <p>
+                        Digite o CPF
+                    </p>
+
+                    <input type="text"
+                           id="cpfEditarBusca"
+                           placeholder="Apenas números"
+                           maxlength="11">
+
+                    <button onclick="buscarTimePorCPF()"
+                            class="btn">
+                        🔍 Buscar
+                    </button>
+
                 </div>
+
+
+                <div id="editarTimeContainer"></div>
+
             </div>
 
-            <div id="tab-consultar" class="tab-content">
-                <div class="stats-grid" id="statsModalidades"></div>
-                <div class="form-group"><label>🔍 Buscar:</label><input type="text" id="buscarTimeNome" placeholder="Nome ou curso..." onkeyup="filtrarTimes()"></div>
-                <div class="table-container"><table id="tabelaTimes"><thead><tr><th>#</th><th>Time</th><th>Curso</th><th>Data</th><th>Modalidades</th><th>Ações</th></tr></thead><tbody id="tabelaTimesBody"></tbody></table></div>
+
+            <!-- TABELA DE JOGOS -->
+
+            <div id="tab-tabelaJogos"
+                 class="tab-content">
+
+                <div class="form-group">
+
+                    <label>
+                        Modalidade:
+                    </label>
+
+                    <select id="selectModalidade"
+                            onchange="carregarTabelaJogos()">
+
+                        <option value="">
+                            Selecione
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div id="tabelaJogosContainer"></div>
+
             </div>
 
-            <div id="tab-admin" class="tab-content"><div style="text-align:center;padding:40px;"><h2 style="color:#667eea;">👑 Admin</h2><p style="margin:20px 0;">Clique para fazer login</p><button onclick="abrirLoginAdmin()" class="btn">🔐 Login</button></div></div>
+
+            <!-- REGRAS -->
+
+            <div id="tab-regras"
+                 class="tab-content">
+
+                <div class="regras-container"
+                     style="max-height:400px;overflow-y:auto;padding:20px;">
+
+                    <h2 style="color:#667eea;">
+                        📋 Regras
+                    </h2>
+
+                    <ul>
+                        <li>Futsal Masculino</li>
+                        <li>Futsal Feminino</li>
+                        <li>Basquete 3x3</li>
+                        <li>Voleibol (Misto)</li>
+                        <li>Handebol (Misto)</li>
+                        <li>Bola Queimada (Misto)</li>
+                        <li>Xadrez (Individual)</li>
+                        <li>Natação 30m (Masc/Fem)</li>
+                    </ul>
+
+                    <p>
+                        <strong>Futsal:</strong>
+                        5 jogadores, 10min, pênaltis
+                    </p>
+
+                    <p>
+                        <strong>Handebol:</strong>
+                        7 jogadores (3H/3M), 10min
+                    </p>
+
+                    <p>
+                        <strong>Basquete:</strong>
+                        3 jogadores, 10min ou 21 pontos
+                    </p>
+
+                    <p>
+                        <strong>Voleibol:</strong>
+                        6 jogadores (3H/3M), 1 set 15 pontos
+                    </p>
+
+                    <p>
+                        <strong>Bola queimada:</strong>
+                        8 jogadores, capitão 2 vidas
+                    </p>
+
+                    <p>
+                        <strong>Xadrez:</strong>
+                        Individual, sistema suíço
+                    </p>
+
+                    <p>
+                        <strong>Natação:</strong>
+                        30m livre, menor tempo vence
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONSULTAR -->
+
+            <div id="tab-consultar"
+                 class="tab-content">
+
+                <div class="stats-grid"
+                     id="statsModalidades">
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        🔍 Buscar:
+                    </label>
+
+                    <input type="text"
+                           id="buscarTimeNome"
+                           placeholder="Nome ou curso..."
+                           onkeyup="filtrarTimes()">
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table id="tabelaTimes">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+                                <th>Time</th>
+                                <th>Curso</th>
+                                <th>Data</th>
+                                <th>Modalidades</th>
+                                <th>Ações</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="tabelaTimesBody"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- ADMIN -->
+
+            <div id="tab-admin"
+                 class="tab-content">
+
+                <div style="text-align:center;padding:40px;">
+
+                    <h2 style="color:#667eea;">
+                        👑 Admin
+                    </h2>
+
+                    <p style="margin:20px 0;">
+                        Clique para fazer login
+                    </p>
+
+                    <button onclick="abrirLoginAdmin()"
+                            class="btn">
+                        🔐 Login
+                    </button>
+
+                </div>
+
+            </div>
+
         </div>
+
 
         <div class="footer">
-            <p>Desenvolvido por Prof. Ms. Murilo Luiz Burim | 📧 murilo.burim@kroton.com.br | © 2026</p>
+
+            <p>
+                Desenvolvido por Prof. Ms. Murilo Luiz Burim |
+                📧 murilo.burim@kroton.com.br |
+                © 2026
+            </p>
+
         </div>
+
     </div>
 
+
     <script>
+
         // ============================================
         // CONFIGURAÇÃO FIREBASE
         // ============================================
+
         const firebaseConfig = {
-            apiKey: "AIzaSyAKsvMG4l1Rn8-6zCymA5reJ_zRZ0lGj50",
-            authDomain: "jogos-unopar.firebaseapp.com",
-            databaseURL: "https://jogos-unopar-default-rtdb.firebaseio.com",
-            projectId: "jogos-unopar",
-            storageBucket: "jogos-unopar.firebasestorage.app",
-            messagingSenderId: "694948203841",
-            appId: "1:694948203841:web:cd7fa57abd1d46e07225c0"
+
+            apiKey:
+                "AIzaSyAKsvMG4l1Rn8-6zCymA5reJ_zRZ0lGj50",
+
+            authDomain:
+                "jogos-unopar.firebaseapp.com",
+
+            databaseURL:
+                "https://jogos-unopar-default-rtdb.firebaseio.com",
+
+            projectId:
+                "jogos-unopar",
+
+            storageBucket:
+                "jogos-unopar.firebasestorage.app",
+
+            messagingSenderId:
+                "694948203841",
+
+            appId:
+                "1:694948203841:web:cd7fa57abd1d46e07225c0"
+
         };
+
 
         // ============================================
         // VARIÁVEIS GLOBAIS
         // ============================================
+
         let inscricoesCache = [];
+
         let firebaseOnline = false;
+
         let isAdmin = false;
+
         let databaseRef = null;
+
+        let authRef = null;
+
+        let adminUser = null;
+
         let dadosCarregados = false;
 
-        // ============================================
-        // FUNÇÕES DE UI
-        // ============================================
 
-        function showLoading(show, msg = 'Carregando dados...') {
-            const overlay = document.getElementById('loadingOverlay');
-            if (overlay) {
-                overlay.style.display = show ? 'flex' : 'none';
-                document.getElementById('loadingText').textContent = msg;
-            }
-        }
+        // ÚNICO E-MAIL AUTORIZADO PARA ADMIN
 
-        function updateStatus() {
-            const indicator = document.getElementById('statusIndicator');
-            if (indicator) {
-                indicator.className = firebaseOnline ? 'status online' : 'status offline';
-                indicator.textContent = firebaseOnline ? '✅ Online' : '⚠️ Offline';
-            }
-            const cacheInfo = document.getElementById('cacheInfo');
-            if (cacheInfo) {
-                cacheInfo.textContent = `📦 ${inscricoesCache.length} inscrições | ${firebaseOnline ? 'Online' : 'Offline'}`;
-            }
-        }
+        const ADMIN_EMAIL =
+            'muriloluiz94@gmail.com';
 
-        // ============================================
-        // INICIALIZAR FIREBASE (UMA ÚNICA VEZ)
-        // ============================================
-        try {
-            firebase.initializeApp(firebaseConfig);
-            databaseRef = firebase.database();
-            
-            // Verificar conexão
-            databaseRef.ref('.info/connected').on('value', (snapshot) => {
-                firebaseOnline = snapshot.val() === true;
-                updateStatus();
-            });
-
-            console.log('🔥 Firebase inicializado!');
-        } catch (error) {
-            console.error('❌ Erro no Firebase:', error);
-            firebaseOnline = false;
-        }
-
-        // ============================================
-        // CARREGAR DADOS (UMA ÚNICA VEZ)
-        // ============================================
-        async function carregarDados() {
-            if (dadosCarregados) return; // Já carregou
-            
-            showLoading(true, 'Carregando dados do servidor...');
-            
-            try {
-                // Tentar carregar do localStorage primeiro (mais rápido)
-                const localData = localStorage.getItem('inscricoes');
-                if (localData) {
-                    inscricoesCache = JSON.parse(localData);
-                    console.log(`📦 Dados do localStorage: ${inscricoesCache.length} inscrições`);
-                }
-
-                // Buscar do Firebase em segundo plano
-                if (databaseRef) {
-                    const snapshot = await databaseRef.ref('inscricoes').once('value');
-                    const data = snapshot.val();
-                    if (data) {
-                        inscricoesCache = Object.values(data);
-                        localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
-                        console.log(`🔥 Dados do Firebase: ${inscricoesCache.length} inscrições`);
-                    }
-                }
-                
-                dadosCarregados = true;
-                showLoading(false);
-                
-                // Atualizar a interface
-                carregarTabelaTimes();
-                carregarEstatisticas();
-                carregarSelectModalidades();
-                carregarTabelaJogos();
-                updateStatus();
-                
-            } catch (error) {
-                console.error('❌ Erro ao carregar:', error);
-                showLoading(false);
-                // Se falhou, tentar usar localStorage
-                const localData = localStorage.getItem('inscricoes');
-                if (localData) {
-                    inscricoesCache = JSON.parse(localData);
-                    carregarTabelaTimes();
-                    carregarEstatisticas();
-                    updateStatus();
-                }
-            }
-        }
-
-        // ============================================
-        // FUNÇÕES DE BANCO DE DADOS
-        // ============================================
-
-        async function salvarInscricao(inscricao) {
-            const id = Date.now().toString();
-            inscricao.id = id;
-            
-            try {
-                if (databaseRef) {
-                    await databaseRef.ref('inscricoes/' + id).set(inscricao);
-                }
-                inscricoesCache.push(inscricao);
-                localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
-                carregarTabelaTimes();
-                carregarEstatisticas();
-                if (isAdmin) carregarAdminTimes();
-                return true;
-            } catch (error) {
-                console.error('❌ Erro ao salvar:', error);
-                inscricoesCache.push(inscricao);
-                localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
-                carregarTabelaTimes();
-                carregarEstatisticas();
-                alert('⚠️ Dados salvos localmente.');
-                return true;
-            }
-        }
-
-        async function atualizarInscricao(id, inscricaoAtualizada) {
-            try {
-                if (databaseRef) {
-                    await databaseRef.ref('inscricoes/' + id).update(inscricaoAtualizada);
-                }
-                const idx = inscricoesCache.findIndex(i => i.id === id);
-                if (idx !== -1) {
-                    inscricoesCache[idx] = { ...inscricaoAtualizada, id: id };
-                    localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
-                }
-                carregarTabelaTimes();
-                carregarEstatisticas();
-                if (isAdmin) carregarAdminTimes();
-                return true;
-            } catch (error) {
-                console.error('❌ Erro ao atualizar:', error);
-                return false;
-            }
-        }
-
-        async function excluirInscricaoFirebase(id) {
-            if (!confirm('Excluir esta inscrição?')) return false;
-            
-            try {
-                if (databaseRef) {
-                    await databaseRef.ref('inscricoes/' + id).remove();
-                }
-                inscricoesCache = inscricoesCache.filter(i => i.id !== id);
-                localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
-                carregarTabelaTimes();
-                carregarEstatisticas();
-                if (isAdmin) carregarAdminTimes();
-                return true;
-            } catch (error) {
-                console.error('❌ Erro ao excluir:', error);
-                return false;
-            }
-        }
 
         // ============================================
         // DADOS E CONFIGURAÇÕES
         // ============================================
 
-        let modalidadesAtletas = { 
-            futsalMasc: [], futsalFem: [], basqueteMasc: [], basqueteFem: [], 
-            volei: [], handebol: [], bolaQueimada: [], 
-            xadrez: [], natacaoMasc: [], natacaoFem: []
+        let modalidadesAtletas = {
+
+            futsalMasc: [],
+
+            futsalFem: [],
+
+            basqueteMasc: [],
+
+            basqueteFem: [],
+
+            volei: [],
+
+            handebol: [],
+
+            bolaQueimada: [],
+
+            xadrez: [],
+
+            natacaoMasc: [],
+
+            natacaoFem: []
+
         };
-        
-        let formatosDisputa = { 
-            futsalMasc: 'Rodízio', futsalFem: 'Eliminatória', 
-            basqueteMasc: 'Misto', basqueteFem: 'Misto', 
-            volei: 'Misto', handebol: 'Eliminatória Dupla', 
-            bolaQueimada: 'Eliminatória', 
-            xadrez: 'Suíço',
-            natacaoMasc: 'Eliminatória',
-            natacaoFem: 'Eliminatória'
+
+
+        let formatosDisputa = {
+
+            futsalMasc:
+                'Rodízio',
+
+            futsalFem:
+                'Eliminatória',
+
+            basqueteMasc:
+                'Misto',
+
+            basqueteFem:
+                'Misto',
+
+            volei:
+                'Misto',
+
+            handebol:
+                'Eliminatória Dupla',
+
+            bolaQueimada:
+                'Eliminatória',
+
+            xadrez:
+                'Suíço',
+
+            natacaoMasc:
+                'Eliminatória',
+
+            natacaoFem:
+                'Eliminatória'
+
         };
-        
+
+
         let resultadosJogos = {};
 
-        const limites = { 
-            futsalMasc:10, futsalFem:10, basqueteMasc:4, basqueteFem:4, 
-            volei:12, handebol:14, bolaQueimada:8, 
-            xadrez:1, natacaoMasc:1, natacaoFem:1
+
+        const limites = {
+
+            futsalMasc: 10,
+
+            futsalFem: 10,
+
+            basqueteMasc: 4,
+
+            basqueteFem: 4,
+
+            volei: 12,
+
+            handebol: 14,
+
+            bolaQueimada: 8,
+
+            xadrez: 1,
+
+            natacaoMasc: 1,
+
+            natacaoFem: 1
+
         };
-        
+
+
         const nomesModalidades = {
-            futsalMasc: 'Futsal Masculino', 
-            futsalFem: 'Futsal Feminino', 
-            basqueteMasc: 'Basquete 3x3 Masc', 
-            basqueteFem: 'Basquete 3x3 Fem',
-            volei: 'Voleibol (Misto)', 
-            handebol: 'Handebol (Misto)', 
-            bolaQueimada: 'Bola queimada (Misto)',
-            xadrez: '♟️ Xadrez (Individual)',
-            natacaoMasc: '🏊 Natação 30m Masc',
-            natacaoFem: '🏊 Natação 30m Fem'
+
+            futsalMasc:
+                'Futsal Masculino',
+
+            futsalFem:
+                'Futsal Feminino',
+
+            basqueteMasc:
+                'Basquete 3x3 Masc',
+
+            basqueteFem:
+                'Basquete 3x3 Fem',
+
+            volei:
+                'Voleibol (Misto)',
+
+            handebol:
+                'Handebol (Misto)',
+
+            bolaQueimada:
+                'Bola queimada (Misto)',
+
+            xadrez:
+                '♟️ Xadrez (Individual)',
+
+            natacaoMasc:
+                '🏊 Natação 30m Masc',
+
+            natacaoFem:
+                '🏊 Natação 30m Fem'
+
         };
+
 
         let timesFiltrados = [];
 
+
         // ============================================
-        // FUNÇÕES - INSCRIÇÃO
+        // FUNÇÕES DE UI
         // ============================================
 
-        function renderizarAtletas(modalidade) {
-            let container = document.getElementById(`${modalidade}-atletas`);
-            if(!container) return;
-            container.innerHTML = '';
-            modalidadesAtletas[modalidade].forEach((a, i) => {
-                let div = document.createElement('div');
-                div.className = 'atleta-item';
-                div.innerHTML = `<input type="text" placeholder="Atleta ${i+1}" value="${a}" onchange="atualizarAtleta('${modalidade}',${i},this.value)">
-                                <button onclick="removerAtleta('${modalidade}',${i})" class="btn btn-danger" style="padding:5px 10px;">X</button>`;
-                container.appendChild(div);
-            });
-        }
+        function showLoading(
+            show,
+            msg = 'Carregando dados...'
+        ) {
 
-        function adicionarAtleta(m) { 
-            if(modalidadesAtletas[m].length >= limites[m]) { 
-                alert(`Máximo ${limites[m]} atletas!`); 
-                return; 
-            } 
-            if((m === 'xadrez' || m === 'natacaoMasc' || m === 'natacaoFem') && modalidadesAtletas[m].length > 0) {
-                alert('Modalidade individual! Apenas 1 atleta.');
-                return;
+            const overlay =
+                document.getElementById(
+                    'loadingOverlay'
+                );
+
+            if (!overlay) return;
+
+
+            overlay.style.display =
+                show
+                    ? 'flex'
+                    : 'none';
+
+
+            const texto =
+                document.getElementById(
+                    'loadingText'
+                );
+
+            if (texto) {
+
+                texto.textContent =
+                    msg;
+
             }
-            modalidadesAtletas[m].push(''); 
-            renderizarAtletas(m); 
+
         }
-        
-        function removerAtleta(m,i) { modalidadesAtletas[m].splice(i,1); renderizarAtletas(m); }
-        function atualizarAtleta(m,i,v) { modalidadesAtletas[m][i] = v; }
+
+
+        function updateStatus() {
+
+            const indicator =
+                document.getElementById(
+                    'statusIndicator'
+                );
+
+
+            if (indicator) {
+
+                indicator.className =
+                    firebaseOnline
+                        ? 'status online'
+                        : 'status offline';
+
+
+                indicator.textContent =
+                    firebaseOnline
+                        ? '✅ Online'
+                        : '⚠️ Offline';
+
+            }
+
+
+            const cacheInfo =
+                document.getElementById(
+                    'cacheInfo'
+                );
+
+
+            if (cacheInfo) {
+
+                cacheInfo.textContent =
+                    `📦 ${inscricoesCache.length} inscrições | ${
+                        firebaseOnline
+                            ? 'Online'
+                            : 'Offline'
+                    }`;
+
+            }
+
+        }
+
 
         // ============================================
-        // FUNÇÕES - CONSULTAR TIMES (RÁPIDO)
+        // SEGURANÇA E NORMALIZAÇÃO
+        // ============================================
+
+        function escapeHTML(valor = '') {
+
+            return String(valor).replace(
+                /[&<>"']/g,
+                caractere => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                })[caractere]
+            );
+
+        }
+
+
+        function normalizarModalidades(
+            modalidades
+        ) {
+
+            const origem =
+                modalidades &&
+                typeof modalidades === 'object'
+                    ? modalidades
+                    : {};
+
+
+            const normalizadas = {};
+
+
+            Object.keys(
+                nomesModalidades
+            ).forEach(m => {
+
+                normalizadas[m] =
+                    Array.isArray(
+                        origem[m]
+                    )
+                        ? origem[m].map(
+                            v =>
+                                String(
+                                    v ?? ''
+                                )
+                        )
+                        : [];
+
+            });
+
+
+            Object.entries(
+                origem
+            ).forEach(
+                ([m, atletas]) => {
+
+                    if (
+                        !(m in normalizadas)
+                    ) {
+
+                        normalizadas[m] =
+                            Array.isArray(
+                                atletas
+                            )
+                                ? atletas.map(
+                                    v =>
+                                        String(
+                                            v ?? ''
+                                        )
+                                )
+                                : [];
+
+                    }
+
+                }
+            );
+
+
+            return normalizadas;
+
+        }
+
+
+        function normalizarInscricao(
+            raw,
+            idFallback = ''
+        ) {
+
+            const item =
+                raw &&
+                typeof raw === 'object'
+                    ? raw
+                    : {};
+
+
+            return {
+
+                id:
+                    String(
+                        item.id ||
+                        idFallback ||
+                        ''
+                    ),
+
+                nomeTime:
+                    String(
+                        item.nomeTime ||
+                        'Sem nome'
+                    ),
+
+                curso:
+                    String(
+                        item.curso ||
+                        ''
+                    ),
+
+                cpfResponsavel:
+                    String(
+                        item.cpfResponsavel ||
+                        ''
+                    ),
+
+                whatsapp:
+                    String(
+                        item.whatsapp ||
+                        ''
+                    ),
+
+                modalidades:
+                    normalizarModalidades(
+                        item.modalidades
+                    ),
+
+                dataCriacao:
+                    item.dataCriacao ||
+                    new Date()
+                        .toISOString()
+
+            };
+
+        }
+
+
+        function dataBR(valor) {
+
+            const d =
+                new Date(valor);
+
+
+            return Number.isNaN(
+                d.getTime()
+            )
+                ? 'Data não informada'
+                : d.toLocaleDateString(
+                    'pt-BR'
+                );
+
+        }
+
+
+        function lerJSONLocalStorage(
+            chave,
+            fallback
+        ) {
+
+            try {
+
+                const valor =
+                    localStorage.getItem(
+                        chave
+                    );
+
+
+                return valor
+                    ? JSON.parse(valor)
+                    : fallback;
+
+
+            } catch (erro) {
+
+                console.warn(
+                    `⚠️ localStorage inválido em ${chave}:`,
+                    erro
+                );
+
+
+                localStorage.removeItem(
+                    chave
+                );
+
+
+                return fallback;
+
+            }
+
+        }
+
+
+        function usuarioEhAdmin(user) {
+
+            return (
+                !!user &&
+                String(
+                    user.email || ''
+                ).toLowerCase()
+                ===
+                ADMIN_EMAIL.toLowerCase()
+            );
+
+        }
+
+
+        // ============================================
+        // FIREBASE
+        // ============================================
+
+        try {
+
+            if (
+                !firebase.apps.length
+            ) {
+
+                firebase.initializeApp(
+                    firebaseConfig
+                );
+
+            }
+
+
+            databaseRef =
+                firebase.database();
+
+
+            authRef =
+                firebase.auth();
+
+
+            authRef.setPersistence(
+                firebase.auth
+                    .Auth
+                    .Persistence
+                    .SESSION
+            ).catch(error => {
+
+                console.warn(
+                    'Persistência da autenticação:',
+                    error
+                );
+
+            });
+
+
+            authRef.onAuthStateChanged(
+                user => {
+
+                    adminUser =
+                        usuarioEhAdmin(user)
+                            ? user
+                            : null;
+
+
+                    isAdmin =
+                        !!adminUser;
+
+
+                    if (
+                        user &&
+                        !isAdmin
+                    ) {
+
+                        console.warn(
+                            'Usuário autenticado não autorizado:',
+                            user.email
+                        );
+
+                    }
+
+                }
+            );
+
+
+            databaseRef
+                .ref(
+                    '.info/connected'
+                )
+                .on(
+                    'value',
+                    snapshot => {
+
+                        firebaseOnline =
+                            snapshot.val()
+                            === true;
+
+
+                        updateStatus();
+
+                    },
+                    error => {
+
+                        console.error(
+                            'Erro de conexão Firebase:',
+                            error
+                        );
+
+
+                        firebaseOnline =
+                            false;
+
+
+                        updateStatus();
+
+                    }
+                );
+
+
+            console.log(
+                '🔥 Firebase inicializado!'
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                '❌ Erro no Firebase:',
+                error
+            );
+
+
+            firebaseOnline =
+                false;
+
+
+            updateStatus();
+
+        }
+
+
+        // ============================================
+        // CARREGAR DADOS
+        // ============================================
+
+        async function carregarDados() {
+
+            if (
+                dadosCarregados
+            ) return;
+
+
+            showLoading(
+                true,
+                'Carregando dados do servidor...'
+            );
+
+
+            try {
+
+                const localData =
+                    lerJSONLocalStorage(
+                        'inscricoes',
+                        []
+                    );
+
+
+                if (
+                    Array.isArray(
+                        localData
+                    )
+                ) {
+
+                    inscricoesCache =
+                        localData.map(
+                            (item, i) =>
+                                normalizarInscricao(
+                                    item,
+                                    item?.id ||
+                                    `local_${i}`
+                                )
+                        );
+
+
+                    updateStatus();
+
+                }
+
+
+                if (
+                    databaseRef
+                ) {
+
+                    const snapshot =
+                        await databaseRef
+                            .ref(
+                                'inscricoes'
+                            )
+                            .once(
+                                'value'
+                            );
+
+
+                    const data =
+                        snapshot.val();
+
+
+                    if (
+                        data &&
+                        typeof data ===
+                            'object'
+                    ) {
+
+                        inscricoesCache =
+                            Object.entries(
+                                data
+                            ).map(
+                                ([id, item]) =>
+                                    normalizarInscricao(
+                                        item,
+                                        id
+                                    )
+                            );
+
+
+                        localStorage.setItem(
+                            'inscricoes',
+                            JSON.stringify(
+                                inscricoesCache
+                            )
+                        );
+
+
+                    } else {
+
+                        inscricoesCache =
+                            [];
+
+
+                        localStorage.setItem(
+                            'inscricoes',
+                            '[]'
+                        );
+
+                    }
+
+                }
+
+
+                dadosCarregados =
+                    true;
+
+
+            } catch (error) {
+
+                console.error(
+                    '❌ Erro ao carregar Firebase:',
+                    error
+                );
+
+            } finally {
+
+                showLoading(
+                    false
+                );
+
+
+                try {
+                    carregarTabelaTimes();
+                } catch (e) {
+                    console.error(e);
+                }
+
+
+                try {
+                    carregarEstatisticas();
+                } catch (e) {
+                    console.error(e);
+                }
+
+
+                try {
+                    carregarSelectModalidades();
+                } catch (e) {
+                    console.error(e);
+                }
+
+
+                try {
+                    carregarTabelaJogos();
+                } catch (e) {
+                    console.error(e);
+                }
+
+
+                updateStatus();
+
+            }
+
+        }
+
+
+        // ============================================
+        // BANCO DE DADOS
+        // ============================================
+
+        async function salvarInscricao(
+            inscricao
+        ) {
+
+            const id =
+                Date.now()
+                    .toString();
+
+
+            inscricao =
+                normalizarInscricao(
+                    {
+                        ...inscricao,
+                        id
+                    },
+                    id
+                );
+
+
+            try {
+
+                if (
+                    databaseRef
+                ) {
+
+                    await databaseRef
+                        .ref(
+                            'inscricoes/' +
+                            id
+                        )
+                        .set(
+                            inscricao
+                        );
+
+                }
+
+
+                inscricoesCache.push(
+                    inscricao
+                );
+
+
+                localStorage.setItem(
+                    'inscricoes',
+                    JSON.stringify(
+                        inscricoesCache
+                    )
+                );
+
+
+                carregarTabelaTimes();
+
+                carregarEstatisticas();
+
+
+                if (
+                    isAdmin
+                ) {
+
+                    carregarAdminTimes();
+
+                }
+
+
+                return true;
+
+
+            } catch (error) {
+
+                console.error(
+                    'Erro ao salvar:',
+                    error
+                );
+
+
+                inscricoesCache.push(
+                    inscricao
+                );
+
+
+                localStorage.setItem(
+                    'inscricoes',
+                    JSON.stringify(
+                        inscricoesCache
+                    )
+                );
+
+
+                carregarTabelaTimes();
+
+                carregarEstatisticas();
+
+
+                alert(
+                    '⚠️ Dados salvos apenas localmente.'
+                );
+
+
+                return true;
+
+            }
+
+        }
+
+
+        async function atualizarInscricao(
+            id,
+            inscricaoAtualizada
+        ) {
+
+            try {
+
+                if (
+                    databaseRef
+                ) {
+
+                    await databaseRef
+                        .ref(
+                            'inscricoes/' +
+                            id
+                        )
+                        .update(
+                            inscricaoAtualizada
+                        );
+
+                }
+
+
+                const idx =
+                    inscricoesCache
+                        .findIndex(
+                            i =>
+                                i.id === id
+                        );
+
+
+                if (
+                    idx !== -1
+                ) {
+
+                    inscricoesCache[idx] =
+                        normalizarInscricao(
+                            {
+                                ...inscricaoAtualizada,
+                                id
+                            },
+                            id
+                        );
+
+
+                    localStorage.setItem(
+                        'inscricoes',
+                        JSON.stringify(
+                            inscricoesCache
+                        )
+                    );
+
+                }
+
+
+                carregarTabelaTimes();
+
+                carregarEstatisticas();
+
+
+                if (
+                    isAdmin
+                ) {
+
+                    carregarAdminTimes();
+
+                }
+
+
+                return true;
+
+
+            } catch (error) {
+
+                console.error(
+                    'Erro ao atualizar:',
+                    error
+                );
+
+
+                return false;
+
+            }
+
+        }
+
+
+        async function excluirInscricaoFirebase(
+            id
+        ) {
+
+            if (
+                !confirm(
+                    'Excluir esta inscrição?'
+                )
+            ) {
+
+                return false;
+
+            }
+
+
+            try {
+
+                if (
+                    databaseRef
+                ) {
+
+                    await databaseRef
+                        .ref(
+                            'inscricoes/' +
+                            id
+                        )
+                        .remove();
+
+                }
+
+
+                inscricoesCache =
+                    inscricoesCache.filter(
+                        i =>
+                            i.id !== id
+                    );
+
+
+                localStorage.setItem(
+                    'inscricoes',
+                    JSON.stringify(
+                        inscricoesCache
+                    )
+                );
+
+
+                carregarTabelaTimes();
+
+                carregarEstatisticas();
+
+
+                if (
+                    isAdmin
+                ) {
+
+                    carregarAdminTimes();
+
+                }
+
+
+                return true;
+
+
+            } catch (error) {
+
+                console.error(
+                    'Erro ao excluir:',
+                    error
+                );
+
+
+                return false;
+
+            }
+
+        }
+
+
+        // ============================================
+        // ATLETAS
+        // ============================================
+
+        function renderizarAtletas(
+            modalidade
+        ) {
+
+            const container =
+                document.getElementById(
+                    `${modalidade}-atletas`
+                );
+
+
+            if (
+                !container
+            ) return;
+
+
+            container.innerHTML =
+                '';
+
+
+            modalidadesAtletas[
+                modalidade
+            ].forEach(
+                (a, i) => {
+
+                    const div =
+                        document.createElement(
+                            'div'
+                        );
+
+
+                    div.className =
+                        'atleta-item';
+
+
+                    div.innerHTML =
+                        `
+                        <input
+                            type="text"
+                            placeholder="Atleta ${i + 1}"
+                            value="${escapeHTML(a)}"
+                            onchange="atualizarAtleta('${modalidade}',${i},this.value)"
+                        >
+
+                        <button
+                            type="button"
+                            onclick="removerAtleta('${modalidade}',${i})"
+                            class="btn btn-danger"
+                            style="padding:5px 10px;"
+                        >
+                            X
+                        </button>
+                        `;
+
+
+                    container.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+
+
+        function adicionarAtleta(m) {
+
+            if (
+                modalidadesAtletas[m]
+                    .length
+                >=
+                limites[m]
+            ) {
+
+                alert(
+                    `Máximo ${limites[m]} atletas!`
+                );
+
+                return;
+
+            }
+
+
+            if (
+                (
+                    m === 'xadrez' ||
+                    m === 'natacaoMasc' ||
+                    m === 'natacaoFem'
+                )
+                &&
+                modalidadesAtletas[m]
+                    .length > 0
+            ) {
+
+                alert(
+                    'Modalidade individual! Apenas 1 atleta.'
+                );
+
+                return;
+
+            }
+
+
+            modalidadesAtletas[m]
+                .push('');
+
+
+            renderizarAtletas(
+                m
+            );
+
+        }
+
+
+        function removerAtleta(
+            m,
+            i
+        ) {
+
+            modalidadesAtletas[m]
+                .splice(
+                    i,
+                    1
+                );
+
+
+            renderizarAtletas(
+                m
+            );
+
+        }
+
+
+        function atualizarAtleta(
+            m,
+            i,
+            v
+        ) {
+
+            modalidadesAtletas[m][i] =
+                v;
+
+        }
+
+
+        // ============================================
+        // CONSULTAR TIMES
         // ============================================
 
         function carregarTabelaTimes() {
-            let map = new Map();
-            inscricoesCache.forEach(i => {
-                if(!map.has(i.nomeTime)) {
-                    map.set(i.nomeTime, { 
-                        nomeTime: i.nomeTime, 
-                        curso: i.curso, 
-                        dataCriacao: i.dataCriacao, 
-                        modalidades: {}
-                    });
+
+            const map =
+                new Map();
+
+
+            inscricoesCache.forEach(
+                i => {
+
+                    if (
+                        !map.has(
+                            i.nomeTime
+                        )
+                    ) {
+
+                        map.set(
+                            i.nomeTime,
+                            {
+
+                                nomeTime:
+                                    i.nomeTime,
+
+                                curso:
+                                    i.curso,
+
+                                dataCriacao:
+                                    i.dataCriacao,
+
+                                modalidades:
+                                    {}
+
+                            }
+                        );
+
+                    }
+
+
+                    const t =
+                        map.get(
+                            i.nomeTime
+                        );
+
+
+                    for (
+                        const [m, at]
+                        of
+                        Object.entries(
+                            i.modalidades ||
+                            {}
+                        )
+                    ) {
+
+                        if (
+                            at?.length > 0
+                        ) {
+
+                            t.modalidades[m] =
+                                at;
+
+                        }
+
+                    }
+
                 }
-                let t = map.get(i.nomeTime);
-                for(let [m,at] of Object.entries(i.modalidades)) {
-                    if(at?.length>0) t.modalidades[m] = at;
-                }
-            });
-            timesFiltrados = Array.from(map.values());
+            );
+
+
+            timesFiltrados =
+                Array.from(
+                    map.values()
+                );
+
+
             atualizarTabela();
+
         }
+
 
         function atualizarTabela() {
-            let tbody = document.getElementById('tabelaTimesBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            
-            if (timesFiltrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">Nenhum time inscrito</td></tr>';
+
+            const tbody =
+                document.getElementById(
+                    'tabelaTimesBody'
+                );
+
+
+            if (
+                !tbody
+            ) return;
+
+
+            tbody.innerHTML =
+                '';
+
+
+            if (
+                timesFiltrados
+                    .length === 0
+            ) {
+
+                tbody.innerHTML =
+                    `
+                    <tr>
+                        <td
+                            colspan="6"
+                            style="text-align:center;padding:20px;"
+                        >
+                            Nenhum time inscrito
+                        </td>
+                    </tr>
+                    `;
+
+
                 return;
+
             }
-            
-            timesFiltrados.forEach((t,i) => {
-                let mods = []; 
-                for(let [m,at] of Object.entries(t.modalidades)) {
-                    if(at?.length>0) mods.push(nomesModalidades[m]);
+
+
+            timesFiltrados.forEach(
+                (t, i) => {
+
+                    const mods =
+                        [];
+
+
+                    for (
+                        const [m, at]
+                        of
+                        Object.entries(
+                            t.modalidades ||
+                            {}
+                        )
+                    ) {
+
+                        if (
+                            at?.length > 0
+                        ) {
+
+                            mods.push(
+                                nomesModalidades[m]
+                                ||
+                                m
+                            );
+
+                        }
+
+                    }
+
+
+                    tbody.innerHTML +=
+                        `
+                        <tr>
+
+                            <td>
+                                ${i + 1}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${escapeHTML(
+                                        t.nomeTime
+                                    )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${escapeHTML(
+                                    t.curso
+                                )}
+                            </td>
+
+                            <td>
+                                ${dataBR(
+                                    t.dataCriacao
+                                )}
+                            </td>
+
+                            <td>
+
+                                ${
+                                    mods.map(
+                                        m =>
+                                            `<span class="modalidades-badge">${escapeHTML(m)}</span>`
+                                    ).join('')
+                                }
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    onclick="verDetalhes(${i})"
+                                    class="btn btn-info"
+                                    style="padding:5px 10px;"
+                                >
+                                    👁️
+                                </button>
+
+                            </td>
+
+                        </tr>
+                        `;
+
                 }
-                tbody.innerHTML += `<tr>
-                    <td>${i+1}</td>
-                    <td><strong>${t.nomeTime}</strong></td>
-                    <td>${t.curso}</td>
-                    <td>${new Date(t.dataCriacao).toLocaleDateString('pt-BR')}</td>
-                    <td>${mods.map(m=>`<span class="modalidades-badge">${m}</span>`).join('')}</td>
-                    <td><button onclick="verDetalhes(${i})" class="btn btn-info" style="padding:5px 10px;">👁️</button></td>
-                </tr>`;
-            });
+            );
+
         }
+
 
         function verDetalhes(i) {
-            let t = timesFiltrados[i];
-            let msg = `🏆 ${t.nomeTime}\n📚 Curso: ${t.curso}\n📅 Data: ${new Date(t.dataCriacao).toLocaleDateString('pt-BR')}\n\n📋 Atletas:\n`;
-            for(let [m,at] of Object.entries(t.modalidades)) {
-                if(at?.length>0) {
-                    msg += `\n${nomesModalidades[m]}:\n${at.map((a,j)=>`  ${j+1}. ${a}`).join('\n')}\n`;
+
+            const t =
+                timesFiltrados[i];
+
+
+            if (
+                !t
+            ) return;
+
+
+            let msg =
+                `🏆 ${t.nomeTime}\n`;
+
+            msg +=
+                `📚 Curso: ${t.curso}\n`;
+
+            msg +=
+                `📅 Data: ${dataBR(t.dataCriacao)}\n\n`;
+
+            msg +=
+                `📋 Atletas:\n`;
+
+
+            for (
+                const [m, at]
+                of
+                Object.entries(
+                    t.modalidades ||
+                    {}
+                )
+            ) {
+
+                if (
+                    at?.length > 0
+                ) {
+
+                    msg +=
+                        `\n${nomesModalidades[m] || m}:\n`;
+
+
+                    msg +=
+                        at.map(
+                            (a, j) =>
+                                `  ${j + 1}. ${a}`
+                        )
+                        .join('\n');
+
+
+                    msg +=
+                        '\n';
+
                 }
+
             }
-            alert(msg);
+
+
+            alert(
+                msg
+            );
+
         }
+
 
         function filtrarTimes() {
-            let busca = document.getElementById('buscarTimeNome').value.toLowerCase();
-            if(!busca) { carregarTabelaTimes(); return; }
-            timesFiltrados = timesFiltrados.filter(t => t.nomeTime.toLowerCase().includes(busca) || t.curso.toLowerCase().includes(busca));
+
+            const input =
+                document.getElementById(
+                    'buscarTimeNome'
+                );
+
+
+            if (
+                !input
+            ) return;
+
+
+            const busca =
+                input.value
+                    .toLowerCase();
+
+
+            if (
+                !busca
+            ) {
+
+                carregarTabelaTimes();
+
+                return;
+
+            }
+
+
+            timesFiltrados =
+                timesFiltrados.filter(
+                    t =>
+                        String(
+                            t.nomeTime ||
+                            ''
+                        )
+                        .toLowerCase()
+                        .includes(
+                            busca
+                        )
+
+                        ||
+
+                        String(
+                            t.curso ||
+                            ''
+                        )
+                        .toLowerCase()
+                        .includes(
+                            busca
+                        )
+                );
+
+
             atualizarTabela();
+
         }
+
 
         function carregarEstatisticas() {
-            let stats = {}; 
-            for(let m in nomesModalidades) stats[m]=0;
-            inscricoesCache.forEach(i => { 
-                for(let [m,at] of Object.entries(i.modalidades)) {
-                    if(at?.length>0) {
-                        if(['xadrez', 'natacaoMasc', 'natacaoFem'].includes(m)) {
-                            stats[m] += at.length;
-                        } else {
-                            stats[m]++; 
-                        }
-                    }
-                }
-            });
-            
-            let container = document.getElementById('statsModalidades');
-            if (!container) return;
-            container.innerHTML = '';
-            
-            let maxV = Math.max(...Object.values(stats),1);
-            for(let [m,q] of Object.entries(stats)) {
-                let card = document.createElement('div');
-                card.className = 'stat-card';
-                card.onclick = () => filtrarPorModalidade(m);
-                card.innerHTML = `<h4>${nomesModalidades[m]}</h4><div class="stat-number">${q}</div>
-                                <div class="progress-bar"><div class="progress-fill" style="width:${(q/maxV)*100}%;height:5px;background:rgba(255,255,255,0.8);border-radius:5px;"></div></div>`;
-                container.appendChild(card);
+
+            const stats =
+                {};
+
+
+            for (
+                const m
+                in
+                nomesModalidades
+            ) {
+
+                stats[m] =
+                    0;
+
             }
+
+
+            inscricoesCache.forEach(
+                i => {
+
+                    for (
+                        const [m, at]
+                        of
+                        Object.entries(
+                            i.modalidades ||
+                            {}
+                        )
+                    ) {
+
+                        if (
+                            at?.length > 0
+                        ) {
+
+                            if (
+                                [
+                                    'xadrez',
+                                    'natacaoMasc',
+                                    'natacaoFem'
+                                ]
+                                .includes(
+                                    m
+                                )
+                            ) {
+
+                                stats[m] +=
+                                    at.length;
+
+                            } else {
+
+                                stats[m]++;
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+
+            const container =
+                document.getElementById(
+                    'statsModalidades'
+                );
+
+
+            if (
+                !container
+            ) return;
+
+
+            container.innerHTML =
+                '';
+
+
+            const maxV =
+                Math.max(
+                    ...Object.values(
+                        stats
+                    ),
+                    1
+                );
+
+
+            for (
+                const [m, q]
+                of
+                Object.entries(
+                    stats
+                )
+            ) {
+
+                const card =
+                    document.createElement(
+                        'div'
+                    );
+
+
+                card.className =
+                    'stat-card';
+
+
+                card.onclick =
+                    () =>
+                        filtrarPorModalidade(
+                            m
+                        );
+
+
+                card.innerHTML =
+                    `
+                    <h4>
+                        ${nomesModalidades[m]}
+                    </h4>
+
+                    <div class="stat-number">
+                        ${q}
+                    </div>
+
+                    <div class="progress-bar">
+
+                        <div
+                            class="progress-fill"
+                            style="
+                                width:${(q / maxV) * 100}%;
+                                height:5px;
+                                background:rgba(255,255,255,0.8);
+                                border-radius:5px;
+                            "
+                        ></div>
+
+                    </div>
+                    `;
+
+
+                container.appendChild(
+                    card
+                );
+
+            }
+
         }
 
-        function filtrarPorModalidade(modalidade) {
-            let map = new Map();
-            inscricoesCache.forEach(i => {
-                if(i.modalidades[modalidade]?.length > 0) {
-                    if(!map.has(i.nomeTime)) {
-                        map.set(i.nomeTime, { 
-                            nomeTime: i.nomeTime, 
-                            curso: i.curso, 
-                            dataCriacao: i.dataCriacao, 
-                            modalidades: {} 
-                        });
+
+        function filtrarPorModalidade(
+            modalidade
+        ) {
+
+            const map =
+                new Map();
+
+
+            inscricoesCache.forEach(
+                i => {
+
+                    if (
+                        i.modalidades?.[
+                            modalidade
+                        ]?.length > 0
+                    ) {
+
+                        if (
+                            !map.has(
+                                i.nomeTime
+                            )
+                        ) {
+
+                            map.set(
+                                i.nomeTime,
+                                {
+
+                                    nomeTime:
+                                        i.nomeTime,
+
+                                    curso:
+                                        i.curso,
+
+                                    dataCriacao:
+                                        i.dataCriacao,
+
+                                    modalidades:
+                                        {}
+
+                                }
+                            );
+
+                        }
+
+
+                        map.get(
+                            i.nomeTime
+                        )
+                        .modalidades[
+                            modalidade
+                        ] =
+                            i.modalidades[
+                                modalidade
+                            ];
+
                     }
-                    map.get(i.nomeTime).modalidades[modalidade] = i.modalidades[modalidade];
+
                 }
-            });
-            timesFiltrados = Array.from(map.values());
+            );
+
+
+            timesFiltrados =
+                Array.from(
+                    map.values()
+                );
+
+
             atualizarTabela();
+
         }
+
 
         // ============================================
-        // FUNÇÕES - TABELA DE JOGOS
+        // TABELA DE JOGOS
         // ============================================
 
         function carregarSelectModalidades() {
-            let select = document.getElementById('selectModalidade');
-            if (!select) return;
-            select.innerHTML = '<option value="">Selecione</option>';
-            for(let [k,v] of Object.entries(nomesModalidades)) {
-                select.innerHTML += `<option value="${k}">${v}</option>`;
+
+            const select =
+                document.getElementById(
+                    'selectModalidade'
+                );
+
+
+            if (
+                !select
+            ) return;
+
+
+            select.innerHTML =
+                '<option value="">Selecione</option>';
+
+
+            for (
+                const [k, v]
+                of
+                Object.entries(
+                    nomesModalidades
+                )
+            ) {
+
+                select.innerHTML +=
+                    `<option value="${k}">${v}</option>`;
+
             }
+
         }
+
 
         function carregarTabelaJogos() {
-            let select = document.getElementById('selectModalidade');
-            let container = document.getElementById('tabelaJogosContainer');
-            if (!select || !container) return;
-            
-            let modalidade = select.value;
-            if(!modalidade) { 
-                container.innerHTML = '<p style="text-align:center;padding:20px;">Selecione uma modalidade</p>'; 
-                return; 
+
+            const select =
+                document.getElementById(
+                    'selectModalidade'
+                );
+
+
+            const container =
+                document.getElementById(
+                    'tabelaJogosContainer'
+                );
+
+
+            if (
+                !select ||
+                !container
+            ) return;
+
+
+            const modalidade =
+                select.value;
+
+
+            if (
+                !modalidade
+            ) {
+
+                container.innerHTML =
+                    `
+                    <p
+                        style="text-align:center;padding:20px;"
+                    >
+                        Selecione uma modalidade
+                    </p>
+                    `;
+
+
+                return;
+
             }
-            
-            let times = [];
-            inscricoesCache.forEach(i => { 
-                if(i.modalidades[modalidade]?.length > 0) times.push(i.nomeTime);
-            });
-            
-            if(times.length < 2) { 
-                container.innerHTML = `<p style="text-align:center;padding:20px;">Mínimo 2 times</p>`; 
-                return; 
-            }
-            
-            let html = `<h3>${nomesModalidades[modalidade]}</h3><div class="table-container"><table><thead><tr><th>#</th><th>Atleta A</th><th>vs</th><th>Atleta B</th><th>Resultado</th></tr></thead><tbody>`;
-            let j=1;
-            for(let i=0; i<times.length; i++) {
-                for(let k=i+1; k<times.length; k++) {
-                    let res = resultadosJogos[`${modalidade}_${i}_${k}`] || '';
-                    html += `<tr><td>${j}</td><td>${times[i]}</td><td>🆚</td><td>${times[k]}</td><td><strong>${res}</strong></td></tr>`;
-                    j++;
+
+
+            const times =
+                [];
+
+
+            inscricoesCache.forEach(
+                i => {
+
+                    if (
+                        i.modalidades?.[
+                            modalidade
+                        ]?.length > 0
+                    ) {
+
+                        times.push(
+                            i.nomeTime
+                        );
+
+                    }
+
                 }
+            );
+
+
+            if (
+                times.length < 2
+            ) {
+
+                container.innerHTML =
+                    `
+                    <p
+                        style="text-align:center;padding:20px;"
+                    >
+                        Mínimo 2 times
+                    </p>
+                    `;
+
+
+                return;
+
             }
-            html += `</tbody></table></div>`;
-            container.innerHTML = html;
+
+
+            let html =
+                `
+                <h3>
+                    ${nomesModalidades[modalidade]}
+                </h3>
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>
+                                    Atleta A
+                                </th>
+
+                                <th>
+                                    vs
+                                </th>
+
+                                <th>
+                                    Atleta B
+                                </th>
+
+                                <th>
+                                    Resultado
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+                `;
+
+
+            let j =
+                1;
+
+
+            for (
+                let i = 0;
+                i < times.length;
+                i++
+            ) {
+
+                for (
+                    let k = i + 1;
+                    k < times.length;
+                    k++
+                ) {
+
+                    const id =
+                        `${modalidade}_${i}_${k}`;
+
+
+                    const res =
+                        resultadosJogos[id]
+                        ||
+                        '';
+
+
+                    html +=
+                        `
+                        <tr>
+
+                            <td>
+                                ${j}
+                            </td>
+
+                            <td>
+                                ${escapeHTML(times[i])}
+                            </td>
+
+                            <td>
+                                🆚
+                            </td>
+
+                            <td>
+                                ${escapeHTML(times[k])}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${escapeHTML(res)}
+                                </strong>
+                            </td>
+
+                        </tr>
+                        `;
+
+
+                    j++;
+
+                }
+
+            }
+
+
+            html +=
+                `
+                        </tbody>
+
+                    </table>
+
+                </div>
+                `;
+
+
+            container.innerHTML =
+                html;
+
         }
 
+
         // ============================================
-        // FUNÇÕES - EDITAR TIME
+        // EDITAR TIME
         // ============================================
 
         function buscarTimePorCPF() {
-            let cpf = document.getElementById('cpfEditarBusca').value.trim();
-            if(!cpf || cpf.length!==11) return alert('CPF inválido!');
-            
-            const time = inscricoesCache.find(i => i.cpfResponsavel === cpf);
-            if(!time) {
-                alert('Time não encontrado!');
+
+            const campo =
+                document.getElementById(
+                    'cpfEditarBusca'
+                );
+
+
+            if (
+                !campo
+            ) return;
+
+
+            const cpf =
+                campo.value.trim();
+
+
+            if (
+                !cpf ||
+                cpf.length !== 11 ||
+                !/^\d+$/.test(cpf)
+            ) {
+
+                alert(
+                    'CPF inválido!'
+                );
+
                 return;
+
             }
-            carregarEdicao(time);
+
+
+            const time =
+                inscricoesCache.find(
+                    i =>
+                        i.cpfResponsavel
+                        ===
+                        cpf
+                );
+
+
+            if (
+                !time
+            ) {
+
+                alert(
+                    'Time não encontrado!'
+                );
+
+                return;
+
+            }
+
+
+            carregarEdicao(
+                time
+            );
+
         }
 
-        function carregarEdicao(time) {
-            let container = document.getElementById('editarTimeContainer');
-            let modals = ['futsalMasc','futsalFem','basqueteMasc','basqueteFem','volei','handebol','bolaQueimada','xadrez','natacaoMasc','natacaoFem'];
-            
-            let html = `<div style="background:#f0f4ff;padding:20px;border-radius:15px;">
-                <h3>✏️ Editando: ${time.nomeTime}</h3>
-                <form id="formEdit">
-                    <div class="form-group"><label>Nome:</label><input type="text" id="editNome" value="${time.nomeTime}" required></div>
-                    <div class="form-group"><label>Curso:</label><input type="text" id="editCurso" value="${time.curso}" required></div>
-                    <div class="form-group"><label>CPF:</label><input type="text" id="editCpf" value="${time.cpfResponsavel}" readonly></div>
-                    <div class="form-group"><label>WhatsApp:</label><div class="whatsapp-wrapper"><span>📱</span><input type="text" id="editWhatsapp" value="${time.whatsapp || ''}" maxlength="12"></div></div>`;
-            
-            modals.forEach(m => {
-                const atletas = time.modalidades[m] || [];
-                html += `<div class="modalidade-card"><h4>${nomesModalidades[m]}</h4><div id="edit-${m}"></div>
-                        <button type="button" onclick="adicionarEdit('${m}')" class="btn btn-success">+</button></div>`;
-                window[`e_${m}`] = [...atletas];
-            });
-            
-            html += `<button type="submit" class="btn">💾 Salvar</button>
-                    <button type="button" onclick="excluirTime('${time.id}')" class="btn btn-danger">🗑️ Excluir</button>
-                </form></div>`;
-            container.innerHTML = html;
-            
-            modals.forEach(m => { renderizarEdit(m); });
-            
-            document.getElementById('formEdit').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                let inscricaoAtualizada = {
-                    nomeTime: document.getElementById('editNome').value,
-                    curso: document.getElementById('editCurso').value,
-                    cpfResponsavel: document.getElementById('editCpf').value,
-                    whatsapp: document.getElementById('editWhatsapp').value,
-                    modalidades: {},
-                    dataCriacao: time.dataCriacao
-                };
-                modals.forEach(m => { inscricaoAtualizada.modalidades[m] = window[`e_${m}`]; });
-                
-                if(await atualizarInscricao(time.id, inscricaoAtualizada)) {
-                    alert('✅ Atualizado!');
-                    document.getElementById('editarTimeContainer').innerHTML = '';
-                    document.getElementById('cpfEditarBusca').value = '';
+
+        function carregarEdicao(
+            time
+        ) {
+
+            const container =
+                document.getElementById(
+                    'editarTimeContainer'
+                );
+
+
+            if (
+                !container
+            ) return;
+
+
+            const modals = [
+
+                'futsalMasc',
+
+                'futsalFem',
+
+                'basqueteMasc',
+
+                'basqueteFem',
+
+                'volei',
+
+                'handebol',
+
+                'bolaQueimada',
+
+                'xadrez',
+
+                'natacaoMasc',
+
+                'natacaoFem'
+
+            ];
+
+
+            let html =
+                `
+                <div
+                    style="
+                        background:#f0f4ff;
+                        padding:20px;
+                        border-radius:15px;
+                    "
+                >
+
+                    <h3>
+                        ✏️ Editando:
+                        ${escapeHTML(
+                            time.nomeTime
+                        )}
+                    </h3>
+
+                    <form id="formEdit">
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Nome:
+                            </label>
+
+                            <input
+                                type="text"
+                                id="editNome"
+                                value="${escapeHTML(
+                                    time.nomeTime
+                                )}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Curso:
+                            </label>
+
+                            <input
+                                type="text"
+                                id="editCurso"
+                                value="${escapeHTML(
+                                    time.curso
+                                )}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                CPF:
+                            </label>
+
+                            <input
+                                type="text"
+                                id="editCpf"
+                                value="${escapeHTML(
+                                    time.cpfResponsavel
+                                )}"
+                                readonly
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                WhatsApp:
+                            </label>
+
+                            <div class="whatsapp-wrapper">
+
+                                <span>
+                                    📱
+                                </span>
+
+                                <input
+                                    type="text"
+                                    id="editWhatsapp"
+                                    value="${escapeHTML(
+                                        time.whatsapp ||
+                                        ''
+                                    )}"
+                                    maxlength="12"
+                                >
+
+                            </div>
+
+                        </div>
+                `;
+
+
+            modals.forEach(
+                m => {
+
+                    const atletas =
+                        time.modalidades?.[m]
+                        ||
+                        [];
+
+
+                    html +=
+                        `
+                        <div class="modalidade-card">
+
+                            <h4>
+                                ${nomesModalidades[m]}
+                            </h4>
+
+                            <div id="edit-${m}">
+                            </div>
+
+                            <button
+                                type="button"
+                                onclick="adicionarEdit('${m}')"
+                                class="btn btn-success"
+                            >
+                                +
+                            </button>
+
+                        </div>
+                        `;
+
+
+                    window[
+                        `e_${m}`
+                    ] =
+                        [...atletas];
+
                 }
-            });
+            );
+
+
+            html +=
+                `
+                    <button
+                        type="submit"
+                        class="btn"
+                    >
+                        💾 Salvar
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="excluirTime('${time.id}')"
+                        class="btn btn-danger"
+                    >
+                        🗑️ Excluir
+                    </button>
+
+                    </form>
+
+                </div>
+                `;
+
+
+            container.innerHTML =
+                html;
+
+
+            modals.forEach(
+                m => {
+
+                    renderizarEdit(
+                        m
+                    );
+
+                }
+            );
+
+
+            document
+                .getElementById(
+                    'formEdit'
+                )
+                .addEventListener(
+                    'submit',
+                    async e => {
+
+                        e.preventDefault();
+
+
+                        const inscricaoAtualizada =
+                        {
+
+                            nomeTime:
+                                document.getElementById(
+                                    'editNome'
+                                ).value,
+
+                            curso:
+                                document.getElementById(
+                                    'editCurso'
+                                ).value,
+
+                            cpfResponsavel:
+                                document.getElementById(
+                                    'editCpf'
+                                ).value,
+
+                            whatsapp:
+                                document.getElementById(
+                                    'editWhatsapp'
+                                ).value,
+
+                            modalidades:
+                                {},
+
+                            dataCriacao:
+                                time.dataCriacao
+
+                        };
+
+
+                        modals.forEach(
+                            m => {
+
+                                inscricaoAtualizada
+                                    .modalidades[m] =
+                                        window[
+                                            `e_${m}`
+                                        ];
+
+                            }
+                        );
+
+
+                        if (
+                            await atualizarInscricao(
+                                time.id,
+                                inscricaoAtualizada
+                            )
+                        ) {
+
+                            alert(
+                                '✅ Atualizado!'
+                            );
+
+
+                            document.getElementById(
+                                'editarTimeContainer'
+                            ).innerHTML =
+                                '';
+
+
+                            document.getElementById(
+                                'cpfEditarBusca'
+                            ).value =
+                                '';
+
+                        }
+
+                    }
+                );
+
         }
 
-        function adicionarEdit(m) { 
-            if(window[`e_${m}`].length >= limites[m]) { alert(`Máximo ${limites[m]}!`); return; }
-            let individuais = ['xadrez','natacaoMasc','natacaoFem'];
-            if(individuais.includes(m) && window[`e_${m}`].length > 0) { alert('Individual! Apenas 1.'); return; }
-            window[`e_${m}`].push(''); renderizarEdit(m);
-        }
-        function removerEdit(m,i) { window[`e_${m}`].splice(i,1); renderizarEdit(m); }
-        function atualizarEdit(m,i,v) { window[`e_${m}`][i] = v; }
-        function renderizarEdit(m) {
-            const container = document.getElementById(`edit-${m}`);
-            if(!container) return;
-            container.innerHTML = '';
-            window[`e_${m}`].forEach((a,i) => {
-                const div = document.createElement('div');
-                div.className = 'atleta-item';
-                div.innerHTML = `<input type="text" value="${a}" onchange="atualizarEdit('${m}',${i},this.value)">
-                                <button onclick="removerEdit('${m}',${i})" class="btn btn-danger" style="padding:5px 10px;">X</button>`;
-                container.appendChild(div);
-            });
-        }
 
-        async function excluirTime(id) {
-            if(await excluirInscricaoFirebase(id)) {
-                alert('✅ Excluído!');
-                document.getElementById('editarTimeContainer').innerHTML = '';
-                document.getElementById('cpfEditarBusca').value = '';
+        function adicionarEdit(m) {
+
+            if (
+                window[`e_${m}`]
+                    .length
+                >=
+                limites[m]
+            ) {
+
+                alert(
+                    `Máximo ${limites[m]}!`
+                );
+
+                return;
+
             }
+
+
+            const individuais = [
+
+                'xadrez',
+
+                'natacaoMasc',
+
+                'natacaoFem'
+
+            ];
+
+
+            if (
+                individuais.includes(m)
+                &&
+                window[`e_${m}`]
+                    .length > 0
+            ) {
+
+                alert(
+                    'Individual! Apenas 1.'
+                );
+
+                return;
+
+            }
+
+
+            window[`e_${m}`]
+                .push('');
+
+
+            renderizarEdit(
+                m
+            );
+
         }
+
+
+        function removerEdit(
+            m,
+            i
+        ) {
+
+            window[`e_${m}`]
+                .splice(
+                    i,
+                    1
+                );
+
+
+            renderizarEdit(
+                m
+            );
+
+        }
+
+
+        function atualizarEdit(
+            m,
+            i,
+            v
+        ) {
+
+            window[
+                `e_${m}`
+            ][i] =
+                v;
+
+        }
+
+
+        function renderizarEdit(
+            m
+        ) {
+
+            const container =
+                document.getElementById(
+                    `edit-${m}`
+                );
+
+
+            if (
+                !container
+            ) return;
+
+
+            container.innerHTML =
+                '';
+
+
+            window[
+                `e_${m}`
+            ].forEach(
+                (a, i) => {
+
+                    const div =
+                        document.createElement(
+                            'div'
+                        );
+
+
+                    div.className =
+                        'atleta-item';
+
+
+                    div.innerHTML =
+                        `
+                        <input
+                            type="text"
+                            value="${escapeHTML(a)}"
+                            onchange="atualizarEdit('${m}',${i},this.value)"
+                        >
+
+                        <button
+                            type="button"
+                            onclick="removerEdit('${m}',${i})"
+                            class="btn btn-danger"
+                            style="padding:5px 10px;"
+                        >
+                            X
+                        </button>
+                        `;
+
+
+                    container.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+
+
+        async function excluirTime(
+            id
+        ) {
+
+            if (
+                await excluirInscricaoFirebase(
+                    id
+                )
+            ) {
+
+                alert(
+                    '✅ Excluído!'
+                );
+
+
+                document.getElementById(
+                    'editarTimeContainer'
+                ).innerHTML =
+                    '';
+
+
+                document.getElementById(
+                    'cpfEditarBusca'
+                ).value =
+                    '';
+
+            }
+
+        }
+
 
         // ============================================
         // NAVEGAÇÃO
         // ============================================
 
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            
-            const targetTab = document.getElementById(`tab-${tabName}`);
-            if (targetTab) targetTab.classList.add('active');
-            
-            document.querySelectorAll('.tab').forEach(btn => {
-                if (btn.textContent.toLowerCase().includes(tabName.toLowerCase()) || 
-                    (tabName === 'inscricao' && btn.textContent.includes('Nova'))) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            if (tabName === 'consultar') {
-                carregarTabelaTimes();
-                carregarEstatisticas();
-            } else if (tabName === 'tabelaJogos') {
-                carregarSelectModalidades();
-                carregarTabelaJogos();
+        function showTab(
+            tabName
+        ) {
+
+            document
+                .querySelectorAll(
+                    '.tab-content'
+                )
+                .forEach(
+                    t =>
+                        t.classList.remove(
+                            'active'
+                        )
+                );
+
+
+            document
+                .querySelectorAll(
+                    '.tab'
+                )
+                .forEach(
+                    t =>
+                        t.classList.remove(
+                            'active'
+                        )
+                );
+
+
+            const targetTab =
+                document.getElementById(
+                    `tab-${tabName}`
+                );
+
+
+            if (
+                targetTab
+            ) {
+
+                targetTab
+                    .classList.add(
+                        'active'
+                    );
+
             }
+
+
+            document
+                .querySelectorAll(
+                    '.tab'
+                )
+                .forEach(
+                    btn => {
+
+                        if (
+                            btn.textContent
+                                .toLowerCase()
+                                .includes(
+                                    tabName
+                                        .toLowerCase()
+                                )
+                            ||
+                            (
+                                tabName ===
+                                    'inscricao'
+                                &&
+                                btn.textContent
+                                    .includes(
+                                        'Nova'
+                                    )
+                            )
+                        ) {
+
+                            btn.classList.add(
+                                'active'
+                            );
+
+                        }
+
+                    }
+                );
+
+
+            if (
+                tabName ===
+                'consultar'
+            ) {
+
+                carregarTabelaTimes();
+
+                carregarEstatisticas();
+
+            }
+
+            else if (
+                tabName ===
+                'tabelaJogos'
+            ) {
+
+                carregarSelectModalidades();
+
+                carregarTabelaJogos();
+
+            }
+
         }
+
 
         // ============================================
         // ADMIN
         // ============================================
 
         function abrirLoginAdmin() {
-            const existing = document.getElementById('loginOverlay');
-            if (existing) existing.remove();
-            
-            let div = document.createElement('div');
-            div.className = 'login-overlay';
-            div.id = 'loginOverlay';
-            div.innerHTML = `
-                <div class="login-box">
-                    <h2>🔐 Admin</h2>
-                    <input type="password" id="senhaAdmin" placeholder="Senha">
-                    <button onclick="verificarAdmin()" class="btn" style="width:100%;margin-bottom:10px;">Entrar</button>
-                    <button onclick="fecharLoginAdmin()" class="btn btn-danger" style="width:100%;">Cancelar</button>
-                </div>
-            `;
-            document.body.appendChild(div);
-            setTimeout(() => document.getElementById('senhaAdmin')?.focus(), 100);
-        }
-        
-        function fecharLoginAdmin() { document.getElementById('loginOverlay')?.remove(); }
-        
-        function verificarAdmin() {
-            const senha = document.getElementById('senhaAdmin')?.value;
-            if (senha === 'UNOPAR2026') {
-                isAdmin = true;
-                fecharLoginAdmin();
-                carregarAdminPanel();
-                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.getElementById('tab-admin').classList.add('active');
-                document.querySelectorAll('.tab').forEach(t => {
-                    if (t.textContent.includes('Admin')) t.classList.add('active');
-                });
-                alert('✅ Login OK!');
-            } else {
-                alert('❌ Senha incorreta!');
-                document.getElementById('senhaAdmin').value = '';
-                document.getElementById('senhaAdmin').focus();
+
+            showLoading(
+                false
+            );
+
+
+            // Se já está autenticado,
+            // abre diretamente.
+
+            if (
+                authRef &&
+                usuarioEhAdmin(
+                    authRef.currentUser
+                )
+            ) {
+
+                adminUser =
+                    authRef.currentUser;
+
+
+                isAdmin =
+                    true;
+
+
+                abrirPainelAdmin();
+
+
+                return;
+
             }
+
+
+            const existing =
+                document.getElementById(
+                    'loginOverlay'
+                );
+
+
+            if (
+                existing
+            ) {
+
+                existing.remove();
+
+            }
+
+
+            const div =
+                document.createElement(
+                    'div'
+                );
+
+
+            div.className =
+                'login-overlay';
+
+
+            div.id =
+                'loginOverlay';
+
+
+            div.innerHTML =
+                `
+                <div class="login-box">
+
+                    <h2>
+                        🔐 Admin
+                    </h2>
+
+                    <p
+                        style="
+                            margin:10px 0 15px;
+                            color:#666;
+                            font-size:14px;
+                        "
+                    >
+                        Acesso seguro pelo Firebase Authentication
+                    </p>
+
+
+                    <input
+                        type="email"
+                        id="emailAdmin"
+                        value="${escapeHTML(
+                            ADMIN_EMAIL
+                        )}"
+                        placeholder="E-mail"
+                        autocomplete="username"
+                        readonly
+                    >
+
+
+                    <input
+                        type="password"
+                        id="senhaAdmin"
+                        placeholder="Senha"
+                        autocomplete="current-password"
+                    >
+
+
+                    <button
+                        type="button"
+                        onclick="verificarAdmin()"
+                        class="btn"
+                        style="
+                            width:100%;
+                            margin-bottom:10px;
+                        "
+                    >
+                        Entrar
+                    </button>
+
+
+                    <button
+                        type="button"
+                        onclick="fecharLoginAdmin()"
+                        class="btn btn-danger"
+                        style="width:100%;"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <p
+                        id="erroLoginAdmin"
+                        style="
+                            color:#c53030;
+                            margin-top:12px;
+                            font-size:13px;
+                        "
+                    ></p>
+
+                </div>
+                `;
+
+
+            document.body
+                .appendChild(
+                    div
+                );
+
+
+            const senha =
+                document.getElementById(
+                    'senhaAdmin'
+                );
+
+
+            senha?.addEventListener(
+                'keydown',
+                e => {
+
+                    if (
+                        e.key ===
+                        'Enter'
+                    ) {
+
+                        verificarAdmin();
+
+                    }
+
+                }
+            );
+
+
+            setTimeout(
+                () =>
+                    senha?.focus(),
+                100
+            );
+
         }
+
+
+        function fecharLoginAdmin() {
+
+            document
+                .getElementById(
+                    'loginOverlay'
+                )
+                ?.remove();
+
+        }
+
+
+        async function verificarAdmin() {
+
+            const email =
+                document.getElementById(
+                    'emailAdmin'
+                )
+                ?.value
+                .trim()
+                .toLowerCase();
+
+
+            const senha =
+                document.getElementById(
+                    'senhaAdmin'
+                )
+                ?.value
+                ||
+                '';
+
+
+            const erroEl =
+                document.getElementById(
+                    'erroLoginAdmin'
+                );
+
+
+            if (
+                !authRef
+            ) {
+
+                if (
+                    erroEl
+                ) {
+
+                    erroEl.textContent =
+                        'Firebase Authentication não foi inicializado.';
+
+                }
+
+
+                return;
+
+            }
+
+
+            if (
+                !email ||
+                !senha
+            ) {
+
+                if (
+                    erroEl
+                ) {
+
+                    erroEl.textContent =
+                        'Informe a senha.';
+
+                }
+
+
+                return;
+
+            }
+
+
+            if (
+                email !==
+                ADMIN_EMAIL.toLowerCase()
+            ) {
+
+                if (
+                    erroEl
+                ) {
+
+                    erroEl.textContent =
+                        'Este e-mail não está autorizado.';
+
+                }
+
+
+                return;
+
+            }
+
+
+            try {
+
+                if (
+                    erroEl
+                ) {
+
+                    erroEl.textContent =
+                        '';
+
+                }
+
+
+                showLoading(
+                    true,
+                    'Autenticando administrador...'
+                );
+
+
+                const credencial =
+                    await authRef
+                        .signInWithEmailAndPassword(
+                            email,
+                            senha
+                        );
+
+
+                const user =
+                    credencial.user;
+
+
+                if (
+                    !usuarioEhAdmin(
+                        user
+                    )
+                ) {
+
+                    await authRef
+                        .signOut();
+
+
+                    throw new Error(
+                        'Conta sem permissão administrativa.'
+                    );
+
+                }
+
+
+                adminUser =
+                    user;
+
+
+                isAdmin =
+                    true;
+
+
+                fecharLoginAdmin();
+
+
+                abrirPainelAdmin();
+
+
+            } catch (error) {
+
+                console.error(
+                    '❌ Falha no login:',
+                    error
+                );
+
+
+                const mensagens =
+                {
+
+                    'auth/invalid-credential':
+                        'E-mail ou senha inválidos.',
+
+                    'auth/invalid-login-credentials':
+                        'E-mail ou senha inválidos.',
+
+                    'auth/user-not-found':
+                        'Usuário não encontrado no Firebase Authentication.',
+
+                    'auth/wrong-password':
+                        'Senha incorreta.',
+
+                    'auth/too-many-requests':
+                        'Muitas tentativas. Aguarde e tente novamente.',
+
+                    'auth/network-request-failed':
+                        'Falha de rede ao autenticar.',
+
+                    'auth/operation-not-allowed':
+                        'Ative E-mail/Senha no Firebase Authentication.'
+
+                };
+
+
+                if (
+                    erroEl
+                ) {
+
+                    erroEl.textContent =
+                        mensagens[
+                            error.code
+                        ]
+                        ||
+                        error.message
+                        ||
+                        'Não foi possível entrar.';
+
+                }
+
+
+            } finally {
+
+                showLoading(
+                    false
+                );
+
+            }
+
+        }
+
+
+        function abrirPainelAdmin() {
+
+            document
+                .querySelectorAll(
+                    '.tab-content'
+                )
+                .forEach(
+                    t =>
+                        t.classList.remove(
+                            'active'
+                        )
+                );
+
+
+            document
+                .querySelectorAll(
+                    '.tab'
+                )
+                .forEach(
+                    t =>
+                        t.classList.remove(
+                            'active'
+                        )
+                );
+
+
+            const adminTab =
+                document.getElementById(
+                    'tab-admin'
+                );
+
+
+            if (
+                !adminTab
+            ) {
+
+                alert(
+                    '❌ Painel Admin não encontrado.'
+                );
+
+
+                return;
+
+            }
+
+
+            // PRIMEIRO torna o painel visível.
+
+            adminTab.classList.add(
+                'active'
+            );
+
+
+            document
+                .querySelectorAll(
+                    '.tab'
+                )
+                .forEach(
+                    t => {
+
+                        if (
+                            t.textContent.includes(
+                                'Admin'
+                            )
+                        ) {
+
+                            t.classList.add(
+                                'active'
+                            );
+
+                        }
+
+                    }
+                );
+
+
+            // DEPOIS carrega seu conteúdo.
+
+            try {
+
+                carregarAdminPanel();
+
+
+            } catch (error) {
+
+                console.error(
+                    'Erro ao montar painel Admin:',
+                    error
+                );
+
+
+                adminTab.innerHTML =
+                    `
+                    <div style="padding:30px;">
+
+                        <h2 style="color:#667eea;">
+                            👑 Painel Admin
+                        </h2>
+
+                        <p
+                            style="
+                                color:#c53030;
+                                margin-top:15px;
+                            "
+                        >
+                            Erro ao carregar o painel.
+                        </p>
+
+                        <p style="margin-top:8px;">
+                            ${escapeHTML(
+                                error.message ||
+                                String(error)
+                            )}
+                        </p>
+
+                    </div>
+                    `;
+
+            }
+
+        }
+
+
+        async function logoutAdmin() {
+
+            try {
+
+                if (
+                    authRef
+                ) {
+
+                    await authRef
+                        .signOut();
+
+                }
+
+
+            } finally {
+
+                adminUser =
+                    null;
+
+
+                isAdmin =
+                    false;
+
+
+                showTab(
+                    'inscricao'
+                );
+
+            }
+
+        }
+
 
         function carregarAdminPanel() {
-            const adminDiv = document.getElementById('tab-admin');
-            if (!adminDiv) return;
-            
-            adminDiv.innerHTML = `
-                <h2 style="color:#667eea;">👑 Painel Admin</h2>
-                <div style="background:#e8f5e9;padding:10px;border-radius:10px;margin-bottom:20px;">
-                    <p style="color:#2e7d32;">🔒 Visualizando dados privados</p>
+
+            const adminDiv =
+                document.getElementById(
+                    'tab-admin'
+                );
+
+
+            if (
+                !adminDiv
+            ) return;
+
+
+            if (
+                !isAdmin ||
+                !usuarioEhAdmin(
+                    authRef?.currentUser
+                )
+            ) {
+
+                adminDiv.innerHTML =
+                    `
+                    <p
+                        style="
+                            padding:30px;
+                            color:#c53030;
+                        "
+                    >
+                        Sessão administrativa inválida.
+                        Faça login novamente.
+                    </p>
+                    `;
+
+
+                return;
+
+            }
+
+
+            adminDiv.innerHTML =
+                `
+                <div
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        gap:15px;
+                        flex-wrap:wrap;
+                        margin-bottom:15px;
+                    "
+                >
+
+                    <div>
+
+                        <h2 style="color:#667eea;">
+                            👑 Painel Admin
+                        </h2>
+
+                        <p
+                            style="
+                                font-size:13px;
+                                color:#666;
+                                margin-top:5px;
+                            "
+                        >
+                            ${escapeHTML(
+                                adminUser?.email ||
+                                ''
+                            )}
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        onclick="logoutAdmin()"
+                        class="btn btn-danger"
+                    >
+                        🚪 Sair
+                    </button>
+
                 </div>
-                <div class="admin-panel"><h3>📋 Formatos</h3><div id="formatosContainer"></div><button onclick="salvarFormatosAdmin()" class="btn">💾 Salvar</button></div>
-                <div class="admin-panel"><h3>🎯 Resultados</h3><select id="adminModalidade" onchange="carregarJogosAdmin()"><option value="">Selecione</option></select><div id="adminJogosContainer"></div></div>
-                <div class="admin-panel"><h3>📊 Relatórios</h3><button onclick="gerarRelatorioTimes()" class="btn btn-info">📄 Gerar</button><button onclick="imprimirRelatorio()" class="btn btn-warning">🖨️ Imprimir</button></div>
-                <h3 style="color:#667eea;margin:20px 0;">📋 Times</h3>
-                <div id="adminTimesList"></div>
-            `;
-            
+
+
+                <div
+                    style="
+                        background:#e8f5e9;
+                        padding:10px;
+                        border-radius:10px;
+                        margin-bottom:20px;
+                    "
+                >
+
+                    <p style="color:#2e7d32;">
+                        🔒 Sessão autenticada pelo Firebase
+                    </p>
+
+                </div>
+
+
+                <div class="admin-panel">
+
+                    <h3>
+                        📋 Formatos
+                    </h3>
+
+                    <div id="formatosContainer">
+                    </div>
+
+                    <button
+                        type="button"
+                        onclick="salvarFormatosAdmin()"
+                        class="btn"
+                    >
+                        💾 Salvar
+                    </button>
+
+                </div>
+
+
+                <div class="admin-panel">
+
+                    <h3>
+                        🎯 Resultados
+                    </h3>
+
+                    <select
+                        id="adminModalidade"
+                        onchange="carregarJogosAdmin()"
+                    >
+
+                        <option value="">
+                            Selecione
+                        </option>
+
+                    </select>
+
+                    <div id="adminJogosContainer">
+                    </div>
+
+                </div>
+
+
+                <div class="admin-panel">
+
+                    <h3>
+                        📊 Relatórios
+                    </h3>
+
+                    <button
+                        type="button"
+                        onclick="gerarRelatorioTimes()"
+                        class="btn btn-info"
+                    >
+                        📄 Gerar
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="imprimirRelatorio()"
+                        class="btn btn-warning"
+                    >
+                        🖨️ Imprimir
+                    </button>
+
+                </div>
+
+
+                <h3
+                    style="
+                        color:#667eea;
+                        margin:20px 0;
+                    "
+                >
+                    📋 Times
+                </h3>
+
+
+                <div id="adminTimesList">
+                </div>
+                `;
+
+
             carregarFormatosAdmin();
+
             carregarSelectAdmin();
+
             carregarAdminTimes();
+
         }
+
 
         function carregarFormatosAdmin() {
-            let container = document.getElementById('formatosContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            for(let [m, nome] of Object.entries(nomesModalidades)) {
-                container.innerHTML += `<div class="formato-card">
-                    <strong>${nome}</strong>
-                    <select id="formato_${m}">
-                        <option ${formatosDisputa[m]==='Rodízio'?'selected':''}>Rodízio</option>
-                        <option ${formatosDisputa[m]==='Eliminatória'?'selected':''}>Eliminatória Simples</option>
-                        <option ${formatosDisputa[m]==='Eliminatória Dupla'?'selected':''}>Eliminatória Dupla</option>
-                        <option ${formatosDisputa[m]==='Misto'?'selected':''}>Sistema Misto</option>
-                        <option ${formatosDisputa[m]==='Suíço'?'selected':''}>Suíço</option>
-                    </select>
-                </div>`;
+
+            const container =
+                document.getElementById(
+                    'formatosContainer'
+                );
+
+
+            if (
+                !container
+            ) return;
+
+
+            container.innerHTML =
+                '';
+
+
+            for (
+                const [m, nome]
+                of
+                Object.entries(
+                    nomesModalidades
+                )
+            ) {
+
+                container.innerHTML +=
+                    `
+                    <div class="formato-card">
+
+                        <strong>
+                            ${nome}
+                        </strong>
+
+
+                        <select id="formato_${m}">
+
+                            <option
+                                value="Rodízio"
+                                ${
+                                    formatosDisputa[m]
+                                    ===
+                                    'Rodízio'
+                                        ? 'selected'
+                                        : ''
+                                }
+                            >
+                                Rodízio
+                            </option>
+
+
+                            <option
+                                value="Eliminatória"
+                                ${
+                                    formatosDisputa[m]
+                                    ===
+                                    'Eliminatória'
+                                        ? 'selected'
+                                        : ''
+                                }
+                            >
+                                Eliminatória Simples
+                            </option>
+
+
+                            <option
+                                value="Eliminatória Dupla"
+                                ${
+                                    formatosDisputa[m]
+                                    ===
+                                    'Eliminatória Dupla'
+                                        ? 'selected'
+                                        : ''
+                                }
+                            >
+                                Eliminatória Dupla
+                            </option>
+
+
+                            <option
+                                value="Misto"
+                                ${
+                                    formatosDisputa[m]
+                                    ===
+                                    'Misto'
+                                        ? 'selected'
+                                        : ''
+                                }
+                            >
+                                Sistema Misto
+                            </option>
+
+
+                            <option
+                                value="Suíço"
+                                ${
+                                    formatosDisputa[m]
+                                    ===
+                                    'Suíço'
+                                        ? 'selected'
+                                        : ''
+                                }
+                            >
+                                Suíço
+                            </option>
+
+                        </select>
+
+                    </div>
+                    `;
+
             }
+
         }
 
-        function salvarFormatosAdmin() {
-            for(let m in nomesModalidades) {
-                const select = document.getElementById(`formato_${m}`);
-                if (select) formatosDisputa[m] = select.value;
+
+        async function salvarFormatosAdmin() {
+
+            if (
+                !isAdmin ||
+                !usuarioEhAdmin(
+                    authRef?.currentUser
+                )
+            ) {
+
+                alert(
+                    'Sessão Admin inválida.'
+                );
+
+                return;
+
             }
-            localStorage.setItem('formatos', JSON.stringify(formatosDisputa));
-            alert('✅ Formatos salvos!');
+
+
+            for (
+                const m
+                in
+                nomesModalidades
+            ) {
+
+                const select =
+                    document.getElementById(
+                        `formato_${m}`
+                    );
+
+
+                if (
+                    select
+                ) {
+
+                    formatosDisputa[m] =
+                        select.value;
+
+                }
+
+            }
+
+
+            localStorage.setItem(
+                'formatos',
+                JSON.stringify(
+                    formatosDisputa
+                )
+            );
+
+
+            try {
+
+                if (
+                    databaseRef
+                ) {
+
+                    await databaseRef
+                        .ref(
+                            'configuracoes/formatos'
+                        )
+                        .set(
+                            formatosDisputa
+                        );
+
+                }
+
+
+                alert(
+                    '✅ Formatos salvos!'
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    'Erro ao salvar formatos:',
+                    error
+                );
+
+
+                alert(
+                    '⚠️ Formatos salvos apenas neste navegador.'
+                );
+
+            }
+
         }
+
 
         function carregarSelectAdmin() {
-            let select = document.getElementById('adminModalidade');
-            if (!select) return;
-            select.innerHTML = '<option value="">Selecione</option>';
-            for(let [k,v] of Object.entries(nomesModalidades)) {
-                select.innerHTML += `<option value="${k}">${v}</option>`;
+
+            const select =
+                document.getElementById(
+                    'adminModalidade'
+                );
+
+
+            if (
+                !select
+            ) return;
+
+
+            select.innerHTML =
+                '<option value="">Selecione</option>';
+
+
+            for (
+                const [k, v]
+                of
+                Object.entries(
+                    nomesModalidades
+                )
+            ) {
+
+                select.innerHTML +=
+                    `<option value="${k}">${v}</option>`;
+
             }
+
         }
+
 
         function carregarJogosAdmin() {
-            let modalidade = document.getElementById('adminModalidade')?.value;
-            let container = document.getElementById('adminJogosContainer');
-            if (!modalidade || !container) { if(container) container.innerHTML = ''; return; }
-            
-            let times = [];
-            inscricoesCache.forEach(i => { if(i.modalidades[modalidade]?.length > 0) times.push(i.nomeTime); });
-            
-            if(times.length < 2) { container.innerHTML = '<p>Times insuficientes</p>'; return; }
-            
-            let html = '<div class="table-container"><table><thead><tr><th>#</th><th>Time A</th><th>vs</th><th>Time B</th><th>Resultado</th><th>Ação</th></tr></thead><tbody>';
-            let j=1;
-            for(let i=0; i<times.length; i++) {
-                for(let k=i+1; k<times.length; k++) {
-                    let id = `${modalidade}_${i}_${k}`;
-                    let val = resultadosJogos[id] || '';
-                    html += `<tr>
-                        <td>${j}</td><td>${times[i]}</td><td>🆚</td><td>${times[k]}</td>
-                        <td><input type="text" id="res_${id}" value="${val}" placeholder="Ex: 2x1" style="width:80px"></td>
-                        <td><button onclick="salvarResultadoAdmin('${id}')" class="btn btn-success" style="padding:5px 10px;">Salvar</button></td>
-                    </tr>`;
-                    j++;
+
+            const modalidade =
+                document.getElementById(
+                    'adminModalidade'
+                )
+                ?.value;
+
+
+            const container =
+                document.getElementById(
+                    'adminJogosContainer'
+                );
+
+
+            if (
+                !modalidade ||
+                !container
+            ) {
+
+                if (
+                    container
+                ) {
+
+                    container.innerHTML =
+                        '';
+
                 }
+
+
+                return;
+
             }
-            html += '</tbody></table></div>';
-            container.innerHTML = html;
+
+
+            const times =
+                [];
+
+
+            inscricoesCache.forEach(
+                i => {
+
+                    if (
+                        i.modalidades?.[
+                            modalidade
+                        ]?.length > 0
+                    ) {
+
+                        times.push(
+                            i.nomeTime
+                        );
+
+                    }
+
+                }
+            );
+
+
+            if (
+                times.length < 2
+            ) {
+
+                container.innerHTML =
+                    '<p>Times insuficientes</p>';
+
+
+                return;
+
+            }
+
+
+            let html =
+                `
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>
+                                    Time A
+                                </th>
+
+                                <th>
+                                    vs
+                                </th>
+
+                                <th>
+                                    Time B
+                                </th>
+
+                                <th>
+                                    Resultado
+                                </th>
+
+                                <th>
+                                    Ação
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+                `;
+
+
+            let j =
+                1;
+
+
+            for (
+                let i = 0;
+                i < times.length;
+                i++
+            ) {
+
+                for (
+                    let k = i + 1;
+                    k < times.length;
+                    k++
+                ) {
+
+                    const id =
+                        `${modalidade}_${i}_${k}`;
+
+
+                    const val =
+                        resultadosJogos[id]
+                        ||
+                        '';
+
+
+                    html +=
+                        `
+                        <tr>
+
+                            <td>
+                                ${j}
+                            </td>
+
+                            <td>
+                                ${escapeHTML(
+                                    times[i]
+                                )}
+                            </td>
+
+                            <td>
+                                🆚
+                            </td>
+
+                            <td>
+                                ${escapeHTML(
+                                    times[k]
+                                )}
+                            </td>
+
+                            <td>
+
+                                <input
+                                    type="text"
+                                    id="res_${id}"
+                                    value="${escapeHTML(
+                                        val
+                                    )}"
+                                    placeholder="Ex: 2x1"
+                                    style="width:80px"
+                                >
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    onclick="salvarResultadoAdmin('${id}')"
+                                    class="btn btn-success"
+                                    style="padding:5px 10px;"
+                                >
+                                    Salvar
+                                </button>
+
+                            </td>
+
+                        </tr>
+                        `;
+
+
+                    j++;
+
+                }
+
+            }
+
+
+            html +=
+                `
+                        </tbody>
+
+                    </table>
+
+                </div>
+                `;
+
+
+            container.innerHTML =
+                html;
+
         }
 
-        function salvarResultadoAdmin(id) {
-            let val = document.getElementById(`res_${id}`)?.value;
-            if(val) { 
-                resultadosJogos[id] = val; 
-                localStorage.setItem('resultados', JSON.stringify(resultadosJogos)); 
-                alert('✅ Resultado salvo!'); 
-                carregarTabelaJogos();
-            } else {
-                alert('Digite o resultado!');
+
+        async function salvarResultadoAdmin(
+            id
+        ) {
+
+            if (
+                !isAdmin ||
+                !usuarioEhAdmin(
+                    authRef?.currentUser
+                )
+            ) {
+
+                alert(
+                    'Sessão Admin inválida.'
+                );
+
+
+                return;
+
             }
+
+
+            const val =
+                document.getElementById(
+                    `res_${id}`
+                )
+                ?.value
+                ?.trim();
+
+
+            if (
+                !val
+            ) {
+
+                alert(
+                    'Digite o resultado!'
+                );
+
+
+                return;
+
+            }
+
+
+            resultadosJogos[id] =
+                val;
+
+
+            localStorage.setItem(
+                'resultados',
+                JSON.stringify(
+                    resultadosJogos
+                )
+            );
+
+
+            try {
+
+                if (
+                    databaseRef
+                ) {
+
+                    await databaseRef
+                        .ref(
+                            `resultados/${id}`
+                        )
+                        .set(
+                            val
+                        );
+
+                }
+
+
+                alert(
+                    '✅ Resultado salvo!'
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    'Erro ao salvar resultado:',
+                    error
+                );
+
+
+                alert(
+                    '⚠️ Resultado salvo apenas neste navegador.'
+                );
+
+            }
+
+
+            carregarTabelaJogos();
+
         }
+
 
         function carregarAdminTimes() {
-            let container = document.getElementById('adminTimesList');
-            if (!container) return;
-            container.innerHTML = '';
-            
-            if (inscricoesCache.length === 0) {
-                container.innerHTML = '<p style="text-align:center;padding:20px;">Nenhum time</p>';
+
+            const container =
+                document.getElementById(
+                    'adminTimesList'
+                );
+
+
+            if (
+                !container
+            ) return;
+
+
+            container.innerHTML =
+                '';
+
+
+            if (
+                inscricoesCache
+                    .length === 0
+            ) {
+
+                container.innerHTML =
+                    `
+                    <p
+                        style="
+                            text-align:center;
+                            padding:20px;
+                        "
+                    >
+                        Nenhum time
+                    </p>
+                    `;
+
+
                 return;
+
             }
-            
-            inscricoesCache.forEach(t => {
-                let whatsappDisplay = t.whatsapp ? `(${t.whatsapp.substring(0,2)}) ${t.whatsapp.substring(2,7)}-${t.whatsapp.substring(7)}` : 'Não informado';
-                
-                container.innerHTML += `<div class="modalidade-card" style="border-left:4px solid #667eea;">
-                    <h3>${t.nomeTime}</h3>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
-                        <p><strong>Curso:</strong> ${t.curso}</p>
-                        <p><strong>CPF:</strong> ${t.cpfResponsavel}</p>
-                        <p><strong>WhatsApp:</strong> ${whatsappDisplay}</p>
-                        <p><strong>Data:</strong> ${new Date(t.dataCriacao).toLocaleDateString('pt-BR')}</p>
-                    </div>
-                    <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:5px;">
-                        ${Object.entries(t.modalidades).filter(([m,at]) => at?.length > 0).map(([m,at]) => 
-                            `<span class="modalidades-badge">${nomesModalidades[m]} (${at.length})</span>`
-                        ).join('')}
-                    </div>
-                    <div style="display:flex;gap:10px;margin-top:10px;">
-                        <button onclick="editarAdminTime('${t.id}')" class="btn" style="padding:5px 15px;">✏️</button>
-                        <button onclick="excluirAdminTime('${t.id}')" class="btn btn-danger" style="padding:5px 15px;">🗑️</button>
-                    </div>
-                </div>`;
-            });
+
+
+            inscricoesCache.forEach(
+                t => {
+
+                    const whatsappDisplay =
+                        t.whatsapp
+                            ?
+                            `(${t.whatsapp.substring(0,2)}) ${t.whatsapp.substring(2,7)}-${t.whatsapp.substring(7)}`
+                            :
+                            'Não informado';
+
+
+                    container.innerHTML +=
+                        `
+                        <div
+                            class="modalidade-card"
+                            style="border-left:4px solid #667eea;"
+                        >
+
+                            <h3>
+                                ${escapeHTML(
+                                    t.nomeTime
+                                )}
+                            </h3>
+
+
+                            <div
+                                style="
+                                    display:grid;
+                                    grid-template-columns:1fr 1fr;
+                                    gap:5px;
+                                "
+                            >
+
+                                <p>
+                                    <strong>
+                                        Curso:
+                                    </strong>
+
+                                    ${escapeHTML(
+                                        t.curso
+                                    )}
+                                </p>
+
+
+                                <p>
+                                    <strong>
+                                        CPF:
+                                    </strong>
+
+                                    ${escapeHTML(
+                                        t.cpfResponsavel
+                                    )}
+                                </p>
+
+
+                                <p>
+                                    <strong>
+                                        WhatsApp:
+                                    </strong>
+
+                                    ${escapeHTML(
+                                        whatsappDisplay
+                                    )}
+                                </p>
+
+
+                                <p>
+                                    <strong>
+                                        Data:
+                                    </strong>
+
+                                    ${dataBR(
+                                        t.dataCriacao
+                                    )}
+                                </p>
+
+                            </div>
+
+
+                            <div
+                                style="
+                                    margin-top:10px;
+                                    display:flex;
+                                    flex-wrap:wrap;
+                                    gap:5px;
+                                "
+                            >
+
+                                ${
+                                    Object.entries(
+                                        t.modalidades ||
+                                        {}
+                                    )
+                                    .filter(
+                                        ([m, at]) =>
+                                            at?.length > 0
+                                    )
+                                    .map(
+                                        ([m, at]) =>
+                                            `
+                                            <span
+                                                class="modalidades-badge"
+                                            >
+                                                ${escapeHTML(
+                                                    nomesModalidades[m]
+                                                    ||
+                                                    m
+                                                )}
+                                                (${at.length})
+                                            </span>
+                                            `
+                                    )
+                                    .join('')
+                                }
+
+                            </div>
+
+
+                            <div
+                                style="
+                                    display:flex;
+                                    gap:10px;
+                                    margin-top:10px;
+                                "
+                            >
+
+                                <button
+                                    onclick="editarAdminTime('${t.id}')"
+                                    class="btn"
+                                    style="padding:5px 15px;"
+                                >
+                                    ✏️
+                                </button>
+
+
+                                <button
+                                    onclick="excluirAdminTime('${t.id}')"
+                                    class="btn btn-danger"
+                                    style="padding:5px 15px;"
+                                >
+                                    🗑️
+                                </button>
+
+                            </div>
+
+                        </div>
+                        `;
+
+                }
+            );
+
         }
 
-        function editarAdminTime(id) {
-            let time = inscricoesCache.find(i => i.id === id);
-            if(!time) return;
-            
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById('tab-editarTime').classList.add('active');
-            document.querySelectorAll('.tab').forEach(t => {
-                if (t.textContent.includes('Editar')) t.classList.add('active');
-            });
-            
-            document.getElementById('cpfEditarBusca').value = time.cpfResponsavel;
+
+        function editarAdminTime(
+            id
+        ) {
+
+            if (
+                !isAdmin ||
+                !usuarioEhAdmin(
+                    authRef?.currentUser
+                )
+            ) {
+
+                alert(
+                    'Sessão Admin inválida.'
+                );
+
+
+                return;
+
+            }
+
+
+            const time =
+                inscricoesCache.find(
+                    i =>
+                        i.id === id
+                );
+
+
+            if (
+                !time
+            ) return;
+
+
+            document
+                .querySelectorAll(
+                    '.tab'
+                )
+                .forEach(
+                    t =>
+                        t.classList.remove(
+                            'active'
+                        )
+                );
+
+
+            document
+                .querySelectorAll(
+                    '.tab-content'
+                )
+                .forEach(
+                    c =>
+                        c.classList.remove(
+                            'active'
+                        )
+                );
+
+
+            document
+                .getElementById(
+                    'tab-editarTime'
+                )
+                .classList.add(
+                    'active'
+                );
+
+
+            document
+                .querySelectorAll(
+                    '.tab'
+                )
+                .forEach(
+                    t => {
+
+                        if (
+                            t.textContent.includes(
+                                'Editar'
+                            )
+                        ) {
+
+                            t.classList.add(
+                                'active'
+                            );
+
+                        }
+
+                    }
+                );
+
+
+            document
+                .getElementById(
+                    'cpfEditarBusca'
+                )
+                .value =
+                    time.cpfResponsavel;
+
+
             buscarTimePorCPF();
+
         }
 
-        async function excluirAdminTime(id) {
-            if(await excluirInscricaoFirebase(id)) {
-                carregarAdminTimes();
-                carregarTabelaTimes();
-                carregarEstatisticas();
-                alert('✅ Excluído!');
+
+        async function excluirAdminTime(
+            id
+        ) {
+
+            if (
+                !isAdmin ||
+                !usuarioEhAdmin(
+                    authRef?.currentUser
+                )
+            ) {
+
+                alert(
+                    'Sessão Admin inválida.'
+                );
+
+
+                return;
+
             }
+
+
+            if (
+                await excluirInscricaoFirebase(
+                    id
+                )
+            ) {
+
+                carregarAdminTimes();
+
+                carregarTabelaTimes();
+
+                carregarEstatisticas();
+
+
+                alert(
+                    '✅ Excluído!'
+                );
+
+            }
+
         }
+
 
         function gerarRelatorioTimes() {
-            let relatorio = "RELATÓRIO DE TIMES\n" + "=".repeat(40) + "\n\n";
-            relatorio += `Gerado: ${new Date().toLocaleString('pt-BR')}\n\n`;
-            inscricoesCache.forEach(t => {
-                relatorio += `Time: ${t.nomeTime}\nCurso: ${t.curso}\nCPF: ${t.cpfResponsavel}\nWhatsApp: ${t.whatsapp || 'Não informado'}\n`;
-                for(let [m, at] of Object.entries(t.modalidades)) {
-                    if(at?.length > 0) {
-                        relatorio += `${nomesModalidades[m]}: ${at.join(', ')}\n`;
+
+            let relatorio =
+                "RELATÓRIO DE TIMES\n"
+                +
+                "=".repeat(40)
+                +
+                "\n\n";
+
+
+            relatorio +=
+                `Gerado: ${new Date().toLocaleString('pt-BR')}\n\n`;
+
+
+            inscricoesCache.forEach(
+                t => {
+
+                    relatorio +=
+                        `Time: ${t.nomeTime}\n`;
+
+                    relatorio +=
+                        `Curso: ${t.curso}\n`;
+
+                    relatorio +=
+                        `CPF: ${t.cpfResponsavel}\n`;
+
+                    relatorio +=
+                        `WhatsApp: ${
+                            t.whatsapp ||
+                            'Não informado'
+                        }\n`;
+
+
+                    for (
+                        const [m, at]
+                        of
+                        Object.entries(
+                            t.modalidades ||
+                            {}
+                        )
+                    ) {
+
+                        if (
+                            at?.length > 0
+                        ) {
+
+                            relatorio +=
+                                `${
+                                    nomesModalidades[m]
+                                    ||
+                                    m
+                                }: ${
+                                    at.join(', ')
+                                }\n`;
+
+                        }
+
                     }
+
+
+                    relatorio +=
+                        "-".repeat(40)
+                        +
+                        "\n\n";
+
                 }
-                relatorio += "-".repeat(40) + "\n\n";
-            });
-            
-            const blob = new Blob([relatorio], {type: 'text/plain;charset=utf-8'});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `relatorio_${new Date().toISOString().slice(0,19)}.txt`;
+            );
+
+
+            const blob =
+                new Blob(
+                    [relatorio],
+                    {
+                        type:
+                            'text/plain;charset=utf-8'
+                    }
+                );
+
+
+            const link =
+                document.createElement(
+                    'a'
+                );
+
+
+            link.href =
+                URL.createObjectURL(
+                    blob
+                );
+
+
+            link.download =
+                `relatorio_${new Date()
+                    .toISOString()
+                    .slice(0,19)}.txt`;
+
+
             link.click();
-            URL.revokeObjectURL(link.href);
-            alert('✅ Relatório gerado!');
+
+
+            URL.revokeObjectURL(
+                link.href
+            );
+
+
+            alert(
+                '✅ Relatório gerado!'
+            );
+
         }
+
 
         function imprimirRelatorio() {
-            let win = window.open('', '_blank');
-            win.document.write(`<html><head><title>Relatório</title><style>body{font-family:Arial;padding:20px}</style></head><body>
-                <h1>🏆 Jogos UNOPAR</h1><h2>Relatório de Times</h2><p>Gerado: ${new Date().toLocaleString('pt-BR')}</p><hr>`);
-            inscricoesCache.forEach(t => {
-                win.document.write(`<div style="border:1px solid #ccc;margin:20px 0;padding:15px;border-radius:10px;">
-                    <h3>${t.nomeTime}</h3><p>Curso: ${t.curso}</p><p>CPF: ${t.cpfResponsavel}</p><p>WhatsApp: ${t.whatsapp || 'Não informado'}</p>`);
-                for(let [m, at] of Object.entries(t.modalidades)) {
-                    if(at?.length > 0) {
-                        win.document.write(`<p><strong>${nomesModalidades[m]}:</strong> ${at.join(', ')}</p>`);
+
+            const win =
+                window.open(
+                    '',
+                    '_blank'
+                );
+
+
+            if (
+                !win
+            ) {
+
+                alert(
+                    'Permita pop-ups para imprimir o relatório.'
+                );
+
+
+                return;
+
+            }
+
+
+            win.document.write(
+                `
+                <html>
+
+                <head>
+
+                    <title>
+                        Relatório
+                    </title>
+
+                    <style>
+                        body {
+                            font-family:Arial;
+                            padding:20px;
+                        }
+                    </style>
+
+                </head>
+
+                <body>
+
+                    <h1>
+                        🏆 Jogos UNOPAR
+                    </h1>
+
+                    <h2>
+                        Relatório de Times
+                    </h2>
+
+                    <p>
+                        Gerado:
+                        ${new Date().toLocaleString('pt-BR')}
+                    </p>
+
+                    <hr>
+                `
+            );
+
+
+            inscricoesCache.forEach(
+                t => {
+
+                    win.document.write(
+                        `
+                        <div
+                            style="
+                                border:1px solid #ccc;
+                                margin:20px 0;
+                                padding:15px;
+                                border-radius:10px;
+                            "
+                        >
+
+                            <h3>
+                                ${escapeHTML(
+                                    t.nomeTime
+                                )}
+                            </h3>
+
+                            <p>
+                                Curso:
+                                ${escapeHTML(
+                                    t.curso
+                                )}
+                            </p>
+
+                            <p>
+                                CPF:
+                                ${escapeHTML(
+                                    t.cpfResponsavel
+                                )}
+                            </p>
+
+                            <p>
+                                WhatsApp:
+                                ${escapeHTML(
+                                    t.whatsapp ||
+                                    'Não informado'
+                                )}
+                            </p>
+                        `
+                    );
+
+
+                    for (
+                        const [m, at]
+                        of
+                        Object.entries(
+                            t.modalidades ||
+                            {}
+                        )
+                    ) {
+
+                        if (
+                            at?.length > 0
+                        ) {
+
+                            win.document.write(
+                                `
+                                <p>
+                                    <strong>
+                                        ${escapeHTML(
+                                            nomesModalidades[m]
+                                            ||
+                                            m
+                                        )}:
+                                    </strong>
+
+                                    ${
+                                        at.map(
+                                            escapeHTML
+                                        )
+                                        .join(', ')
+                                    }
+
+                                </p>
+                                `
+                            );
+
+                        }
+
                     }
+
+
+                    win.document.write(
+                        '</div>'
+                    );
+
                 }
-                win.document.write(`</div>`);
-            });
-            win.document.write('</body></html>');
+            );
+
+
+            win.document.write(
+                '</body></html>'
+            );
+
+
             win.document.close();
+
             win.print();
+
         }
 
+
         // ============================================
-        // FUNÇÃO PRINCIPAL - FORMULÁRIO DE INSCRIÇÃO
+        // FORMULÁRIO DE INSCRIÇÃO
         // ============================================
 
-        document.getElementById('formInscricao').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            let nome = document.getElementById('nomeTime').value.trim();
-            let curso = document.getElementById('curso').value.trim();
-            let cpf = document.getElementById('cpfResponsavel').value.trim();
-            let whatsapp = document.getElementById('whatsapp').value.trim();
-            
-            if(!nome || !curso || !cpf || !whatsapp) return alert('Preencha todos os campos!');
-            if(cpf.length!==11 || !/^\d+$/.test(cpf)) return alert('CPF inválido!');
-            if(whatsapp.length < 10 || !/^\d+$/.test(whatsapp)) return alert('WhatsApp inválido!');
-            
-            let tem = false; 
-            for(let m in modalidadesAtletas) if(modalidadesAtletas[m].length>0) tem=true;
-            if(!tem) return alert('Adicione pelo menos uma modalidade!');
-            
-            let inscricao = { 
-                nomeTime: nome, 
-                curso: curso, 
-                cpfResponsavel: cpf,
-                whatsapp: whatsapp,
-                modalidades: JSON.parse(JSON.stringify(modalidadesAtletas)), 
-                dataCriacao: new Date().toISOString() 
-            };
-            
-            if(await salvarInscricao(inscricao)) {
-                alert('✅ Inscrição salva!');
-                document.getElementById('formInscricao').reset();
-                modalidadesAtletas = { 
-                    futsalMasc:[], futsalFem:[], basqueteMasc:[], basqueteFem:[], 
-                    volei:[], handebol:[], bolaQueimada:[], 
-                    xadrez:[], natacaoMasc:[], natacaoFem:[]
-                };
-                for(let m in modalidadesAtletas) renderizarAtletas(m);
-            }
-        });
+        document
+            .getElementById(
+                'formInscricao'
+            )
+            .addEventListener(
+                'submit',
+                async e => {
+
+                    e.preventDefault();
+
+
+                    const nome =
+                        document.getElementById(
+                            'nomeTime'
+                        )
+                        .value
+                        .trim();
+
+
+                    const curso =
+                        document.getElementById(
+                            'curso'
+                        )
+                        .value
+                        .trim();
+
+
+                    const cpf =
+                        document.getElementById(
+                            'cpfResponsavel'
+                        )
+                        .value
+                        .trim();
+
+
+                    const whatsapp =
+                        document.getElementById(
+                            'whatsapp'
+                        )
+                        .value
+                        .trim();
+
+
+                    if (
+                        !nome ||
+                        !curso ||
+                        !cpf ||
+                        !whatsapp
+                    ) {
+
+                        alert(
+                            'Preencha todos os campos!'
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    if (
+                        cpf.length !== 11
+                        ||
+                        !/^\d+$/.test(
+                            cpf
+                        )
+                    ) {
+
+                        alert(
+                            'CPF inválido!'
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    if (
+                        whatsapp.length < 10
+                        ||
+                        !/^\d+$/.test(
+                            whatsapp
+                        )
+                    ) {
+
+                        alert(
+                            'WhatsApp inválido!'
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    let tem =
+                        false;
+
+
+                    for (
+                        const m
+                        in
+                        modalidadesAtletas
+                    ) {
+
+                        if (
+                            modalidadesAtletas[m]
+                                .length > 0
+                        ) {
+
+                            tem =
+                                true;
+
+                        }
+
+                    }
+
+
+                    if (
+                        !tem
+                    ) {
+
+                        alert(
+                            'Adicione pelo menos uma modalidade!'
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    const inscricao =
+                    {
+
+                        nomeTime:
+                            nome,
+
+                        curso:
+                            curso,
+
+                        cpfResponsavel:
+                            cpf,
+
+                        whatsapp:
+                            whatsapp,
+
+                        modalidades:
+                            JSON.parse(
+                                JSON.stringify(
+                                    modalidadesAtletas
+                                )
+                            ),
+
+                        dataCriacao:
+                            new Date()
+                                .toISOString()
+
+                    };
+
+
+                    if (
+                        await salvarInscricao(
+                            inscricao
+                        )
+                    ) {
+
+                        alert(
+                            '✅ Inscrição salva!'
+                        );
+
+
+                        document
+                            .getElementById(
+                                'formInscricao'
+                            )
+                            .reset();
+
+
+                        modalidadesAtletas =
+                        {
+
+                            futsalMasc: [],
+
+                            futsalFem: [],
+
+                            basqueteMasc: [],
+
+                            basqueteFem: [],
+
+                            volei: [],
+
+                            handebol: [],
+
+                            bolaQueimada: [],
+
+                            xadrez: [],
+
+                            natacaoMasc: [],
+
+                            natacaoFem: []
+
+                        };
+
+
+                        for (
+                            const m
+                            in
+                            modalidadesAtletas
+                        ) {
+
+                            renderizarAtletas(
+                                m
+                            );
+
+                        }
+
+                    }
+
+                }
+            );
+
 
         // ============================================
         // INICIALIZAÇÃO
         // ============================================
 
-        for(let m in modalidadesAtletas) renderizarAtletas(m);
-        
-        // Carregar dados salvos
-        let savedFormats = localStorage.getItem('formatos');
-        if(savedFormats) formatosDisputa = JSON.parse(savedFormats);
-        
-        let savedResults = localStorage.getItem('resultados');
-        if(savedResults) resultadosJogos = JSON.parse(savedResults);
-        
-        // Iniciar carregamento
-        carregarDados();
+        for (
+            const m
+            in
+            modalidadesAtletas
+        ) {
 
-        console.log('🚀 Sistema otimizado iniciado!');
+            renderizarAtletas(
+                m
+            );
+
+        }
+
+
+        const savedFormats =
+            lerJSONLocalStorage(
+                'formatos',
+                null
+            );
+
+
+        if (
+            savedFormats &&
+            typeof savedFormats
+            ===
+            'object'
+        ) {
+
+            formatosDisputa =
+            {
+
+                ...formatosDisputa,
+
+                ...savedFormats
+
+            };
+
+        }
+
+
+        const savedResults =
+            lerJSONLocalStorage(
+                'resultados',
+                null
+            );
+
+
+        if (
+            savedResults &&
+            typeof savedResults
+            ===
+            'object'
+        ) {
+
+            resultadosJogos =
+                savedResults;
+
+        }
+
+
+        // ============================================
+        // CONFIGURAÇÕES DO FIREBASE
+        // ============================================
+
+        async function carregarConfiguracoesFirebase() {
+
+            if (
+                !databaseRef
+            ) return;
+
+
+            try {
+
+                const [
+                    formatosSnap,
+                    resultadosSnap
+                ] =
+                    await Promise.all(
+                        [
+
+                            databaseRef
+                                .ref(
+                                    'configuracoes/formatos'
+                                )
+                                .once(
+                                    'value'
+                                ),
+
+                            databaseRef
+                                .ref(
+                                    'resultados'
+                                )
+                                .once(
+                                    'value'
+                                )
+
+                        ]
+                    );
+
+
+                if (
+                    formatosSnap.exists()
+                ) {
+
+                    formatosDisputa =
+                    {
+
+                        ...formatosDisputa,
+
+                        ...formatosSnap.val()
+
+                    };
+
+
+                    localStorage.setItem(
+                        'formatos',
+                        JSON.stringify(
+                            formatosDisputa
+                        )
+                    );
+
+                }
+
+
+                if (
+                    resultadosSnap.exists()
+                ) {
+
+                    resultadosJogos =
+                        resultadosSnap.val()
+                        ||
+                        {};
+
+
+                    localStorage.setItem(
+                        'resultados',
+                        JSON.stringify(
+                            resultadosJogos
+                        )
+                    );
+
+                }
+
+
+            } catch (error) {
+
+                console.warn(
+                    'Configurações/resultados do Firebase indisponíveis:',
+                    error
+                );
+
+            }
+
+        }
+
+
+        Promise.allSettled(
+            [
+
+                carregarDados(),
+
+                carregarConfiguracoesFirebase()
+
+            ]
+        ).then(
+            () => {
+
+                carregarTabelaJogos();
+
+            }
+        );
+
+
+        console.log(
+            '🚀 Sistema iniciado!'
+        );
+
     </script>
+
 </body>
 </html>
