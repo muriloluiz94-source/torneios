@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogos Universitários UNOPAR Arapongas</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -311,6 +316,41 @@
             color: #006080;
         }
 
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .loading-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
             .main-content { padding: 20px; }
             .atleta-item { flex-direction: column; }
@@ -320,10 +360,21 @@
     </style>
 </head>
 <body>
+    <!-- Loading -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-box">
+            <div class="spinner"></div>
+            <p>Carregando dados...</p>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>🏆 Jogos Universitários UNOPAR Arapongas</h1>
             <p>Inscreva seu time e participe das competições!</p>
+            <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; margin-top: 15px; display: inline-block;">
+                <span style="color: #90ff90;">●</span> Conectado ao Firebase
+            </div>
         </div>
 
         <div class="main-content">
@@ -362,9 +413,7 @@
                         
                         <div class="modalidade-card" style="border-color: #f39c12;">
                             <h3>♟️ Xadrez (Individual)</h3>
-                            <div class="info-box">
-                                <strong>⚠️ Modalidade Individual:</strong> Cada jogador se inscreve individualmente.
-                            </div>
+                            <div class="info-box"><strong>⚠️ Modalidade Individual:</strong> Cada jogador se inscreve individualmente.</div>
                             <p>Cadastre o nome do jogador no campo "Nome do Time"</p>
                             <div id="xadrez-atletas"></div>
                             <button type="button" onclick="adicionarAtleta('xadrez')" class="btn btn-success">+ Adicionar Jogador</button>
@@ -372,9 +421,7 @@
 
                         <div class="modalidade-card" style="border-color: #1a8cff;">
                             <h3>🏊 Natação 30m livre Masculino</h3>
-                            <div class="info-box-natacao">
-                                <strong>⚠️ Modalidade Individual Masculina:</strong> Cada nadador se inscreve individualmente.
-                            </div>
+                            <div class="info-box-natacao"><strong>⚠️ Modalidade Individual Masculina:</strong> Cada nadador se inscreve individualmente.</div>
                             <p>Cadastre o nome do nadador no campo "Nome do Time"</p>
                             <div id="natacaoMasc-atletas"></div>
                             <button type="button" onclick="adicionarAtleta('natacaoMasc')" class="btn btn-success">+ Adicionar Nadador</button>
@@ -382,9 +429,7 @@
 
                         <div class="modalidade-card" style="border-color: #ff6b9d;">
                             <h3>🏊 Natação 30m livre Feminino</h3>
-                            <div class="info-box-natacao">
-                                <strong>⚠️ Modalidade Individual Feminina:</strong> Cada nadadora se inscreve individualmente.
-                            </div>
+                            <div class="info-box-natacao"><strong>⚠️ Modalidade Individual Feminina:</strong> Cada nadadora se inscreve individualmente.</div>
                             <p>Cadastre o nome da nadadora no campo "Nome do Time"</p>
                             <div id="natacaoFem-atletas"></div>
                             <button type="button" onclick="adicionarAtleta('natacaoFem')" class="btn btn-success">+ Adicionar Nadadora</button>
@@ -437,17 +482,16 @@
                     
                     <div class="regra-modalidade"><h3>⚽ Futsal</h3><ul><li>5 jogadores + 5 reservas</li><li>10 minutos corridos</li><li>Empate = pênaltis (morte súbita)</li></ul></div>
                     <div class="regra-modalidade"><h3>🤾 Handebol</h3><ul><li>7 jogadores (mín. 3H/3M) + 7 reservas</li><li>10 minutos</li><li>Empate = tiros de 7m (morte súbita)</li></ul></div>
-                    <div class="regra-modalidade"><h3>🏀 Basquete 3x3</h3><ul><li>3 jogadores + 1 reserva</li><li>10 min ou 21 pontos</li><li>Empate = 2 pontos na prorrogação</li><li>Cesta de 1 ponto (dentro do arco) / 2 pontos (fora do arco)</li></ul></div>
+                    <div class="regra-modalidade"><h3>🏀 Basquete 3x3</h3><ul><li>3 jogadores + 1 reserva</li><li>10 min ou 21 pontos</li><li>Empate = 2 pontos na prorrogação</li></ul></div>
                     <div class="regra-modalidade"><h3>🔥 Bola queimada</h3><ul><li>8 jogadores (capitão tem 2 vidas)</li><li>15 min máx.</li></ul></div>
                     <div class="regra-modalidade"><h3>🏐 Voleibol</h3><ul><li>6 jogadores (3H/3M) + 6 reservas</li><li>1 set de 15 pontos (diferença 2)</li></ul></div>
                     <div class="regra-modalidade" style="border-color: #f39c12;">
                         <h3>♟️ Xadrez (Individual)</h3>
                         <ul>
                             <li><strong>Modalidade individual</strong> - cada jogador compete sozinho</li>
-                            <li>Partidas no sistema <strong>Suíço</strong> ou <strong>Eliminatória</strong> (definido pelo administrador)</li>
-                            <li>Cada jogador tem <strong>10 minutos</strong> para cada partida (ritmo rápido)</li>
+                            <li>Partidas no sistema <strong>Suíço</strong> ou <strong>Eliminatória</strong></li>
+                            <li>Cada jogador tem <strong>10 minutos</strong> para cada partida</li>
                             <li>Em caso de empate na partida, considera-se <strong>meio ponto</strong> para cada</li>
-                            <li>O campeão é definido pela <strong>maior pontuação</strong> ao final do torneio</li>
                         </ul>
                     </div>
                     <div class="regra-modalidade" style="border-color: #1a8cff;">
@@ -456,8 +500,6 @@
                             <li><strong>Modalidade individual masculina</strong> - cada nadador compete sozinho</li>
                             <li>Prova de <strong>30 metros</strong> estilo livre (crawl)</li>
                             <li>Classificação por <strong>tempo</strong> - menor tempo vence</li>
-                            <li>Eliminatórias e finais conforme número de inscritos</li>
-                            <li>O campeão é o nadador com o <strong>menor tempo</strong> na final</li>
                         </ul>
                     </div>
                     <div class="regra-modalidade" style="border-color: #ff6b9d;">
@@ -466,8 +508,6 @@
                             <li><strong>Modalidade individual feminina</strong> - cada nadadora compete sozinha</li>
                             <li>Prova de <strong>30 metros</strong> estilo livre (crawl)</li>
                             <li>Classificação por <strong>tempo</strong> - menor tempo vence</li>
-                            <li>Eliminatórias e finais conforme número de inscritas</li>
-                            <li>A campeã é a nadadora com o <strong>menor tempo</strong> na final</li>
                         </ul>
                     </div>
                 </div>
@@ -491,7 +531,98 @@
     </div>
 
     <script>
-        // Dados globais - Adicionado natacaoMasc e natacaoFem
+        // 🔥 CONFIGURAÇÃO DO FIREBASE - Cole suas credenciais aqui!
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKsvMG4l1Rn8-6zCymA5reJ_zRZ0lGj50",
+            authDomain: "jogos-unopar.firebaseapp.com",
+            databaseURL: "https://jogos-unopar-default-rtdb.firebaseio.com",
+            projectId: "jogos-unopar",
+            storageBucket: "jogos-unopar.firebasestorage.app",
+            messagingSenderId: "694948203841",
+            appId: "1:694948203841:web:cd7fa57abd1d46e07225c0",
+            measurementId: "G-DD963LNCEH"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // ============================================
+        // FUNÇÕES DO BANCO DE DADOS FIREBASE
+        // ============================================
+
+        // Mostrar/ocultar loading
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+        }
+
+        // Buscar todas as inscrições
+        async function getInscricoes() {
+            showLoading(true);
+            try {
+                const snapshot = await database.ref('inscricoes').once('value');
+                const data = snapshot.val();
+                showLoading(false);
+                return data ? Object.values(data) : [];
+            } catch (error) {
+                console.error('Erro ao buscar inscrições:', error);
+                showLoading(false);
+                alert('Erro ao carregar dados do Firebase. Verifique sua conexão.');
+                return [];
+            }
+        }
+
+        // Salvar uma inscrição
+        async function salvarInscricao(inscricao) {
+            showLoading(true);
+            try {
+                const id = Date.now().toString();
+                inscricao.id = id;
+                await database.ref('inscricoes/' + id).set(inscricao);
+                showLoading(false);
+                return true;
+            } catch (error) {
+                console.error('Erro ao salvar inscrição:', error);
+                showLoading(false);
+                alert('Erro ao salvar no Firebase. Tente novamente.');
+                return false;
+            }
+        }
+
+        // Atualizar uma inscrição
+        async function atualizarInscricao(id, inscricaoAtualizada) {
+            showLoading(true);
+            try {
+                await database.ref('inscricoes/' + id).update(inscricaoAtualizada);
+                showLoading(false);
+                return true;
+            } catch (error) {
+                console.error('Erro ao atualizar inscrição:', error);
+                showLoading(false);
+                alert('Erro ao atualizar no Firebase. Tente novamente.');
+                return false;
+            }
+        }
+
+        // Excluir uma inscrição
+        async function excluirInscricaoFirebase(id) {
+            showLoading(true);
+            try {
+                await database.ref('inscricoes/' + id).remove();
+                showLoading(false);
+                return true;
+            } catch (error) {
+                console.error('Erro ao excluir inscrição:', error);
+                showLoading(false);
+                alert('Erro ao excluir do Firebase. Tente novamente.');
+                return false;
+            }
+        }
+
+        // ============================================
+        // DADOS E CONFIGURAÇÕES
+        // ============================================
+
         let modalidadesAtletas = { 
             futsalMasc: [], futsalFem: [], basqueteMasc: [], basqueteFem: [], 
             volei: [], handebol: [], bolaQueimada: [], 
@@ -535,13 +666,9 @@
 
         let timesFiltrados = [];
 
-        // Funções de storage
-        function getInscricoes() { return JSON.parse(localStorage.getItem('inscricoes') || '[]'); }
-        function salvarInscricoes(data) { localStorage.setItem('inscricoes', JSON.stringify(data)); }
-        function salvarFormatos() { localStorage.setItem('formatos', JSON.stringify(formatosDisputa)); }
-        function carregarFormatos() { let f = localStorage.getItem('formatos'); if(f) formatosDisputa = JSON.parse(f); }
-        function salvarResultados() { localStorage.setItem('resultados', JSON.stringify(resultadosJogos)); }
-        function carregarResultados() { let r = localStorage.getItem('resultados'); if(r) resultadosJogos = JSON.parse(r); }
+        // ============================================
+        // FUNÇÕES DO SISTEMA
+        // ============================================
 
         // Renderizar atletas
         function renderizarAtletas(modalidade) {
@@ -567,7 +694,6 @@
                 alert(`Máximo ${limites[m]} atleta(s)!`); 
                 return; 
             } 
-            // Verificar se é modalidade individual
             if((m === 'xadrez' || m === 'natacaoMasc' || m === 'natacaoFem') && modalidadesAtletas[m].length > 0) {
                 alert('Esta é uma modalidade individual! Cada inscrição deve ter apenas 1 atleta.');
                 return;
@@ -580,11 +706,13 @@
         function atualizarAtleta(m,i,v) { modalidadesAtletas[m][i] = v; }
 
         // Nova inscrição
-        document.getElementById('formInscricao').addEventListener('submit', (e) => {
+        document.getElementById('formInscricao').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
             let nome = document.getElementById('nomeTime').value.trim();
             let curso = document.getElementById('curso').value.trim();
             let cpf = document.getElementById('cpfResponsavel').value.trim();
+            
             if(!nome || !curso || !cpf) return alert('Preencha todos os campos!');
             if(cpf.length!==11 || !/^\d+$/.test(cpf)) return alert('CPF inválido!');
             
@@ -592,7 +720,6 @@
             for(let m in modalidadesAtletas) if(modalidadesAtletas[m].length>0) tem=true;
             if(!tem) return alert('Adicione pelo menos uma modalidade!');
             
-            // Verifica se é modalidade individual e se há mais de um atleta
             let individuais = ['xadrez', 'natacaoMasc', 'natacaoFem'];
             for(let m of individuais) {
                 if(modalidadesAtletas[m].length > 1) {
@@ -601,32 +728,36 @@
                 }
             }
             
-            let inscricoes = getInscricoes();
-            inscricoes.push({ 
-                id:Date.now(), 
-                nomeTime:nome, 
-                curso:curso, 
-                cpfResponsavel:cpf, 
-                modalidades:JSON.parse(JSON.stringify(modalidadesAtletas)), 
-                dataCriacao:new Date().toISOString() 
-            });
-            salvarInscricoes(inscricoes);
-            alert(`Inscrição realizada com sucesso!`);
-            document.getElementById('formInscricao').reset();
-            modalidadesAtletas = { 
-                futsalMasc:[], futsalFem:[], basqueteMasc:[], basqueteFem:[], 
-                volei:[], handebol:[], bolaQueimada:[], 
-                xadrez:[], natacaoMasc:[], natacaoFem:[]
+            const inscricao = { 
+                nomeTime: nome, 
+                curso: curso, 
+                cpfResponsavel: cpf, 
+                modalidades: JSON.parse(JSON.stringify(modalidadesAtletas)), 
+                dataCriacao: new Date().toISOString() 
             };
-            for(let m in modalidadesAtletas) renderizarAtletas(m);
-            carregarTabelaTimes(); carregarEstatisticas();
+            
+            const salvou = await salvarInscricao(inscricao);
+            if(salvou) {
+                alert(`✅ Inscrição realizada com sucesso!`);
+                document.getElementById('formInscricao').reset();
+                modalidadesAtletas = { 
+                    futsalMasc:[], futsalFem:[], basqueteMasc:[], basqueteFem:[], 
+                    volei:[], handebol:[], bolaQueimada:[], 
+                    xadrez:[], natacaoMasc:[], natacaoFem:[]
+                };
+                for(let m in modalidadesAtletas) renderizarAtletas(m);
+                carregarTabelaTimes(); 
+                carregarEstatisticas();
+            }
         });
 
-        // Editar por CPF
-        function buscarTimePorCPF() {
+        // Buscar time por CPF para edição
+        async function buscarTimePorCPF() {
             let cpf = document.getElementById('cpfEditarBusca').value.trim();
             if(!cpf || cpf.length!==11) return alert('Digite CPF válido!');
-            let time = getInscricoes().find(i => i.cpfResponsavel === cpf);
+            
+            const inscricoes = await getInscricoes();
+            const time = inscricoes.find(i => i.cpfResponsavel === cpf);
             if(!time) return alert('Time não encontrado!');
             carregarEdicao(time);
         }
@@ -648,19 +779,24 @@
             
             modals.forEach(m => { window[`e_${m}`] = [...(time.modalidades[m]||[])]; renderizarEdit(m); });
             
-            document.getElementById('formEdit').addEventListener('submit', (e) => {
+            document.getElementById('formEdit').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                let inscricoes = getInscricoes();
-                let idx = inscricoes.findIndex(i => i.id === time.id);
-                if(idx !== -1) {
-                    inscricoes[idx].nomeTime = document.getElementById('editNome').value;
-                    inscricoes[idx].curso = document.getElementById('editCurso').value;
-                    modals.forEach(m => { inscricoes[idx].modalidades[m] = window[`e_${m}`]; });
-                    salvarInscricoes(inscricoes);
-                    alert('Time atualizado!');
+                let inscricaoAtualizada = {
+                    nomeTime: document.getElementById('editNome').value,
+                    curso: document.getElementById('editCurso').value,
+                    cpfResponsavel: document.getElementById('editCpf').value,
+                    modalidades: {},
+                    dataCriacao: time.dataCriacao
+                };
+                modals.forEach(m => { inscricaoAtualizada.modalidades[m] = window[`e_${m}`]; });
+                
+                const atualizou = await atualizarInscricao(time.id, inscricaoAtualizada);
+                if(atualizou) {
+                    alert('✅ Time atualizado com sucesso!');
                     document.getElementById('editarTimeContainer').innerHTML = '';
                     document.getElementById('cpfEditarBusca').value = '';
-                    carregarTabelaTimes(); carregarEstatisticas();
+                    carregarTabelaTimes(); 
+                    carregarEstatisticas();
                 }
             });
         }
@@ -695,14 +831,16 @@
             });
         }
 
-        function excluirTime(id) {
+        async function excluirTime(id) {
             if(confirm('Excluir time?')) {
-                let inscricoes = getInscricoes().filter(i => i.id !== id);
-                salvarInscricoes(inscricoes);
-                alert('Time excluído!');
-                document.getElementById('editarTimeContainer').innerHTML = '';
-                document.getElementById('cpfEditarBusca').value = '';
-                carregarTabelaTimes(); carregarEstatisticas();
+                const excluiu = await excluirInscricaoFirebase(id);
+                if(excluiu) {
+                    alert('Time excluído!');
+                    document.getElementById('editarTimeContainer').innerHTML = '';
+                    document.getElementById('cpfEditarBusca').value = '';
+                    carregarTabelaTimes(); 
+                    carregarEstatisticas();
+                }
             }
         }
 
@@ -713,20 +851,16 @@
             for(let [k,v] of Object.entries(nomesModalidades)) select.innerHTML += `<option value="${k}">${v}</option>`;
         }
 
-        function carregarTabelaJogos() {
+        async function carregarTabelaJogos() {
             let modalidade = document.getElementById('selectModalidade').value;
             let container = document.getElementById('tabelaJogosContainer');
             if(!modalidade) { container.innerHTML = '<p>Selecione uma modalidade</p>'; return; }
             
+            const inscricoes = await getInscricoes();
             let times = [];
-            getInscricoes().forEach(i => { 
+            inscricoes.forEach(i => { 
                 if(i.modalidades[modalidade]?.length > 0) {
-                    // Para modalidades individuais, cada inscrição representa um atleta
-                    if(['xadrez', 'natacaoMasc', 'natacaoFem'].includes(modalidade)) {
-                        times.push(i.nomeTime);
-                    } else {
-                        times.push(i.nomeTime);
-                    }
+                    times.push(i.nomeTime);
                 }
             });
             
@@ -751,9 +885,10 @@
         }
 
         // Consultar Times
-        function carregarTabelaTimes() {
+        async function carregarTabelaTimes() {
+            const inscricoes = await getInscricoes();
             let map = new Map();
-            getInscricoes().forEach(i => {
+            inscricoes.forEach(i => {
                 if(!map.has(i.nomeTime)) map.set(i.nomeTime, { nomeTime:i.nomeTime, curso:i.curso, dataCriacao:i.dataCriacao, modalidades:{} });
                 let t = map.get(i.nomeTime);
                 for(let [m,at] of Object.entries(i.modalidades)) if(at?.length>0) t.modalidades[m] = at;
@@ -797,13 +932,13 @@
             atualizarTabela();
         }
 
-        function carregarEstatisticas() {
+        async function carregarEstatisticas() {
+            const inscricoes = await getInscricoes();
             let stats = {}; 
             for(let m in nomesModalidades) stats[m]=0;
-            getInscricoes().forEach(i => { 
+            inscricoes.forEach(i => { 
                 for(let [m,at] of Object.entries(i.modalidades)) {
                     if(at?.length>0) {
-                        // Para modalidades individuais, conta cada atleta
                         if(['xadrez', 'natacaoMasc', 'natacaoFem'].includes(m)) {
                             stats[m] += at.length;
                         } else {
@@ -829,14 +964,16 @@
 
         function filtrarPorModalidade(modalidade) {
             let map = new Map();
-            getInscricoes().forEach(i => {
-                if(i.modalidades[modalidade]?.length > 0) {
-                    if(!map.has(i.nomeTime)) map.set(i.nomeTime, { nomeTime:i.nomeTime, curso:i.curso, dataCriacao:i.dataCriacao, modalidades:{} });
-                    map.get(i.nomeTime).modalidades[modalidade] = i.modalidades[modalidade];
-                }
+            getInscricoes().then(inscricoes => {
+                inscricoes.forEach(i => {
+                    if(i.modalidades[modalidade]?.length > 0) {
+                        if(!map.has(i.nomeTime)) map.set(i.nomeTime, { nomeTime:i.nomeTime, curso:i.curso, dataCriacao:i.dataCriacao, modalidades:{} });
+                        map.get(i.nomeTime).modalidades[modalidade] = i.modalidades[modalidade];
+                    }
+                });
+                timesFiltrados = Array.from(map.values());
+                atualizarTabela();
             });
-            timesFiltrados = Array.from(map.values());
-            atualizarTabela();
         }
 
         function showTab(tab) {
@@ -848,7 +985,10 @@
             if(tab === 'tabelaJogos') { carregarSelectModalidades(); carregarTabelaJogos(); }
         }
 
-        // ADMIN - Senha UNOPAR2026
+        // ============================================
+        // ADMIN
+        // ============================================
+
         function mostrarLoginAdmin() {
             let div = document.createElement('div');
             div.className = 'login-overlay';
@@ -913,7 +1053,7 @@
 
         function salvarFormatosAdmin() {
             for(let m in nomesModalidades) formatosDisputa[m] = document.getElementById(`formato_${m}`).value;
-            salvarFormatos();
+            localStorage.setItem('formatos', JSON.stringify(formatosDisputa));
             alert('Formatos salvos!');
             carregarTabelaJogos();
         }
@@ -924,21 +1064,25 @@
             for(let [k,v] of Object.entries(nomesModalidades)) select.innerHTML += `<option value="${k}">${v}</option>`;
         }
 
-        function carregarJogosAdmin() {
+        async function carregarJogosAdmin() {
             let modalidade = document.getElementById('adminModalidade').value;
             let container = document.getElementById('adminJogosContainer');
             if(!modalidade) { container.innerHTML = ''; return; }
+            
+            const inscricoes = await getInscricoes();
             let times = [];
-            getInscricoes().forEach(i => { 
+            inscricoes.forEach(i => { 
                 if(i.modalidades[modalidade]?.length > 0) {
                     times.push(i.nomeTime);
                 }
             });
+            
             if(times.length < 2) { 
                 let msg = modalidade.includes('Natação') ? 'Nadadores' : 'Jogadores';
                 container.innerHTML = `<p>${msg} insuficientes</p>`; 
                 return; 
             }
+            
             let html = '<div class="table-container"><table><thead><tr><th>Prova/Jogo</th><th>Atleta A</th><th>vs</th><th>Atleta B</th><th>Resultado</th><th>Ação</th></tr></thead><tbody>';
             let j=1;
             for(let i=0; i<times.length; i++) {
@@ -959,14 +1103,15 @@
 
         function salvarResultadoAdmin(id) {
             let val = document.getElementById(`res_${id}`).value;
-            if(val) { resultadosJogos[id] = val; salvarResultados(); alert('Resultado salvo!'); carregarTabelaJogos(); }
+            if(val) { resultadosJogos[id] = val; localStorage.setItem('resultados', JSON.stringify(resultadosJogos)); alert('Resultado salvo!'); carregarTabelaJogos(); }
             else alert('Digite o resultado!');
         }
 
-        function carregarAdminTimes() {
+        async function carregarAdminTimes() {
+            const inscricoes = await getInscricoes();
             let container = document.getElementById('adminTimesList');
             container.innerHTML = '<h3>📋 Times / Atletas Inscritos</h3>';
-            getInscricoes().forEach(t => {
+            inscricoes.forEach(t => {
                 let hasIndividual = t.modalidades.xadrez?.length > 0 || t.modalidades.natacaoMasc?.length > 0 || t.modalidades.natacaoFem?.length > 0;
                 let displayName = hasIndividual ? `🏊 ${t.nomeTime}` : t.nomeTime;
                 container.innerHTML += `<div class="modalidade-card"><strong>${displayName}</strong><br>Curso: ${t.curso}<br>CPF: ${t.cpfResponsavel}<br>
@@ -975,36 +1120,39 @@
             });
         }
 
-        function editarAdminTime(id) {
-            let time = getInscricoes().find(i => i.id === id);
+        async function editarAdminTime(id) {
+            const inscricoes = await getInscricoes();
+            let time = inscricoes.find(i => i.id === id);
             if(!time) return;
+            
             let novoNome = prompt('Novo nome:', time.nomeTime);
             if(novoNome) time.nomeTime = novoNome;
             let novoCurso = prompt('Novo curso:', time.curso);
             if(novoCurso) time.curso = novoCurso;
-            let inscricoes = getInscricoes();
-            let idx = inscricoes.findIndex(i => i.id === id);
-            if(idx !== -1) inscricoes[idx] = time;
-            salvarInscricoes(inscricoes);
-            carregarAdminTimes();
-            carregarTabelaTimes();
-            carregarEstatisticas();
-            alert('Atualizado!');
-        }
-
-        function excluirAdminTime(id) {
-            if(confirm('Excluir time?')) {
-                let inscricoes = getInscricoes().filter(i => i.id !== id);
-                salvarInscricoes(inscricoes);
+            
+            const atualizou = await atualizarInscricao(id, time);
+            if(atualizou) {
                 carregarAdminTimes();
                 carregarTabelaTimes();
                 carregarEstatisticas();
-                alert('Excluído!');
+                alert('Atualizado!');
             }
         }
 
-        function gerarRelatorioTimes() {
-            let inscricoes = getInscricoes();
+        async function excluirAdminTime(id) {
+            if(confirm('Excluir time?')) {
+                const excluiu = await excluirInscricaoFirebase(id);
+                if(excluiu) {
+                    carregarAdminTimes();
+                    carregarTabelaTimes();
+                    carregarEstatisticas();
+                    alert('Excluído!');
+                }
+            }
+        }
+
+        async function gerarRelatorioTimes() {
+            const inscricoes = await getInscricoes();
             let relatorio = "RELATÓRIO DE TIMES E ATLETAS\n" + "=".repeat(50) + "\n\n";
             inscricoes.forEach(t => {
                 relatorio += `ATLETA: ${t.nomeTime}\nCURSO: ${t.curso}\nCPF: ${t.cpfResponsavel}\n`;
@@ -1025,8 +1173,8 @@
             alert('Relatório gerado!');
         }
 
-        function imprimirRelatorio() {
-            let inscricoes = getInscricoes();
+        async function imprimirRelatorio() {
+            const inscricoes = await getInscricoes();
             let win = window.open('', '_blank');
             win.document.write('<html><head><title>Relatório Jogos UNOPAR</title><style>body{font-family:Arial;padding:20px}</style></head><body>');
             win.document.write('<h1 style="color:#667eea;">Jogos Universitários UNOPAR Arapongas</h1><h2>Relatório de Times e Atletas</h2>');
@@ -1047,98 +1195,50 @@
             win.print();
         }
 
-        // Inicialização
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
+
         for(let m in modalidadesAtletas) renderizarAtletas(m);
-        carregarFormatos();
-        carregarResultados();
+        
+        // Carregar formatos salvos
+        let savedFormats = localStorage.getItem('formatos');
+        if(savedFormats) formatosDisputa = JSON.parse(savedFormats);
+        
+        let savedResults = localStorage.getItem('resultados');
+        if(savedResults) resultadosJogos = JSON.parse(savedResults);
+        
         carregarTabelaTimes();
         carregarEstatisticas();
-        
-        if(getInscricoes().length === 0) {
-            let exemplo = { 
-                id:Date.now(), 
-                nomeTime:"FURIA FC", 
-                curso:"Educação Física", 
-                cpfResponsavel:"12345678900", 
-                dataCriacao:new Date().toISOString(),
-                modalidades:{ 
-                    futsalMasc:["João Silva","Pedro Santos"], 
-                    futsalFem:[], 
-                    basqueteMasc:["Carlos Souza"], 
-                    basqueteFem:[], 
-                    volei:[], 
-                    handebol:[], 
-                    bolaQueimada:["Ana Paula"],
-                    xadrez:[],
-                    natacaoMasc:[],
-                    natacaoFem:[]
-                } 
-            };
-            
-            let exemploXadrez = {
-                id:Date.now()+1,
-                nomeTime:"Mateus Silva",
-                curso:"Matemática",
-                cpfResponsavel:"98765432100",
-                dataCriacao:new Date().toISOString(),
-                modalidades:{
-                    futsalMasc:[],
-                    futsalFem:[],
-                    basqueteMasc:[],
-                    basqueteFem:[],
-                    volei:[],
-                    handebol:[],
-                    bolaQueimada:[],
-                    xadrez:["Mateus Silva"],
-                    natacaoMasc:[],
-                    natacaoFem:[]
-                }
-            };
 
-            let exemploNatacaoMasc = {
-                id:Date.now()+2,
-                nomeTime:"Lucas Oliveira",
-                curso:"Educação Física",
-                cpfResponsavel:"55555555555",
-                dataCriacao:new Date().toISOString(),
-                modalidades:{
-                    futsalMasc:[],
-                    futsalFem:[],
-                    basqueteMasc:[],
-                    basqueteFem:[],
-                    volei:[],
-                    handebol:[],
-                    bolaQueimada:[],
-                    xadrez:[],
-                    natacaoMasc:["Lucas Oliveira"],
-                    natacaoFem:[]
-                }
-            };
-
-            let exemploNatacaoFem = {
-                id:Date.now()+3,
-                nomeTime:"Mariana Santos",
-                curso:"Educação Física",
-                cpfResponsavel:"44444444444",
-                dataCriacao:new Date().toISOString(),
-                modalidades:{
-                    futsalMasc:[],
-                    futsalFem:[],
-                    basqueteMasc:[],
-                    basqueteFem:[],
-                    volei:[],
-                    handebol:[],
-                    bolaQueimada:[],
-                    xadrez:[],
-                    natacaoMasc:[],
-                    natacaoFem:["Mariana Santos"]
-                }
-            };
-            
-            salvarInscricoes([exemplo, exemploXadrez, exemploNatacaoMasc, exemploNatacaoFem]);
-            carregarTabelaTimes();
-            carregarEstatisticas();
-        }
+        // Carregar dados de exemplo se não houver nenhuma inscrição
+        getInscricoes().then(inscricoes => {
+            if(inscricoes.length === 0) {
+                // Dados de exemplo
+                const exemplo = { 
+                    nomeTime: "FURIA FC", 
+                    curso: "Educação Física", 
+                    cpfResponsavel: "12345678900", 
+                    dataCriacao: new Date().toISOString(),
+                    modalidades: { 
+                        futsalMasc:["João Silva","Pedro Santos"], 
+                        futsalFem:[], 
+                        basqueteMasc:["Carlos Souza"], 
+                        basqueteFem:[], 
+                        volei:[], 
+                        handebol:[], 
+                        bolaQueimada:["Ana Paula"],
+                        xadrez:[],
+                        natacaoMasc:[],
+                        natacaoFem:[]
+                    } 
+                };
+                salvarInscricao(exemplo).then(() => {
+                    carregarTabelaTimes();
+                    carregarEstatisticas();
+                });
+            }
+        });
     </script>
 </body>
 </html>
