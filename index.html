@@ -59,13 +59,29 @@
         .loading-box { background: white; padding: 30px; border-radius: 15px; text-align: center; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .cache-info { font-size: 12px; color: #888; margin-top: 5px; }
+        .whatsapp-input { display: flex; gap: 10px; align-items: center; }
+        .whatsapp-input input { flex: 1; }
+        .whatsapp-prefix { background: #25D366; color: white; padding: 10px 15px; border-radius: 5px 0 0 5px; font-weight: bold; }
+        .whatsapp-wrapper { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; }
+        .whatsapp-wrapper span { background: #25D366; color: white; padding: 10px 12px; font-weight: bold; }
+        .whatsapp-wrapper input { border: none; padding: 10px; flex: 1; }
+        .whatsapp-wrapper input:focus { outline: none; }
         @media (max-width: 768px) { .main-content { padding: 20px; } .atleta-item { flex-direction: column; } .btn { width: 100%; margin-top: 10px; } .tabs { flex-direction: column; } }
         
-        /* Indicador de cache */
-        .cache-info {
-            font-size: 12px;
-            color: #888;
-            margin-top: 5px;
+        /* Ocultar CPF e WhatsApp na tabela pública */
+        .admin-only { display: none; }
+        .admin-visible .admin-only { display: table-cell; }
+        
+        /* Badge de privacidade */
+        .privacy-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -83,7 +99,7 @@
             <h1>🏆 Jogos Universitários UNOPAR Arapongas</h1>
             <p>Inscreva seu time e participe das competições!</p>
             <div id="statusIndicator" class="status offline">⚠️ Carregando...</div>
-            <div id="cacheInfo" class="cache-info">🔄 Atualizando dados em tempo real...</div>
+            <div id="cacheInfo" class="cache-info">🔄 Atualizando dados...</div>
         </div>
 
         <div class="main-content">
@@ -96,13 +112,30 @@
                 <button class="tab" onclick="mostrarLoginAdmin()">👑 Administrador</button>
             </div>
 
-            <!-- Conteúdo das abas (mesmo código anterior) -->
+            <!-- Nova Inscrição -->
             <div id="tab-inscricao" class="tab-content active">
-                <!-- Mesmo conteúdo da inscrição -->
                 <form id="formInscricao">
-                    <div class="form-group"><label>Nome do Time / Atleta *</label><input type="text" id="nomeTime" required></div>
-                    <div class="form-group"><label>Curso de Graduação *</label><input type="text" id="curso" required></div>
-                    <div class="form-group"><label>CPF do Responsável *</label><input type="text" id="cpfResponsavel" placeholder="Apenas números" maxlength="11" required></div>
+                    <div class="form-group">
+                        <label>Nome do Time / Atleta *</label>
+                        <input type="text" id="nomeTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Curso de Graduação *</label>
+                        <input type="text" id="curso" required>
+                    </div>
+                    <div class="form-group">
+                        <label>CPF do Responsável * <span class="privacy-badge">🔒 Privado</span></label>
+                        <input type="text" id="cpfResponsavel" placeholder="Apenas números" maxlength="11" required>
+                        <small style="color: #888;">🔒 Visível apenas para o administrador</small>
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp para Contato * <span class="privacy-badge">🔒 Privado</span></label>
+                        <div class="whatsapp-wrapper">
+                            <span>📱 +55</span>
+                            <input type="text" id="whatsapp" placeholder="Ex: 41999999999" maxlength="12" required>
+                        </div>
+                        <small style="color: #888;">🔒 Visível apenas para o administrador</small>
+                    </div>
                     <div id="modalidades">
                         <div class="modalidade-card"><h3>⚽ Futsal Masculino</h3><p>Máximo 10 atletas</p><div id="futsalMasc-atletas"></div><button type="button" onclick="adicionarAtleta('futsalMasc')" class="btn btn-success">+ Adicionar</button></div>
                         <div class="modalidade-card"><h3>⚽ Futsal Feminino</h3><p>Máximo 10 atletas</p><div id="futsalFem-atletas"></div><button type="button" onclick="adicionarAtleta('futsalFem')" class="btn btn-success">+ Adicionar</button></div>
@@ -119,6 +152,7 @@
                 </form>
             </div>
 
+            <!-- Editar times/inscrição -->
             <div id="tab-editarTime" class="tab-content">
                 <div class="cpf-busca-box">
                     <h3>🔐 Editar Time</h3>
@@ -129,11 +163,13 @@
                 <div id="editarTimeContainer"></div>
             </div>
 
+            <!-- Tabela de Jogos -->
             <div id="tab-tabelaJogos" class="tab-content">
                 <div class="form-group"><label>Selecione a Modalidade:</label><select id="selectModalidade" onchange="carregarTabelaJogos()"><option value="">Selecione</option></select></div>
                 <div id="tabelaJogosContainer"></div>
             </div>
 
+            <!-- Regras -->
             <div id="tab-regras" class="tab-content">
                 <div class="regras-container">
                     <h2 style="color:#667eea;">📋 Regras das Competições</h2>
@@ -161,12 +197,31 @@
                 </div>
             </div>
 
+            <!-- Consultar Times -->
             <div id="tab-consultar" class="tab-content">
                 <div class="stats-grid" id="statsModalidades"></div>
                 <div class="form-group"><label>🔍 Buscar:</label><input type="text" id="buscarTimeNome" placeholder="Nome ou curso..." onkeyup="filtrarTimes()"></div>
-                <div class="table-container"><table id="tabelaTimes"><thead><tr><th>#</th><th>Time/Atleta</th><th>Curso</th><th>Data</th><th>Modalidades</th><th>Ações</th></tr></thead><tbody id="tabelaTimesBody"></tbody></table></div>
+                <div class="table-container">
+                    <table id="tabelaTimes">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Time/Atleta</th>
+                                <th>Curso</th>
+                                <th>Data</th>
+                                <th>Modalidades</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaTimesBody"></tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 10px; font-size: 12px; color: #888; text-align: center;">
+                    🔒 Informações pessoais (CPF e WhatsApp) são visíveis apenas para o administrador
+                </div>
             </div>
 
+            <!-- Administrador -->
             <div id="tab-admin" class="tab-content"></div>
         </div>
 
@@ -197,7 +252,7 @@
         let inscricoesCache = [];
         let inscricoesCarregadas = false;
         let firebaseOnline = false;
-        let atualizando = false;
+        let isAdmin = false;
 
         // ============================================
         // INICIALIZAR FIREBASE
@@ -206,7 +261,6 @@
             firebase.initializeApp(firebaseConfig);
             const database = firebase.database();
             
-            // Verificar conexão
             database.ref('.info/connected').on('value', (snapshot) => {
                 firebaseOnline = snapshot.val() === true;
                 updateStatus();
@@ -215,22 +269,19 @@
                 }
             });
 
-            // LISTENER EM TEMPO REAL - Atualiza automaticamente quando há mudanças
             database.ref('inscricoes').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     inscricoesCache = Object.values(data);
                     inscricoesCarregadas = true;
-                    // Atualizar interface se estiver visível
                     atualizarInterface();
                 }
             });
 
-            console.log('🔥 Firebase inicializado com listener em tempo real!');
+            console.log('🔥 Firebase inicializado!');
         } catch (error) {
             console.error('❌ Erro ao inicializar Firebase:', error);
             firebaseOnline = false;
-            // Tentar carregar do localStorage
             carregarDadosLocais();
             updateStatus();
         }
@@ -254,7 +305,6 @@
 
         function carregarDadosIniciais() {
             showLoading(true);
-            // O listener já vai trazer os dados, mas se não vier, busca manualmente
             setTimeout(() => {
                 if (!inscricoesCarregadas) {
                     firebase.database().ref('inscricoes').once('value').then((snapshot) => {
@@ -279,7 +329,6 @@
         // ============================================
         
         function atualizarInterface() {
-            // Verificar qual aba está ativa
             const activeTab = document.querySelector('.tab-content.active');
             if (activeTab) {
                 const id = activeTab.id;
@@ -293,7 +342,6 @@
                     carregarTabelaJogos();
                 }
             }
-            // Atualizar status do cache
             document.getElementById('cacheInfo').textContent = 
                 `📦 ${inscricoesCache.length} inscrições em cache | ${firebaseOnline ? 'Online' : 'Offline'}`;
         }
@@ -327,18 +375,14 @@
             try {
                 if (firebaseOnline) {
                     await firebase.database().ref('inscricoes/' + id).set(inscricao);
-                    // O listener vai atualizar o cache automaticamente
                 }
-                // Salvar no localStorage como backup
                 const local = getInscricoesLocal();
                 local.push(inscricao);
                 salvarInscricoesLocal(local);
-                
                 showLoading(false);
                 return true;
             } catch (error) {
                 console.error('❌ Erro ao salvar:', error);
-                // Fallback local
                 const local = getInscricoesLocal();
                 local.push(inscricao);
                 salvarInscricoesLocal(local);
@@ -356,7 +400,6 @@
                 if (firebaseOnline) {
                     await firebase.database().ref('inscricoes/' + id).update(inscricaoAtualizada);
                 }
-                // Atualizar cache
                 const idx = inscricoesCache.findIndex(i => i.id === id);
                 if (idx !== -1) {
                     inscricoesCache[idx] = { ...inscricaoAtualizada, id: id };
@@ -380,7 +423,6 @@
                 if (firebaseOnline) {
                     await firebase.database().ref('inscricoes/' + id).remove();
                 }
-                // Remover do cache
                 inscricoesCache = inscricoesCache.filter(i => i.id !== id);
                 salvarInscricoesLocal(inscricoesCache);
                 showLoading(false);
@@ -500,9 +542,11 @@
             let nome = document.getElementById('nomeTime').value.trim();
             let curso = document.getElementById('curso').value.trim();
             let cpf = document.getElementById('cpfResponsavel').value.trim();
+            let whatsapp = document.getElementById('whatsapp').value.trim();
             
-            if(!nome || !curso || !cpf) return alert('Preencha todos os campos!');
+            if(!nome || !curso || !cpf || !whatsapp) return alert('Preencha todos os campos!');
             if(cpf.length!==11 || !/^\d+$/.test(cpf)) return alert('CPF inválido!');
+            if(whatsapp.length < 10 || !/^\d+$/.test(whatsapp)) return alert('WhatsApp inválido! Digite apenas números com DDD (Ex: 41999999999)');
             
             let tem = false; 
             for(let m in modalidadesAtletas) if(modalidadesAtletas[m].length>0) tem=true;
@@ -519,7 +563,8 @@
             const inscricao = { 
                 nomeTime: nome, 
                 curso: curso, 
-                cpfResponsavel: cpf, 
+                cpfResponsavel: cpf,
+                whatsapp: whatsapp,
                 modalidades: JSON.parse(JSON.stringify(modalidadesAtletas)), 
                 dataCriacao: new Date().toISOString() 
             };
@@ -534,53 +579,98 @@
                     xadrez:[], natacaoMasc:[], natacaoFem:[]
                 };
                 for(let m in modalidadesAtletas) renderizarAtletas(m);
-                // A interface será atualizada automaticamente pelo listener
             }
         });
 
-        // Buscar time por CPF para edição
+        // Buscar time por CPF para edição - CORRIGIDO
         function buscarTimePorCPF() {
             let cpf = document.getElementById('cpfEditarBusca').value.trim();
             if(!cpf || cpf.length!==11) return alert('Digite CPF válido!');
             
+            // Buscar em todos os dados, não apenas no cache
             const time = inscricoesCache.find(i => i.cpfResponsavel === cpf);
-            if(!time) return alert('Time não encontrado!');
+            if(!time) {
+                alert('Nenhum time encontrado com este CPF!');
+                return;
+            }
             carregarEdicao(time);
         }
 
         function carregarEdicao(time) {
             let container = document.getElementById('editarTimeContainer');
-            let html = `<div style="background:#f0f4ff;padding:20px;border-radius:15px;"><h3>Editando: ${time.nomeTime}</h3>
-                        <form id="formEdit"><div class="form-group"><label>Nome:</label><input type="text" id="editNome" value="${time.nomeTime}"></div>
-                        <div class="form-group"><label>Curso:</label><input type="text" id="editCurso" value="${time.curso}"></div>
-                        <div class="form-group"><label>CPF:</label><input type="text" id="editCpf" value="${time.cpfResponsavel}" readonly style="background:#ddd;"></div>`;
+            
+            // Verificar se o time tem WhatsApp (para compatibilidade com dados antigos)
+            const whatsappValue = time.whatsapp || '';
+            
+            let html = `<div style="background:#f0f4ff;padding:20px;border-radius:15px;">
+                <h3 style="color:#667eea;">✏️ Editando: ${time.nomeTime}</h3>
+                <form id="formEdit">
+                    <div class="form-group">
+                        <label>Nome do Time/Atleta:</label>
+                        <input type="text" id="editNome" value="${time.nomeTime.replace(/"/g, '&quot;')}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Curso de Graduação:</label>
+                        <input type="text" id="editCurso" value="${time.curso.replace(/"/g, '&quot;')}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>CPF do Responsável:</label>
+                        <input type="text" id="editCpf" value="${time.cpfResponsavel}" readonly style="background:#ddd;">
+                    </div>
+                    <div class="form-group">
+                        <label>WhatsApp:</label>
+                        <div class="whatsapp-wrapper">
+                            <span>📱 +55</span>
+                            <input type="text" id="editWhatsapp" value="${whatsappValue}" placeholder="Ex: 41999999999" maxlength="12" required>
+                        </div>
+                    </div>`;
+            
             let modals = ['futsalMasc','futsalFem','basqueteMasc','basqueteFem','volei','handebol','bolaQueimada','xadrez','natacaoMasc','natacaoFem'];
             modals.forEach(m => {
-                html += `<div class="modalidade-card"><h3>${nomesModalidades[m]}</h3><div id="edit-${m}"></div>
-                        <button type="button" onclick="adicionarEdit('${m}')" class="btn btn-success">+ ${m === 'xadrez' ? 'Jogador' : (m === 'natacaoMasc' || m === 'natacaoFem') ? 'Nadador(a)' : 'Atleta'}</button></div>`;
+                const atletas = time.modalidades[m] || [];
+                html += `<div class="modalidade-card">
+                    <h3>${nomesModalidades[m]}</h3>
+                    <div id="edit-${m}"></div>
+                    <button type="button" onclick="adicionarEdit('${m}')" class="btn btn-success">+ ${m === 'xadrez' ? 'Jogador' : (m === 'natacaoMasc' || m === 'natacaoFem') ? 'Nadador(a)' : 'Atleta'}</button>
+                </div>`;
+                window[`e_${m}`] = [...atletas];
             });
-            html += `<button type="submit" class="btn">💾 Salvar</button>
-                    <button type="button" onclick="excluirTime(${time.id})" class="btn btn-danger">🗑️ Excluir</button></form></div>`;
+            
+            html += `<div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
+                    <button type="submit" class="btn">💾 Salvar Alterações</button>
+                    <button type="button" onclick="excluirTime('${time.id}')" class="btn btn-danger">🗑️ Excluir Inscrição</button>
+                </div>
+                </form>
+            </div>`;
+            
             container.innerHTML = html;
             
-            modals.forEach(m => { window[`e_${m}`] = [...(time.modalidades[m]||[])]; renderizarEdit(m); });
+            // Renderizar atletas para edição
+            modals.forEach(m => renderizarEdit(m));
             
             document.getElementById('formEdit').addEventListener('submit', async (e) => {
                 e.preventDefault();
+                
                 let inscricaoAtualizada = {
                     nomeTime: document.getElementById('editNome').value,
                     curso: document.getElementById('editCurso').value,
                     cpfResponsavel: document.getElementById('editCpf').value,
+                    whatsapp: document.getElementById('editWhatsapp').value,
                     modalidades: {},
                     dataCriacao: time.dataCriacao
                 };
-                modals.forEach(m => { inscricaoAtualizada.modalidades[m] = window[`e_${m}`]; });
+                
+                modals.forEach(m => {
+                    inscricaoAtualizada.modalidades[m] = window[`e_${m}`];
+                });
                 
                 const atualizou = await atualizarInscricao(time.id, inscricaoAtualizada);
                 if(atualizou) {
                     alert('✅ Time atualizado com sucesso!');
                     document.getElementById('editarTimeContainer').innerHTML = '';
                     document.getElementById('cpfEditarBusca').value = '';
+                    carregarTabelaTimes();
+                    carregarEstatisticas();
                 }
             });
         }
@@ -599,15 +689,21 @@
             renderizarEdit(m); 
         }
         
-        function removerEdit(m,i) { window[`e_${m}`].splice(i,1); renderizarEdit(m); }
-        function atualizarEdit(m,i,v) { window[`e_${m}`][i] = v; }
+        function removerEdit(m,i) { 
+            window[`e_${m}`].splice(i,1); 
+            renderizarEdit(m); 
+        }
+        
+        function atualizarEdit(m,i,v) { 
+            window[`e_${m}`][i] = v; 
+        }
         
         function renderizarEdit(m) {
-            let container = document.getElementById(`edit-${m}`);
+            const container = document.getElementById(`edit-${m}`);
             if(!container) return;
             container.innerHTML = '';
             window[`e_${m}`].forEach((a,i) => {
-                let div = document.createElement('div');
+                const div = document.createElement('div');
                 div.className = 'atleta-item';
                 div.innerHTML = `<input type="text" value="${a}" onchange="atualizarEdit('${m}',${i},this.value)">
                                 <button onclick="removerEdit('${m}',${i})" class="btn btn-danger" style="padding:5px 10px;">X</button>`;
@@ -621,6 +717,8 @@
                 alert('Time excluído!');
                 document.getElementById('editarTimeContainer').innerHTML = '';
                 document.getElementById('cpfEditarBusca').value = '';
+                carregarTabelaTimes();
+                carregarEstatisticas();
             }
         }
 
@@ -663,11 +761,16 @@
             container.innerHTML = html;
         }
 
-        // Consultar Times
+        // Consultar Times - SEM CPF e WhatsApp visíveis
         function carregarTabelaTimes() {
             let map = new Map();
             inscricoesCache.forEach(i => {
-                if(!map.has(i.nomeTime)) map.set(i.nomeTime, { nomeTime:i.nomeTime, curso:i.curso, dataCriacao:i.dataCriacao, modalidades:{} });
+                if(!map.has(i.nomeTime)) map.set(i.nomeTime, { 
+                    nomeTime:i.nomeTime, 
+                    curso:i.curso, 
+                    dataCriacao:i.dataCriacao, 
+                    modalidades:{}
+                });
                 let t = map.get(i.nomeTime);
                 for(let [m,at] of Object.entries(i.modalidades)) if(at?.length>0) t.modalidades[m] = at;
             });
@@ -685,16 +788,20 @@
                         mods.push(nomesModalidades[m]);
                     }
                 }
-                tbody.innerHTML += `<tr><td>${i+1}</td><td><strong>${t.nomeTime}</strong></td><td>${t.curso}</td>
-                                    <td>${new Date(t.dataCriacao).toLocaleDateString()}</td>
-                                    <td>${mods.map(m=>`<span class="modalidades-badge">${m}</span>`).join('')}</td>
-                                    <td><button onclick="verDetalhes(${i})" class="btn btn-info" style="padding:5px 10px;">Detalhes</button></td></tr>`;
+                tbody.innerHTML += `<tr>
+                    <td>${i+1}</td>
+                    <td><strong>${t.nomeTime}</strong></td>
+                    <td>${t.curso}</td>
+                    <td>${new Date(t.dataCriacao).toLocaleDateString()}</td>
+                    <td>${mods.map(m=>`<span class="modalidades-badge">${m}</span>`).join('')}</td>
+                    <td><button onclick="verDetalhes(${i})" class="btn btn-info" style="padding:5px 10px;">👁️ Detalhes</button></td>
+                </tr>`;
             });
         }
 
         function verDetalhes(i) {
             let t = timesFiltrados[i];
-            let msg = `🏆 ${t.nomeTime}\nCurso: ${t.curso}\n\nAtletas:\n`;
+            let msg = `🏆 ${t.nomeTime}\n📚 Curso: ${t.curso}\n📅 Data: ${new Date(t.dataCriacao).toLocaleDateString()}\n\n📋 Atletas:\n`;
             for(let [m,at] of Object.entries(t.modalidades)) {
                 if(at?.length>0) {
                     msg += `\n${nomesModalidades[m]}:\n${at.map((a,j)=>`  ${j+1}. ${a}`).join('\n')}\n`;
@@ -756,7 +863,6 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(`tab-${tab}`).classList.add('active');
             if (event) event.target.classList.add('active');
-            // Usar cache para carregar rapidamente
             if(tab === 'consultar') { carregarTabelaTimes(); carregarEstatisticas(); }
             if(tab === 'tabelaJogos') { carregarSelectModalidades(); carregarTabelaJogos(); }
             if(tab === 'admin') { carregarAdminTimes(); }
@@ -770,45 +876,66 @@
             let div = document.createElement('div');
             div.className = 'login-overlay';
             div.id = 'loginOverlay';
-            div.innerHTML = `<div class="login-box"><h2>🔐 Acesso Administrador</h2><input type="password" id="senhaAdmin" placeholder="Digite a senha"><br><br>
-                            <button onclick="verificarAdmin()" class="btn">Entrar</button>
-                            <button onclick="fecharLogin()" class="btn btn-danger">Cancelar</button></div>`;
+            div.innerHTML = `<div class="login-box">
+                <h2 style="color:#667eea;">🔐 Acesso Administrador</h2>
+                <p style="margin-bottom:15px;">Digite a senha para acessar o painel administrativo</p>
+                <input type="password" id="senhaAdmin" placeholder="Digite a senha" style="text-align:center;font-size:18px;margin-bottom:15px;">
+                <button onclick="verificarAdmin()" class="btn" style="width:100%;">Entrar</button>
+                <button onclick="fecharLogin()" class="btn btn-danger" style="width:100%;margin-top:10px;">Cancelar</button>
+            </div>`;
             document.body.appendChild(div);
         }
         
-        function fecharLogin() { let o=document.getElementById('loginOverlay'); if(o) o.remove(); }
+        function fecharLogin() { 
+            let o = document.getElementById('loginOverlay'); 
+            if(o) o.remove(); 
+        }
         
         function verificarAdmin() {
-            if(document.getElementById('senhaAdmin').value === 'UNOPAR2026') {
+            const senha = document.getElementById('senhaAdmin').value;
+            if (senha === 'UNOPAR2026') {
+                isAdmin = true;
                 fecharLogin();
                 carregarAdminPanel();
-                document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById('tab-admin').classList.add('active');
                 document.querySelectorAll('.tab').forEach(t => {
                     if(t.textContent.includes('Administrador')) t.classList.add('active');
                 });
-            } else alert('Senha incorreta!');
+            } else {
+                alert('❌ Senha incorreta! Tente novamente.');
+                document.getElementById('senhaAdmin').value = '';
+                document.getElementById('senhaAdmin').focus();
+            }
         }
 
         function carregarAdminPanel() {
             document.getElementById('tab-admin').innerHTML = `
                 <h2 style="color:#667eea;">👑 Painel Administrador</h2>
+                <div style="background:#e8f5e9;padding:15px;border-radius:10px;margin-bottom:20px;">
+                    <p style="color:#2e7d32;">🔒 Você está visualizando informações privadas (CPF e WhatsApp)</p>
+                </div>
+                
                 <div style="background:#f0f4ff;padding:20px;border-radius:15px;margin-bottom:20px;">
                     <h3>📋 Formatos de Disputa</h3>
                     <div id="formatosContainer"></div>
                     <button onclick="salvarFormatosAdmin()" class="btn">💾 Salvar Formatos</button>
                 </div>
+                
                 <div style="background:#f0f4ff;padding:20px;border-radius:15px;margin-bottom:20px;">
                     <h3>🎯 Resultados dos Jogos</h3>
                     <select id="adminModalidade" onchange="carregarJogosAdmin()"><option value="">Selecione</option></select>
                     <div id="adminJogosContainer"></div>
                 </div>
+                
                 <div style="background:#f0f4ff;padding:20px;border-radius:15px;margin-bottom:20px;">
                     <h3>📊 Relatório de Times e Atletas</h3>
                     <button onclick="gerarRelatorioTimes()" class="btn btn-info">📄 Gerar Relatório</button>
                     <button onclick="imprimirRelatorio()" class="btn btn-warning">🖨️ Imprimir</button>
                 </div>
+                
+                <h3 style="color:#667eea;margin:20px 0;">📋 Times / Atletas Inscritos</h3>
                 <div id="adminTimesList"></div>
             `;
             carregarFormatosAdmin();
@@ -835,7 +962,7 @@
         function salvarFormatosAdmin() {
             for(let m in nomesModalidades) formatosDisputa[m] = document.getElementById(`formato_${m}`).value;
             localStorage.setItem('formatos', JSON.stringify(formatosDisputa));
-            alert('Formatos salvos!');
+            alert('✅ Formatos salvos!');
             carregarTabelaJogos();
         }
 
@@ -883,38 +1010,73 @@
 
         function salvarResultadoAdmin(id) {
             let val = document.getElementById(`res_${id}`).value;
-            if(val) { resultadosJogos[id] = val; localStorage.setItem('resultados', JSON.stringify(resultadosJogos)); alert('Resultado salvo!'); carregarTabelaJogos(); }
-            else alert('Digite o resultado!');
+            if(val) { 
+                resultadosJogos[id] = val; 
+                localStorage.setItem('resultados', JSON.stringify(resultadosJogos)); 
+                alert('✅ Resultado salvo!'); 
+                carregarTabelaJogos(); 
+            } else {
+                alert('⚠️ Digite o resultado!');
+            }
         }
 
         function carregarAdminTimes() {
             let container = document.getElementById('adminTimesList');
-            container.innerHTML = '<h3>📋 Times / Atletas Inscritos</h3>';
+            container.innerHTML = '';
+            
+            if (inscricoesCache.length === 0) {
+                container.innerHTML = '<p style="text-align:center;padding:20px;color:#888;">Nenhum time inscrito ainda.</p>';
+                return;
+            }
+            
             inscricoesCache.forEach(t => {
                 let hasIndividual = t.modalidades.xadrez?.length > 0 || t.modalidades.natacaoMasc?.length > 0 || t.modalidades.natacaoFem?.length > 0;
                 let displayName = hasIndividual ? `🏊 ${t.nomeTime}` : t.nomeTime;
-                container.innerHTML += `<div class="modalidade-card"><strong>${displayName}</strong><br>Curso: ${t.curso}<br>CPF: ${t.cpfResponsavel}<br>
-                    <button onclick="editarAdminTime(${t.id})" class="btn" style="padding:5px 15px;">✏️ Editar</button>
-                    <button onclick="excluirAdminTime(${t.id})" class="btn btn-danger" style="padding:5px 15px;">🗑️ Excluir</button></div>`;
+                
+                // WhatsApp seguro
+                let whatsappDisplay = t.whatsapp ? `(${t.whatsapp.substring(0,2)}) ${t.whatsapp.substring(2,7)}-${t.whatsapp.substring(7)}` : 'Não informado';
+                
+                container.innerHTML += `<div class="modalidade-card" style="border-left: 4px solid #667eea;">
+                    <h3>${displayName}</h3>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px;">
+                        <p><strong>📚 Curso:</strong> ${t.curso}</p>
+                        <p><strong>🔒 CPF:</strong> <span style="font-family:monospace;">${t.cpfResponsavel}</span></p>
+                        <p><strong>📱 WhatsApp:</strong> <a href="https://wa.me/55${t.whatsapp}" target="_blank" style="color:#25D366;text-decoration:none;">${whatsappDisplay}</a></p>
+                        <p><strong>📅 Data:</strong> ${new Date(t.dataCriacao).toLocaleString()}</p>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <p><strong>📋 Modalidades:</strong></p>
+                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;">
+                            ${Object.entries(t.modalidades).filter(([m,at]) => at?.length > 0).map(([m,at]) => 
+                                `<span class="modalidades-badge">${nomesModalidades[m]} (${at.length})</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                        <button onclick="editarAdminTime('${t.id}')" class="btn" style="padding:5px 15px;">✏️ Editar</button>
+                        <button onclick="excluirAdminTime('${t.id}')" class="btn btn-danger" style="padding:5px 15px;">🗑️ Excluir</button>
+                    </div>
+                </div>`;
             });
         }
 
-        async function editarAdminTime(id) {
+        function editarAdminTime(id) {
             let time = inscricoesCache.find(i => i.id === id);
-            if(!time) return;
-            
-            let novoNome = prompt('Novo nome:', time.nomeTime);
-            if(novoNome) time.nomeTime = novoNome;
-            let novoCurso = prompt('Novo curso:', time.curso);
-            if(novoCurso) time.curso = novoCurso;
-            
-            const atualizou = await atualizarInscricao(id, time);
-            if(atualizou) {
-                carregarAdminTimes();
-                carregarTabelaTimes();
-                carregarEstatisticas();
-                alert('Atualizado!');
+            if(!time) {
+                alert('Time não encontrado!');
+                return;
             }
+            
+            // Abrir a aba de edição com o CPF preenchido
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-editarTime').classList.add('active');
+            document.querySelectorAll('.tab').forEach(t => {
+                if(t.textContent.includes('Editar times')) t.classList.add('active');
+            });
+            
+            document.getElementById('cpfEditarBusca').value = time.cpfResponsavel;
+            buscarTimePorCPF();
         }
 
         async function excluirAdminTime(id) {
@@ -923,47 +1085,92 @@
                 carregarAdminTimes();
                 carregarTabelaTimes();
                 carregarEstatisticas();
-                alert('Excluído!');
+                alert('✅ Time excluído!');
             }
         }
 
-        async function gerarRelatorioTimes() {
+        function gerarRelatorioTimes() {
             let relatorio = "RELATÓRIO DE TIMES E ATLETAS\n" + "=".repeat(50) + "\n\n";
+            relatorio += `GERADO EM: ${new Date().toLocaleString()}\n\n`;
+            
             inscricoesCache.forEach(t => {
-                relatorio += `ATLETA: ${t.nomeTime}\nCURSO: ${t.curso}\nCPF: ${t.cpfResponsavel}\n`;
+                relatorio += `ATLETA: ${t.nomeTime}\n`;
+                relatorio += `CURSO: ${t.curso}\n`;
+                relatorio += `CPF: ${t.cpfResponsavel}\n`;
+                relatorio += `WHATSAPP: ${t.whatsapp || 'Não informado'}\n`;
+                relatorio += `DATA INSCRIÇÃO: ${new Date(t.dataCriacao).toLocaleString()}\n`;
+                
+                let temModalidades = false;
                 for(let [m, at] of Object.entries(t.modalidades)) {
                     if(at?.length > 0) {
+                        temModalidades = true;
                         relatorio += `\n${nomesModalidades[m]} (${at.length} atletas):\n`;
                         at.forEach((a,i) => relatorio += `  ${i+1}. ${a}\n`);
                     }
                 }
+                if (!temModalidades) relatorio += `\nNenhuma modalidade inscrita\n`;
                 relatorio += "\n" + "-".repeat(50) + "\n\n";
             });
-            let blob = new Blob([relatorio], {type: 'text/plain'});
-            let link = document.createElement('a');
+            
+            const blob = new Blob([relatorio], {type: 'text/plain;charset=utf-8'});
+            const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `relatorio_times_${new Date().toISOString().slice(0,19)}.txt`;
             link.click();
             URL.revokeObjectURL(link.href);
-            alert('Relatório gerado!');
+            alert('✅ Relatório gerado!');
         }
 
-        async function imprimirRelatorio() {
+        function imprimirRelatorio() {
             let win = window.open('', '_blank');
-            win.document.write('<html><head><title>Relatório Jogos UNOPAR</title><style>body{font-family:Arial;padding:20px}</style></head><body>');
-            win.document.write('<h1 style="color:#667eea;">Jogos Universitários UNOPAR Arapongas</h1><h2>Relatório de Times e Atletas</h2>');
+            win.document.write(`<html><head><title>Relatório Jogos UNOPAR</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1 { color: #667eea; }
+                    .card { border: 1px solid #ccc; margin: 20px 0; padding: 15px; border-radius: 10px; }
+                    .badge { display: inline-block; background: #667eea; color: white; padding: 3px 10px; border-radius: 5px; margin: 2px; font-size: 12px; }
+                    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+                    @media print { .no-print { display: none; } }
+                </style>
+            </head><body>`);
+            
+            win.document.write('<h1>🏆 Jogos Universitários UNOPAR Arapongas</h1>');
+            win.document.write(`<h2>Relatório de Times e Atletas</h2>`);
+            win.document.write(`<p><strong>Gerado em:</strong> ${new Date().toLocaleString()}</p>`);
+            win.document.write(`<p><strong>Total de inscrições:</strong> ${inscricoesCache.length}</p><hr>`);
+            
             inscricoesCache.forEach(t => {
-                win.document.write(`<div style="border:1px solid #ccc;margin:20px 0;padding:15px;border-radius:10px;">
-                    <h3>🏅 ${t.nomeTime}</h3><p><strong>Curso:</strong> ${t.curso}</p><p><strong>CPF:</strong> ${t.cpfResponsavel}</p>`);
+                let hasIndividual = t.modalidades.xadrez?.length > 0 || t.modalidades.natacaoMasc?.length > 0 || t.modalidades.natacaoFem?.length > 0;
+                let displayName = hasIndividual ? `🏊 ${t.nomeTime}` : t.nomeTime;
+                
+                win.document.write(`<div class="card">
+                    <h3>${displayName}</h3>
+                    <div class="info-grid">
+                        <p><strong>Curso:</strong> ${t.curso}</p>
+                        <p><strong>CPF:</strong> ${t.cpfResponsavel}</p>
+                        <p><strong>WhatsApp:</strong> ${t.whatsapp || 'Não informado'}</p>
+                        <p><strong>Data:</strong> ${new Date(t.dataCriacao).toLocaleString()}</p>
+                    </div>
+                    <h4>Modalidades:</h4>
+                    <div>`);
+                
+                let temMod = false;
                 for(let [m, at] of Object.entries(t.modalidades)) {
                     if(at?.length > 0) {
-                        win.document.write(`<h4>${nomesModalidades[m]}</h4><ul>`);
+                        temMod = true;
+                        win.document.write(`<p><strong>${nomesModalidades[m]}</strong> (${at.length} atletas):</p><ul>`);
                         at.forEach(a => win.document.write(`<li>${a}</li>`));
                         win.document.write(`</ul>`);
                     }
                 }
-                win.document.write(`</div>`);
+                if (!temMod) win.document.write('<p>Nenhuma modalidade inscrita</p>');
+                win.document.write(`</div></div>`);
             });
+            
+            win.document.write(`<p style="text-align:center;color:#888;font-size:12px;margin-top:30px;">
+                Documento gerado pelo Sistema de Inscrição dos Jogos Universitários UNOPAR Arapongas
+            </p>`);
+            
             win.document.write('</body></html>');
             win.document.close();
             win.print();
@@ -975,14 +1182,12 @@
 
         for(let m in modalidadesAtletas) renderizarAtletas(m);
         
-        // Carregar formatos salvos
         let savedFormats = localStorage.getItem('formatos');
         if(savedFormats) formatosDisputa = JSON.parse(savedFormats);
         
         let savedResults = localStorage.getItem('resultados');
         if(savedResults) resultadosJogos = JSON.parse(savedResults);
         
-        // Se não tiver dados em cache, carregar do localStorage
         if (inscricoesCache.length === 0) {
             const localData = getInscricoesLocal();
             if (localData.length > 0) {
@@ -996,7 +1201,7 @@
         carregarTabelaTimes();
         carregarEstatisticas();
 
-        console.log('🚀 Sistema inicializado com cache e tempo real!');
+        console.log('🚀 Sistema inicializado!');
         console.log(`📦 ${inscricoesCache.length} inscrições em cache`);
     </script>
 </body>
