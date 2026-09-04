@@ -39,6 +39,29 @@
             margin-bottom: 10px;
         }
 
+        .header .status {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .status.online {
+            background: rgba(0, 200, 0, 0.3);
+            color: #90ff90;
+        }
+
+        .status.offline {
+            background: rgba(255, 0, 0, 0.3);
+            color: #ff9090;
+        }
+
+        .status.local {
+            background: rgba(255, 165, 0, 0.3);
+            color: #ffcc80;
+        }
+
         .main-content {
             background: white;
             border-radius: 15px;
@@ -372,9 +395,7 @@
         <div class="header">
             <h1>🏆 Jogos Universitários UNOPAR Arapongas</h1>
             <p>Inscreva seu time e participe das competições!</p>
-            <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 10px; margin-top: 15px; display: inline-block;">
-                <span style="color: #90ff90;">●</span> Conectado ao Firebase
-            </div>
+            <div id="statusIndicator" class="status offline">⚠️ Desconectado</div>
         </div>
 
         <div class="main-content">
@@ -491,22 +512,21 @@
                             <li><strong>Modalidade individual</strong> - cada jogador compete sozinho</li>
                             <li>Partidas no sistema <strong>Suíço</strong> ou <strong>Eliminatória</strong></li>
                             <li>Cada jogador tem <strong>10 minutos</strong> para cada partida</li>
-                            <li>Em caso de empate na partida, considera-se <strong>meio ponto</strong> para cada</li>
                         </ul>
                     </div>
                     <div class="regra-modalidade" style="border-color: #1a8cff;">
                         <h3>🏊 Natação 30m livre Masculino</h3>
                         <ul>
-                            <li><strong>Modalidade individual masculina</strong> - cada nadador compete sozinho</li>
-                            <li>Prova de <strong>30 metros</strong> estilo livre (crawl)</li>
+                            <li><strong>Modalidade individual masculina</strong></li>
+                            <li>Prova de <strong>30 metros</strong> estilo livre</li>
                             <li>Classificação por <strong>tempo</strong> - menor tempo vence</li>
                         </ul>
                     </div>
                     <div class="regra-modalidade" style="border-color: #ff6b9d;">
                         <h3>🏊 Natação 30m livre Feminino</h3>
                         <ul>
-                            <li><strong>Modalidade individual feminina</strong> - cada nadadora compete sozinha</li>
-                            <li>Prova de <strong>30 metros</strong> estilo livre (crawl)</li>
+                            <li><strong>Modalidade individual feminina</strong></li>
+                            <li>Prova de <strong>30 metros</strong> estilo livre</li>
                             <li>Classificação por <strong>tempo</strong> - menor tempo vence</li>
                         </ul>
                     </div>
@@ -531,7 +551,9 @@
     </div>
 
     <script>
-        // 🔥 CONFIGURAÇÃO DO FIREBASE - Cole suas credenciais aqui!
+        // ============================================
+        // CONFIGURAÇÃO DO FIREBASE
+        // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyAKsvMG4l1Rn8-6zCymA5reJ_zRZ0lGj50",
             authDomain: "jogos-unopar.firebaseapp.com",
@@ -543,78 +565,160 @@
             measurementId: "G-DD963LNCEH"
         };
 
+        let firebaseOnline = false;
+
         // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        try {
+            firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
+            
+            // Testar conexão
+            database.ref('.info/connected').on('value', (snapshot) => {
+                firebaseOnline = snapshot.val() === true;
+                updateStatus();
+            });
+            
+            console.log('🔥 Firebase inicializado com sucesso!');
+        } catch (error) {
+            console.error('❌ Erro ao inicializar Firebase:', error);
+            firebaseOnline = false;
+            updateStatus();
+        }
+
+        function updateStatus() {
+            const indicator = document.getElementById('statusIndicator');
+            if (firebaseOnline) {
+                indicator.className = 'status online';
+                indicator.textContent = '✅ Conectado ao Firebase';
+            } else {
+                indicator.className = 'status offline';
+                indicator.textContent = '⚠️ Offline - Usando localStorage local';
+            }
+        }
 
         // ============================================
-        // FUNÇÕES DO BANCO DE DADOS FIREBASE
+        // FUNÇÕES DO BANCO DE DADOS (com fallback)
         // ============================================
 
-        // Mostrar/ocultar loading
         function showLoading(show) {
             document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
         }
 
-        // Buscar todas as inscrições
+        // Buscar todas as inscrições com fallback para localStorage
         async function getInscricoes() {
             showLoading(true);
             try {
-                const snapshot = await database.ref('inscricoes').once('value');
-                const data = snapshot.val();
-                showLoading(false);
-                return data ? Object.values(data) : [];
+                if (firebaseOnline) {
+                    const snapshot = await firebase.database().ref('inscricoes').once('value');
+                    const data = snapshot.val();
+                    showLoading(false);
+                    if (data) {
+                        return Object.values(data);
+                    } else {
+                        // Se não houver dados no Firebase, tenta buscar do localStorage
+                        return getInscricoesLocal();
+                    }
+                } else {
+                    return getInscricoesLocal();
+                }
             } catch (error) {
-                console.error('Erro ao buscar inscrições:', error);
+                console.warn('⚠️ Erro ao buscar do Firebase, usando localStorage:', error);
                 showLoading(false);
-                alert('Erro ao carregar dados do Firebase. Verifique sua conexão.');
+                return getInscricoesLocal();
+            }
+        }
+
+        function getInscricoesLocal() {
+            try {
+                const data = localStorage.getItem('inscricoes');
+                return data ? JSON.parse(data) : [];
+            } catch {
                 return [];
             }
         }
 
-        // Salvar uma inscrição
+        function salvarInscricoesLocal(inscricoes) {
+            localStorage.setItem('inscricoes', JSON.stringify(inscricoes));
+        }
+
+        // Salvar uma inscrição (tenta Firebase, fallback local)
         async function salvarInscricao(inscricao) {
             showLoading(true);
+            const id = Date.now().toString();
+            inscricao.id = id;
+            
             try {
-                const id = Date.now().toString();
-                inscricao.id = id;
-                await database.ref('inscricoes/' + id).set(inscricao);
-                showLoading(false);
-                return true;
+                if (firebaseOnline) {
+                    await firebase.database().ref('inscricoes/' + id).set(inscricao);
+                    showLoading(false);
+                    // Salvar também no localStorage como backup
+                    const local = getInscricoesLocal();
+                    local.push(inscricao);
+                    salvarInscricoesLocal(local);
+                    return true;
+                } else {
+                    // Fallback para localStorage
+                    const local = getInscricoesLocal();
+                    local.push(inscricao);
+                    salvarInscricoesLocal(local);
+                    showLoading(false);
+                    return true;
+                }
             } catch (error) {
-                console.error('Erro ao salvar inscrição:', error);
+                console.error('❌ Erro ao salvar:', error);
+                // Tentar salvar localmente
+                const local = getInscricoesLocal();
+                local.push(inscricao);
+                salvarInscricoesLocal(local);
                 showLoading(false);
-                alert('Erro ao salvar no Firebase. Tente novamente.');
-                return false;
+                alert('⚠️ Dados salvos localmente (offline). Serão sincronizados quando a conexão for restaurada.');
+                return true;
             }
         }
 
-        // Atualizar uma inscrição
+        // Atualizar inscrição
         async function atualizarInscricao(id, inscricaoAtualizada) {
             showLoading(true);
             try {
-                await database.ref('inscricoes/' + id).update(inscricaoAtualizada);
+                if (firebaseOnline) {
+                    await firebase.database().ref('inscricoes/' + id).update(inscricaoAtualizada);
+                }
+                // Atualizar local
+                const local = getInscricoesLocal();
+                const idx = local.findIndex(i => i.id === id);
+                if (idx !== -1) {
+                    local[idx] = { ...inscricaoAtualizada, id: id };
+                    salvarInscricoesLocal(local);
+                }
                 showLoading(false);
                 return true;
             } catch (error) {
-                console.error('Erro ao atualizar inscrição:', error);
+                console.error('❌ Erro ao atualizar:', error);
                 showLoading(false);
-                alert('Erro ao atualizar no Firebase. Tente novamente.');
+                alert('⚠️ Erro ao atualizar. Tente novamente.');
                 return false;
             }
         }
 
-        // Excluir uma inscrição
+        // Excluir inscrição
         async function excluirInscricaoFirebase(id) {
+            if (!confirm('Tem certeza que deseja excluir esta inscrição?')) return false;
+            
             showLoading(true);
             try {
-                await database.ref('inscricoes/' + id).remove();
+                if (firebaseOnline) {
+                    await firebase.database().ref('inscricoes/' + id).remove();
+                }
+                // Remover do local
+                const local = getInscricoesLocal();
+                const novas = local.filter(i => i.id !== id);
+                salvarInscricoesLocal(novas);
                 showLoading(false);
                 return true;
             } catch (error) {
-                console.error('Erro ao excluir inscrição:', error);
+                console.error('❌ Erro ao excluir:', error);
                 showLoading(false);
-                alert('Erro ao excluir do Firebase. Tente novamente.');
+                alert('⚠️ Erro ao excluir. Tente novamente.');
                 return false;
             }
         }
@@ -670,7 +774,6 @@
         // FUNÇÕES DO SISTEMA
         // ============================================
 
-        // Renderizar atletas
         function renderizarAtletas(modalidade) {
             let container = document.getElementById(`${modalidade}-atletas`);
             if(!container) return;
@@ -832,15 +935,13 @@
         }
 
         async function excluirTime(id) {
-            if(confirm('Excluir time?')) {
-                const excluiu = await excluirInscricaoFirebase(id);
-                if(excluiu) {
-                    alert('Time excluído!');
-                    document.getElementById('editarTimeContainer').innerHTML = '';
-                    document.getElementById('cpfEditarBusca').value = '';
-                    carregarTabelaTimes(); 
-                    carregarEstatisticas();
-                }
+            const excluiu = await excluirInscricaoFirebase(id);
+            if(excluiu) {
+                alert('Time excluído!');
+                document.getElementById('editarTimeContainer').innerHTML = '';
+                document.getElementById('cpfEditarBusca').value = '';
+                carregarTabelaTimes(); 
+                carregarEstatisticas();
             }
         }
 
@@ -963,8 +1064,8 @@
         }
 
         function filtrarPorModalidade(modalidade) {
-            let map = new Map();
             getInscricoes().then(inscricoes => {
+                let map = new Map();
                 inscricoes.forEach(i => {
                     if(i.modalidades[modalidade]?.length > 0) {
                         if(!map.has(i.nomeTime)) map.set(i.nomeTime, { nomeTime:i.nomeTime, curso:i.curso, dataCriacao:i.dataCriacao, modalidades:{} });
@@ -980,7 +1081,7 @@
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(`tab-${tab}`).classList.add('active');
-            event.target.classList.add('active');
+            if (event) event.target.classList.add('active');
             if(tab === 'consultar') { carregarTabelaTimes(); carregarEstatisticas(); }
             if(tab === 'tabelaJogos') { carregarSelectModalidades(); carregarTabelaJogos(); }
         }
@@ -998,7 +1099,9 @@
                             <button onclick="fecharLogin()" class="btn btn-danger">Cancelar</button></div>`;
             document.body.appendChild(div);
         }
+        
         function fecharLogin() { let o=document.getElementById('loginOverlay'); if(o) o.remove(); }
+        
         function verificarAdmin() {
             if(document.getElementById('senhaAdmin').value === 'UNOPAR2026') {
                 fecharLogin();
@@ -1006,7 +1109,9 @@
                 document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
                 document.getElementById('tab-admin').classList.add('active');
-                event.target.classList.add('active');
+                document.querySelectorAll('.tab').forEach(t => {
+                    if(t.textContent.includes('Administrador')) t.classList.add('active');
+                });
             } else alert('Senha incorreta!');
         }
 
@@ -1140,14 +1245,12 @@
         }
 
         async function excluirAdminTime(id) {
-            if(confirm('Excluir time?')) {
-                const excluiu = await excluirInscricaoFirebase(id);
-                if(excluiu) {
-                    carregarAdminTimes();
-                    carregarTabelaTimes();
-                    carregarEstatisticas();
-                    alert('Excluído!');
-                }
+            const excluiu = await excluirInscricaoFirebase(id);
+            if(excluiu) {
+                carregarAdminTimes();
+                carregarTabelaTimes();
+                carregarEstatisticas();
+                alert('Excluído!');
             }
         }
 
@@ -1214,7 +1317,6 @@
         // Carregar dados de exemplo se não houver nenhuma inscrição
         getInscricoes().then(inscricoes => {
             if(inscricoes.length === 0) {
-                // Dados de exemplo
                 const exemplo = { 
                     nomeTime: "FURIA FC", 
                     curso: "Educação Física", 
@@ -1239,6 +1341,19 @@
                 });
             }
         });
+
+        // Atualizar status periodicamente
+        setInterval(() => {
+            if (firebaseOnline) {
+                document.getElementById('statusIndicator').className = 'status online';
+                document.getElementById('statusIndicator').textContent = '✅ Conectado ao Firebase';
+            } else {
+                document.getElementById('statusIndicator').className = 'status offline';
+                document.getElementById('statusIndicator').textContent = '⚠️ Offline - Usando localStorage';
+            }
+        }, 5000);
+
+        console.log('🚀 Sistema inicializado!');
     </script>
 </body>
 </html>
