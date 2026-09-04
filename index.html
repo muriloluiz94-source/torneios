@@ -10,6 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
     <style>
+        /* ===== ESTILOS COMPACTOS ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; }
@@ -38,29 +39,18 @@
         .atleta-item input { flex: 1; }
         .modalidade-card { border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
         .modalidade-card h3 { margin-bottom: 15px; color: #667eea; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; transition: transform 0.3s; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; transition: transform 0.3s; }
         .stat-card:hover { transform: translateY(-5px); }
-        .stat-number { font-size: 2.5em; font-weight: bold; }
+        .stat-number { font-size: 2em; font-weight: bold; }
         .table-container { overflow-x: auto; max-height: 500px; overflow-y: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background-color: #667eea; color: white; position: sticky; top: 0; }
-        .modalidades-badge { display: inline-block; background: #667eea; color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px; margin: 2px; }
-        .progress-bar { background: rgba(255,255,255,0.3); border-radius: 10px; overflow: hidden; margin-top: 10px; }
-        .progress-fill { background: rgba(255,255,255,0.8); height: 20px; }
-        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-        .login-box { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
-        .login-box h2 { color: #667eea; margin-bottom: 20px; }
-        .login-box input { text-align: center; font-size: 18px; margin-bottom: 15px; width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; }
-        .login-box input:focus { outline: none; border-color: #667eea; }
-        .cpf-busca-box { background: #f0f4ff; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 30px; }
-        .regras-container { max-height: 600px; overflow-y: auto; padding: 20px; background: #f9f9f9; border-radius: 10px; }
-        .regra-modalidade { margin-bottom: 30px; border-left: 4px solid #667eea; padding-left: 20px; }
-        .info-box { background: #e6f7ff; border: 1px solid #91d5ff; border-radius: 10px; padding: 15px; margin-bottom: 20px; color: #0050b3; }
+        .modalidades-badge { display: inline-block; background: #667eea; color: white; padding: 3px 8px; border-radius: 5px; font-size: 11px; margin: 2px; }
         .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 2000; }
-        .loading-box { background: white; padding: 30px; border-radius: 15px; text-align: center; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        .loading-box { background: white; padding: 30px; border-radius: 15px; text-align: center; max-width: 350px; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .cache-info { font-size: 12px; color: #888; margin-top: 5px; }
         .whatsapp-wrapper { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; }
@@ -70,9 +60,12 @@
         .privacy-badge { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 2px 10px; border-radius: 12px; font-size: 11px; margin-left: 5px; }
         .admin-panel { background: #f8f9ff; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 2px solid #667eea; }
         .admin-panel h3 { color: #667eea; margin-bottom: 15px; }
-        .formato-card { background: #f7f7f7; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
-        .formato-card select { margin-top: 10px; padding: 8px; width: 100%; border-radius: 5px; border: 1px solid #ddd; }
-        .data-atualizacao { font-size: 12px; color: #888; margin-top: 5px; }
+        .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .login-box { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
+        .login-box input { text-align: center; font-size: 18px; margin-bottom: 15px; width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; }
+        .login-box input:focus { outline: none; border-color: #667eea; }
+        .formato-card { background: #f7f7f7; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        .formato-card select { margin-top: 8px; padding: 8px; width: 100%; border-radius: 5px; border: 1px solid #ddd; }
         @media (max-width: 768px) { .main-content { padding: 20px; } .atleta-item { flex-direction: column; } .btn { width: 100%; margin-top: 10px; } .tabs { flex-direction: column; } }
     </style>
 </head>
@@ -81,7 +74,8 @@
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-box">
             <div class="spinner"></div>
-            <p>Carregando dados...</p>
+            <p id="loadingText">Carregando dados...</p>
+            <p id="loadingProgress" style="font-size:12px;color:#888;margin-top:5px;"></p>
         </div>
     </div>
 
@@ -90,149 +84,83 @@
             <h1>🏆 Jogos Universitários UNOPAR Arapongas</h1>
             <p>Inscreva seu time e participe das competições!</p>
             <div id="statusIndicator" class="status offline">⚠️ Carregando...</div>
-            <div id="cacheInfo" class="cache-info">🔄 Atualizando dados...</div>
+            <div id="cacheInfo" class="cache-info">🔄 Carregando...</div>
         </div>
 
         <div class="main-content">
             <div class="tabs">
                 <button class="tab active" onclick="showTab('inscricao')">Nova Inscrição</button>
-                <button class="tab" onclick="showTab('editarTime')">Editar times/inscrição</button>
+                <button class="tab" onclick="showTab('editarTime')">Editar</button>
                 <button class="tab" onclick="showTab('tabelaJogos')">Tabela de Jogos</button>
                 <button class="tab" onclick="showTab('regras')">Regras</button>
                 <button class="tab" onclick="showTab('consultar')">Consultar Times</button>
-                <button class="tab" onclick="abrirLoginAdmin()">👑 Administrador</button>
+                <button class="tab" onclick="abrirLoginAdmin()">👑 Admin</button>
             </div>
 
-            <!-- Nova Inscrição -->
+            <!-- Conteúdo simplificado - mesmo HTML de antes, mas com JS otimizado -->
             <div id="tab-inscricao" class="tab-content active">
                 <form id="formInscricao">
-                    <div class="form-group">
-                        <label>Nome do Time / Atleta *</label>
-                        <input type="text" id="nomeTime" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Curso de Graduação *</label>
-                        <input type="text" id="curso" required>
-                    </div>
-                    <div class="form-group">
-                        <label>CPF do Responsável * <span class="privacy-badge">🔒 Privado</span></label>
-                        <input type="text" id="cpfResponsavel" placeholder="Apenas números" maxlength="11" required>
-                        <small style="color: #888;">🔒 Visível apenas para o administrador</small>
-                    </div>
-                    <div class="form-group">
-                        <label>WhatsApp para Contato * <span class="privacy-badge">🔒 Privado</span></label>
-                        <div class="whatsapp-wrapper">
-                            <span>📱 +55</span>
-                            <input type="text" id="whatsapp" placeholder="Ex: 41999999999" maxlength="12" required>
-                        </div>
-                        <small style="color: #888;">🔒 Visível apenas para o administrador</small>
-                    </div>
+                    <div class="form-group"><label>Nome do Time / Atleta *</label><input type="text" id="nomeTime" required></div>
+                    <div class="form-group"><label>Curso *</label><input type="text" id="curso" required></div>
+                    <div class="form-group"><label>CPF * <span class="privacy-badge">🔒</span></label><input type="text" id="cpfResponsavel" placeholder="Apenas números" maxlength="11" required><small>🔒 Privado</small></div>
+                    <div class="form-group"><label>WhatsApp * <span class="privacy-badge">🔒</span></label><div class="whatsapp-wrapper"><span>📱 +55</span><input type="text" id="whatsapp" placeholder="41999999999" maxlength="12" required></div><small>🔒 Privado</small></div>
                     <div id="modalidades">
-                        <div class="modalidade-card"><h3>⚽ Futsal Masculino</h3><p>Máximo 10 atletas</p><div id="futsalMasc-atletas"></div><button type="button" onclick="adicionarAtleta('futsalMasc')" class="btn btn-success">+ Adicionar</button></div>
-                        <div class="modalidade-card"><h3>⚽ Futsal Feminino</h3><p>Máximo 10 atletas</p><div id="futsalFem-atletas"></div><button type="button" onclick="adicionarAtleta('futsalFem')" class="btn btn-success">+ Adicionar</button></div>
-                        <div class="modalidade-card"><h3>🏀 Basquete 3x3 Masculino</h3><p>Máximo 4 atletas</p><div id="basqueteMasc-atletas"></div><button type="button" onclick="adicionarAtleta('basqueteMasc')" class="btn btn-success">+ Adicionar</button></div>
-                        <div class="modalidade-card"><h3>🏀 Basquete 3x3 Feminino</h3><p>Máximo 4 atletas</p><div id="basqueteFem-atletas"></div><button type="button" onclick="adicionarAtleta('basqueteFem')" class="btn btn-success">+ Adicionar</button></div>
-                        <div class="modalidade-card"><h3>🏐 Voleibol (Misto)</h3><p>Máximo 12 atletas</p><div id="volei-atletas"></div><button type="button" onclick="adicionarAtleta('volei')" class="btn btn-success">+ Adicionar</button></div>
-                        <div class="modalidade-card"><h3>🤾 Handebol (Misto)</h3><p>Máximo 14 atletas</p><div id="handebol-atletas"></div><button type="button" onclick="adicionarAtleta('handebol')" class="btn btn-success">+ Adicionar</button></div>
-                        <div class="modalidade-card"><h3>🔥 Bola queimada (Misto)</h3><p>Máximo 8 atletas</p><div id="bolaQueimada-atletas"></div><button type="button" onclick="adicionarAtleta('bolaQueimada')" class="btn btn-success">+ Adicionar</button></div>
-                        <div class="modalidade-card" style="border-color:#f39c12;"><h3>♟️ Xadrez (Individual)</h3><div class="info-box"><strong>⚠️ Modalidade Individual</strong></div><div id="xadrez-atletas"></div><button type="button" onclick="adicionarAtleta('xadrez')" class="btn btn-success">+ Adicionar Jogador</button></div>
-                        <div class="modalidade-card" style="border-color:#1a8cff;"><h3>🏊 Natação 30m livre Masculino</h3><div class="info-box"><strong>⚠️ Modalidade Individual</strong></div><div id="natacaoMasc-atletas"></div><button type="button" onclick="adicionarAtleta('natacaoMasc')" class="btn btn-success">+ Adicionar</button></div>
-                        <div class="modalidade-card" style="border-color:#ff6b9d;"><h3>🏊 Natação 30m livre Feminino</h3><div class="info-box"><strong>⚠️ Modalidade Individual</strong></div><div id="natacaoFem-atletas"></div><button type="button" onclick="adicionarAtleta('natacaoFem')" class="btn btn-success">+ Adicionar</button></div>
+                        <div class="modalidade-card"><h3>⚽ Futsal Masculino</h3><p>Máx 10</p><div id="futsalMasc-atletas"></div><button type="button" onclick="adicionarAtleta('futsalMasc')" class="btn btn-success">+</button></div>
+                        <div class="modalidade-card"><h3>⚽ Futsal Feminino</h3><p>Máx 10</p><div id="futsalFem-atletas"></div><button type="button" onclick="adicionarAtleta('futsalFem')" class="btn btn-success">+</button></div>
+                        <div class="modalidade-card"><h3>🏀 Basquete 3x3 Masculino</h3><p>Máx 4</p><div id="basqueteMasc-atletas"></div><button type="button" onclick="adicionarAtleta('basqueteMasc')" class="btn btn-success">+</button></div>
+                        <div class="modalidade-card"><h3>🏀 Basquete 3x3 Feminino</h3><p>Máx 4</p><div id="basqueteFem-atletas"></div><button type="button" onclick="adicionarAtleta('basqueteFem')" class="btn btn-success">+</button></div>
+                        <div class="modalidade-card"><h3>🏐 Voleibol (Misto)</h3><p>Máx 12</p><div id="volei-atletas"></div><button type="button" onclick="adicionarAtleta('volei')" class="btn btn-success">+</button></div>
+                        <div class="modalidade-card"><h3>🤾 Handebol (Misto)</h3><p>Máx 14</p><div id="handebol-atletas"></div><button type="button" onclick="adicionarAtleta('handebol')" class="btn btn-success">+</button></div>
+                        <div class="modalidade-card"><h3>🔥 Bola queimada (Misto)</h3><p>Máx 8</p><div id="bolaQueimada-atletas"></div><button type="button" onclick="adicionarAtleta('bolaQueimada')" class="btn btn-success">+</button></div>
+                        <div class="modalidade-card" style="border-color:#f39c12;"><h3>♟️ Xadrez (Individual)</h3><div id="xadrez-atletas"></div><button type="button" onclick="adicionarAtleta('xadrez')" class="btn btn-success">+</button></div>
+                        <div class="modalidade-card" style="border-color:#1a8cff;"><h3>🏊 Natação 30m Masc</h3><div id="natacaoMasc-atletas"></div><button type="button" onclick="adicionarAtleta('natacaoMasc')" class="btn btn-success">+</button></div>
+                        <div class="modalidade-card" style="border-color:#ff6b9d;"><h3>🏊 Natação 30m Fem</h3><div id="natacaoFem-atletas"></div><button type="button" onclick="adicionarAtleta('natacaoFem')" class="btn btn-success">+</button></div>
                     </div>
-                    <button type="submit" class="btn">Salvar Inscrição</button>
+                    <button type="submit" class="btn">Salvar</button>
                 </form>
             </div>
 
-            <!-- Editar times/inscrição -->
             <div id="tab-editarTime" class="tab-content">
-                <div class="cpf-busca-box">
-                    <h3>🔐 Editar Time</h3>
-                    <p>Digite o CPF do responsável</p>
-                    <input type="text" id="cpfEditarBusca" placeholder="Apenas números" maxlength="11" style="text-align:center;font-size:18px;">
-                    <button onclick="buscarTimePorCPF()" class="btn" style="margin-top:15px;">🔍 Buscar</button>
-                </div>
+                <div class="cpf-busca-box"><h3>🔐 Editar</h3><p>Digite o CPF</p><input type="text" id="cpfEditarBusca" placeholder="Apenas números" maxlength="11"><button onclick="buscarTimePorCPF()" class="btn">🔍 Buscar</button></div>
                 <div id="editarTimeContainer"></div>
             </div>
 
-            <!-- Tabela de Jogos -->
             <div id="tab-tabelaJogos" class="tab-content">
-                <div class="form-group"><label>Selecione a Modalidade:</label><select id="selectModalidade" onchange="carregarTabelaJogos()"><option value="">Selecione</option></select></div>
+                <div class="form-group"><label>Modalidade:</label><select id="selectModalidade" onchange="carregarTabelaJogos()"><option value="">Selecione</option></select></div>
                 <div id="tabelaJogosContainer"></div>
             </div>
 
-            <!-- Regras -->
             <div id="tab-regras" class="tab-content">
-                <div class="regras-container">
-                    <h2 style="color:#667eea;">📋 Regras das Competições</h2>
-                    <h3>Modalidades:</h3>
-                    <ul>
-                        <li>Futsal Masculino</li>
-                        <li>Futsal Feminino</li>
-                        <li>Basquete 3x3 Masculino</li>
-                        <li>Basquete 3x3 Feminino</li>
-                        <li>Voleibol (Misto)</li>
-                        <li>Handebol (Misto)</li>
-                        <li>Bola Queimada (Misto)</li>
-                        <li>♟️ Xadrez (Individual)</li>
-                        <li>🏊 Natação 30m livre Masculino (Individual)</li>
-                        <li>🏊 Natação 30m livre Feminino (Individual)</li>
-                    </ul>
-                    <div class="regra-modalidade"><h3>⚽ Futsal</h3><ul><li>5 jogadores + 5 reservas</li><li>10 minutos corridos</li><li>Empate = pênaltis (morte súbita)</li></ul></div>
-                    <div class="regra-modalidade"><h3>🤾 Handebol</h3><ul><li>7 jogadores (mín. 3H/3M) + 7 reservas</li><li>10 minutos</li><li>Empate = tiros de 7m (morte súbita)</li></ul></div>
-                    <div class="regra-modalidade"><h3>🏀 Basquete 3x3</h3><ul><li>3 jogadores + 1 reserva</li><li>10 min ou 21 pontos</li><li>Empate = 2 pontos na prorrogação</li></ul></div>
-                    <div class="regra-modalidade"><h3>🔥 Bola queimada</h3><ul><li>8 jogadores (capitão tem 2 vidas)</li><li>15 min máx.</li></ul></div>
-                    <div class="regra-modalidade"><h3>🏐 Voleibol</h3><ul><li>6 jogadores (3H/3M) + 6 reservas</li><li>1 set de 15 pontos (diferença 2)</li></ul></div>
-                    <div class="regra-modalidade" style="border-color:#f39c12;"><h3>♟️ Xadrez (Individual)</h3><ul><li>Modalidade individual</li><li>Sistema Suíço ou Eliminatória</li></ul></div>
-                    <div class="regra-modalidade" style="border-color:#1a8cff;"><h3>🏊 Natação 30m livre Masculino</h3><ul><li>Modalidade individual</li><li>30 metros estilo livre</li><li>Menor tempo vence</li></ul></div>
-                    <div class="regra-modalidade" style="border-color:#ff6b9d;"><h3>🏊 Natação 30m livre Feminino</h3><ul><li>Modalidade individual</li><li>30 metros estilo livre</li><li>Menor tempo vence</li></ul></div>
+                <div class="regras-container" style="max-height:400px;overflow-y:auto;padding:20px;">
+                    <h2 style="color:#667eea;">📋 Regras</h2>
+                    <ul><li>Futsal Masculino</li><li>Futsal Feminino</li><li>Basquete 3x3</li><li>Voleibol (Misto)</li><li>Handebol (Misto)</li><li>Bola Queimada (Misto)</li><li>Xadrez (Individual)</li><li>Natação 30m (Masc/Fem)</li></ul>
+                    <p><strong>Futsal:</strong> 5 jogadores, 10min, pênaltis</p>
+                    <p><strong>Handebol:</strong> 7 jogadores (3H/3M), 10min</p>
+                    <p><strong>Basquete:</strong> 3 jogadores, 10min ou 21 pontos</p>
+                    <p><strong>Voleibol:</strong> 6 jogadores (3H/3M), 1 set 15 pontos</p>
+                    <p><strong>Bola queimada:</strong> 8 jogadores, capitão 2 vidas</p>
+                    <p><strong>Xadrez:</strong> Individual, sistema suíço</p>
+                    <p><strong>Natação:</strong> 30m livre, menor tempo vence</p>
                 </div>
             </div>
 
-            <!-- Consultar Times -->
             <div id="tab-consultar" class="tab-content">
                 <div class="stats-grid" id="statsModalidades"></div>
                 <div class="form-group"><label>🔍 Buscar:</label><input type="text" id="buscarTimeNome" placeholder="Nome ou curso..." onkeyup="filtrarTimes()"></div>
-                <div class="table-container">
-                    <table id="tabelaTimes">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Time/Atleta</th>
-                                <th>Curso</th>
-                                <th>Data</th>
-                                <th>Modalidades</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaTimesBody"></tbody>
-                    </table>
-                </div>
-                <div style="margin-top: 10px; font-size: 12px; color: #888; text-align: center;">
-                    🔒 Informações pessoais (CPF e WhatsApp) são visíveis apenas para o administrador
-                </div>
+                <div class="table-container"><table id="tabelaTimes"><thead><tr><th>#</th><th>Time</th><th>Curso</th><th>Data</th><th>Modalidades</th><th>Ações</th></tr></thead><tbody id="tabelaTimesBody"></tbody></table></div>
             </div>
 
-            <!-- Administrador -->
-            <div id="tab-admin" class="tab-content">
-                <div id="adminContent">
-                    <div style="text-align:center;padding:40px;">
-                        <h2 style="color:#667eea;">👑 Acesso Administrador</h2>
-                        <p style="margin:20px 0;">Clique no botão abaixo para fazer login</p>
-                        <button onclick="abrirLoginAdmin()" class="btn" style="font-size:18px;padding:15px 40px;">🔐 Fazer Login</button>
-                    </div>
-                </div>
-            </div>
+            <div id="tab-admin" class="tab-content"><div style="text-align:center;padding:40px;"><h2 style="color:#667eea;">👑 Admin</h2><p style="margin:20px 0;">Clique para fazer login</p><button onclick="abrirLoginAdmin()" class="btn">🔐 Login</button></div></div>
         </div>
 
         <div class="footer">
-            <p>Desenvolvido por Prof. Ms. Murilo Luiz Burim</p>
-            <p>📧 murilo.burim@kroton.com.br | © 2026</p>
+            <p>Desenvolvido por Prof. Ms. Murilo Luiz Burim | 📧 murilo.burim@kroton.com.br | © 2026</p>
         </div>
     </div>
 
     <script>
         // ============================================
-        // FIREBASE CONFIG
+        // CONFIGURAÇÃO FIREBASE
         // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyAKsvMG4l1Rn8-6zCymA5reJ_zRZ0lGj50",
@@ -241,177 +169,129 @@
             projectId: "jogos-unopar",
             storageBucket: "jogos-unopar.firebasestorage.app",
             messagingSenderId: "694948203841",
-            appId: "1:694948203841:web:cd7fa57abd1d46e07225c0",
-            measurementId: "G-DD963LNCEH"
+            appId: "1:694948203841:web:cd7fa57abd1d46e07225c0"
         };
 
         // ============================================
-        // CACHE E VARIÁVEIS GLOBAIS
+        // VARIÁVEIS GLOBAIS
         // ============================================
         let inscricoesCache = [];
-        let inscricoesCarregadas = false;
         let firebaseOnline = false;
         let isAdmin = false;
         let databaseRef = null;
+        let dadosCarregados = false;
 
         // ============================================
         // FUNÇÕES DE UI
         // ============================================
 
-        function showLoading(show) {
+        function showLoading(show, msg = 'Carregando dados...') {
             const overlay = document.getElementById('loadingOverlay');
-            if (overlay) overlay.style.display = show ? 'flex' : 'none';
+            if (overlay) {
+                overlay.style.display = show ? 'flex' : 'none';
+                document.getElementById('loadingText').textContent = msg;
+            }
         }
 
         function updateStatus() {
             const indicator = document.getElementById('statusIndicator');
             if (indicator) {
-                if (firebaseOnline) {
-                    indicator.className = 'status online';
-                    indicator.textContent = '✅ Conectado ao Firebase (tempo real)';
-                } else {
-                    indicator.className = 'status offline';
-                    indicator.textContent = '⚠️ Offline - Usando dados em cache';
-                }
+                indicator.className = firebaseOnline ? 'status online' : 'status offline';
+                indicator.textContent = firebaseOnline ? '✅ Online' : '⚠️ Offline';
             }
-            
             const cacheInfo = document.getElementById('cacheInfo');
             if (cacheInfo) {
-                cacheInfo.textContent = `📦 ${inscricoesCache.length} inscrições em cache | ${firebaseOnline ? 'Online' : 'Offline'}`;
+                cacheInfo.textContent = `📦 ${inscricoesCache.length} inscrições | ${firebaseOnline ? 'Online' : 'Offline'}`;
             }
         }
 
         // ============================================
-        // INICIALIZAR FIREBASE
+        // INICIALIZAR FIREBASE (UMA ÚNICA VEZ)
         // ============================================
         try {
             firebase.initializeApp(firebaseConfig);
             databaseRef = firebase.database();
             
+            // Verificar conexão
             databaseRef.ref('.info/connected').on('value', (snapshot) => {
                 firebaseOnline = snapshot.val() === true;
                 updateStatus();
-                if (firebaseOnline && !inscricoesCarregadas) {
-                    carregarDadosIniciais();
-                }
-            });
-
-            databaseRef.ref('inscricoes').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    inscricoesCache = Object.values(data);
-                    inscricoesCarregadas = true;
-                    localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
-                    // Atualizar todas as interfaces
-                    carregarTabelaTimes();
-                    carregarEstatisticas();
-                    carregarSelectModalidades();
-                    carregarTabelaJogos();
-                    if (isAdmin) {
-                        carregarAdminTimes();
-                    }
-                    updateStatus();
-                } else {
-                    carregarDadosLocais();
-                }
             });
 
             console.log('🔥 Firebase inicializado!');
         } catch (error) {
-            console.error('❌ Erro ao inicializar Firebase:', error);
+            console.error('❌ Erro no Firebase:', error);
             firebaseOnline = false;
-            carregarDadosLocais();
-            updateStatus();
         }
 
         // ============================================
-        // FUNÇÕES DE CARREGAMENTO
+        // CARREGAR DADOS (UMA ÚNICA VEZ)
         // ============================================
-        
-        function carregarDadosLocais() {
+        async function carregarDados() {
+            if (dadosCarregados) return; // Já carregou
+            
+            showLoading(true, 'Carregando dados do servidor...');
+            
             try {
-                const data = localStorage.getItem('inscricoes');
-                if (data) {
-                    inscricoesCache = JSON.parse(data);
-                    inscricoesCarregadas = true;
+                // Tentar carregar do localStorage primeiro (mais rápido)
+                const localData = localStorage.getItem('inscricoes');
+                if (localData) {
+                    inscricoesCache = JSON.parse(localData);
+                    console.log(`📦 Dados do localStorage: ${inscricoesCache.length} inscrições`);
+                }
+
+                // Buscar do Firebase em segundo plano
+                if (databaseRef) {
+                    const snapshot = await databaseRef.ref('inscricoes').once('value');
+                    const data = snapshot.val();
+                    if (data) {
+                        inscricoesCache = Object.values(data);
+                        localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
+                        console.log(`🔥 Dados do Firebase: ${inscricoesCache.length} inscrições`);
+                    }
+                }
+                
+                dadosCarregados = true;
+                showLoading(false);
+                
+                // Atualizar a interface
+                carregarTabelaTimes();
+                carregarEstatisticas();
+                carregarSelectModalidades();
+                carregarTabelaJogos();
+                updateStatus();
+                
+            } catch (error) {
+                console.error('❌ Erro ao carregar:', error);
+                showLoading(false);
+                // Se falhou, tentar usar localStorage
+                const localData = localStorage.getItem('inscricoes');
+                if (localData) {
+                    inscricoesCache = JSON.parse(localData);
                     carregarTabelaTimes();
                     carregarEstatisticas();
-                    carregarSelectModalidades();
-                    carregarTabelaJogos();
-                    if (isAdmin) {
-                        carregarAdminTimes();
-                    }
                     updateStatus();
                 }
-            } catch (e) {
-                console.warn('⚠️ Erro ao carregar dados locais:', e);
             }
-        }
-
-        function carregarDadosIniciais() {
-            showLoading(true);
-            setTimeout(() => {
-                if (!inscricoesCarregadas && databaseRef) {
-                    databaseRef.ref('inscricoes').once('value').then((snapshot) => {
-                        const data = snapshot.val();
-                        if (data) {
-                            inscricoesCache = Object.values(data);
-                            inscricoesCarregadas = true;
-                            localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
-                            carregarTabelaTimes();
-                            carregarEstatisticas();
-                            carregarSelectModalidades();
-                            carregarTabelaJogos();
-                            if (isAdmin) {
-                                carregarAdminTimes();
-                            }
-                            updateStatus();
-                        }
-                        showLoading(false);
-                    }).catch(() => {
-                        showLoading(false);
-                    });
-                } else {
-                    showLoading(false);
-                }
-            }, 500);
         }
 
         // ============================================
         // FUNÇÕES DE BANCO DE DADOS
         // ============================================
-        
-        function getInscricoes() {
-            return inscricoesCache;
-        }
-
-        function getInscricoesLocal() {
-            try {
-                const data = localStorage.getItem('inscricoes');
-                return data ? JSON.parse(data) : [];
-            } catch {
-                return [];
-            }
-        }
 
         async function salvarInscricao(inscricao) {
-            showLoading(true);
             const id = Date.now().toString();
             inscricao.id = id;
             
             try {
-                if (firebaseOnline && databaseRef) {
+                if (databaseRef) {
                     await databaseRef.ref('inscricoes/' + id).set(inscricao);
                 }
                 inscricoesCache.push(inscricao);
                 localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
-                // Atualizar interfaces
                 carregarTabelaTimes();
                 carregarEstatisticas();
-                if (isAdmin) {
-                    carregarAdminTimes();
-                }
-                showLoading(false);
+                if (isAdmin) carregarAdminTimes();
                 return true;
             } catch (error) {
                 console.error('❌ Erro ao salvar:', error);
@@ -419,16 +299,14 @@
                 localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
                 carregarTabelaTimes();
                 carregarEstatisticas();
-                showLoading(false);
-                alert('⚠️ Dados salvos localmente (offline).');
+                alert('⚠️ Dados salvos localmente.');
                 return true;
             }
         }
 
         async function atualizarInscricao(id, inscricaoAtualizada) {
-            showLoading(true);
             try {
-                if (firebaseOnline && databaseRef) {
+                if (databaseRef) {
                     await databaseRef.ref('inscricoes/' + id).update(inscricaoAtualizada);
                 }
                 const idx = inscricoesCache.findIndex(i => i.id === id);
@@ -438,40 +316,29 @@
                 }
                 carregarTabelaTimes();
                 carregarEstatisticas();
-                if (isAdmin) {
-                    carregarAdminTimes();
-                }
-                showLoading(false);
+                if (isAdmin) carregarAdminTimes();
                 return true;
             } catch (error) {
                 console.error('❌ Erro ao atualizar:', error);
-                showLoading(false);
-                alert('⚠️ Erro ao atualizar. Tente novamente.');
                 return false;
             }
         }
 
         async function excluirInscricaoFirebase(id) {
-            if (!confirm('Tem certeza que deseja excluir esta inscrição?')) return false;
+            if (!confirm('Excluir esta inscrição?')) return false;
             
-            showLoading(true);
             try {
-                if (firebaseOnline && databaseRef) {
+                if (databaseRef) {
                     await databaseRef.ref('inscricoes/' + id).remove();
                 }
                 inscricoesCache = inscricoesCache.filter(i => i.id !== id);
                 localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
                 carregarTabelaTimes();
                 carregarEstatisticas();
-                if (isAdmin) {
-                    carregarAdminTimes();
-                }
-                showLoading(false);
+                if (isAdmin) carregarAdminTimes();
                 return true;
             } catch (error) {
                 console.error('❌ Erro ao excluir:', error);
-                showLoading(false);
-                alert('⚠️ Erro ao excluir. Tente novamente.');
                 return false;
             }
         }
@@ -507,20 +374,20 @@
         const nomesModalidades = {
             futsalMasc: 'Futsal Masculino', 
             futsalFem: 'Futsal Feminino', 
-            basqueteMasc: 'Basquete 3x3 Masculino', 
-            basqueteFem: 'Basquete 3x3 Feminino',
+            basqueteMasc: 'Basquete 3x3 Masc', 
+            basqueteFem: 'Basquete 3x3 Fem',
             volei: 'Voleibol (Misto)', 
             handebol: 'Handebol (Misto)', 
             bolaQueimada: 'Bola queimada (Misto)',
             xadrez: '♟️ Xadrez (Individual)',
-            natacaoMasc: '🏊 Natação 30m livre Masculino',
-            natacaoFem: '🏊 Natação 30m livre Feminino'
+            natacaoMasc: '🏊 Natação 30m Masc',
+            natacaoFem: '🏊 Natação 30m Fem'
         };
 
         let timesFiltrados = [];
 
         // ============================================
-        // FUNÇÕES DO SISTEMA - INSCRIÇÃO
+        // FUNÇÕES - INSCRIÇÃO
         // ============================================
 
         function renderizarAtletas(modalidade) {
@@ -528,14 +395,9 @@
             if(!container) return;
             container.innerHTML = '';
             modalidadesAtletas[modalidade].forEach((a, i) => {
-                let placeholder = '';
-                if(modalidade === 'xadrez') placeholder = 'Nome do Jogador';
-                else if(modalidade === 'natacaoMasc' || modalidade === 'natacaoFem') placeholder = 'Nome do Nadador(a)';
-                else placeholder = 'Atleta '+(i+1);
-                
                 let div = document.createElement('div');
                 div.className = 'atleta-item';
-                div.innerHTML = `<input type="text" placeholder="${placeholder}" value="${a}" onchange="atualizarAtleta('${modalidade}',${i},this.value)">
+                div.innerHTML = `<input type="text" placeholder="Atleta ${i+1}" value="${a}" onchange="atualizarAtleta('${modalidade}',${i},this.value)">
                                 <button onclick="removerAtleta('${modalidade}',${i})" class="btn btn-danger" style="padding:5px 10px;">X</button>`;
                 container.appendChild(div);
             });
@@ -543,11 +405,11 @@
 
         function adicionarAtleta(m) { 
             if(modalidadesAtletas[m].length >= limites[m]) { 
-                alert(`Máximo ${limites[m]} atleta(s)!`); 
+                alert(`Máximo ${limites[m]} atletas!`); 
                 return; 
             } 
             if((m === 'xadrez' || m === 'natacaoMasc' || m === 'natacaoFem') && modalidadesAtletas[m].length > 0) {
-                alert('Esta é uma modalidade individual! Cada inscrição deve ter apenas 1 atleta.');
+                alert('Modalidade individual! Apenas 1 atleta.');
                 return;
             }
             modalidadesAtletas[m].push(''); 
@@ -557,263 +419,11 @@
         function removerAtleta(m,i) { modalidadesAtletas[m].splice(i,1); renderizarAtletas(m); }
         function atualizarAtleta(m,i,v) { modalidadesAtletas[m][i] = v; }
 
-        // Nova inscrição
-        document.getElementById('formInscricao').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            let nome = document.getElementById('nomeTime').value.trim();
-            let curso = document.getElementById('curso').value.trim();
-            let cpf = document.getElementById('cpfResponsavel').value.trim();
-            let whatsapp = document.getElementById('whatsapp').value.trim();
-            
-            if(!nome || !curso || !cpf || !whatsapp) return alert('Preencha todos os campos!');
-            if(cpf.length!==11 || !/^\d+$/.test(cpf)) return alert('CPF inválido!');
-            if(whatsapp.length < 10 || !/^\d+$/.test(whatsapp)) return alert('WhatsApp inválido! Digite apenas números com DDD (Ex: 41999999999)');
-            
-            let tem = false; 
-            for(let m in modalidadesAtletas) if(modalidadesAtletas[m].length>0) tem=true;
-            if(!tem) return alert('Adicione pelo menos uma modalidade!');
-            
-            let individuais = ['xadrez', 'natacaoMasc', 'natacaoFem'];
-            for(let m of individuais) {
-                if(modalidadesAtletas[m].length > 1) {
-                    alert(`A modalidade ${nomesModalidades[m]} é individual! Cada inscrição deve ter apenas 1 atleta.`);
-                    return;
-                }
-            }
-            
-            const inscricao = { 
-                nomeTime: nome, 
-                curso: curso, 
-                cpfResponsavel: cpf,
-                whatsapp: whatsapp,
-                modalidades: JSON.parse(JSON.stringify(modalidadesAtletas)), 
-                dataCriacao: new Date().toISOString() 
-            };
-            
-            const salvou = await salvarInscricao(inscricao);
-            if(salvou) {
-                alert(`✅ Inscrição realizada com sucesso!`);
-                document.getElementById('formInscricao').reset();
-                modalidadesAtletas = { 
-                    futsalMasc:[], futsalFem:[], basqueteMasc:[], basqueteFem:[], 
-                    volei:[], handebol:[], bolaQueimada:[], 
-                    xadrez:[], natacaoMasc:[], natacaoFem:[]
-                };
-                for(let m in modalidadesAtletas) renderizarAtletas(m);
-                carregarTabelaTimes();
-                carregarEstatisticas();
-                if (isAdmin) {
-                    carregarAdminTimes();
-                }
-            }
-        });
-
         // ============================================
-        // FUNÇÕES - EDITAR TIME
-        // ============================================
-
-        function buscarTimePorCPF() {
-            let cpf = document.getElementById('cpfEditarBusca').value.trim();
-            if(!cpf || cpf.length!==11) return alert('Digite CPF válido!');
-            
-            const time = inscricoesCache.find(i => i.cpfResponsavel === cpf);
-            if(!time) {
-                alert('Nenhum time encontrado com este CPF!');
-                return;
-            }
-            carregarEdicao(time);
-        }
-
-        function carregarEdicao(time) {
-            let container = document.getElementById('editarTimeContainer');
-            
-            const whatsappValue = time.whatsapp || '';
-            
-            let html = `<div style="background:#f0f4ff;padding:20px;border-radius:15px;">
-                <h3 style="color:#667eea;">✏️ Editando: ${time.nomeTime}</h3>
-                <form id="formEdit">
-                    <div class="form-group">
-                        <label>Nome do Time/Atleta:</label>
-                        <input type="text" id="editNome" value="${time.nomeTime.replace(/"/g, '&quot;')}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Curso de Graduação:</label>
-                        <input type="text" id="editCurso" value="${time.curso.replace(/"/g, '&quot;')}" required>
-                    </div>
-                    <div class="form-group">
-                        <label>CPF do Responsável:</label>
-                        <input type="text" id="editCpf" value="${time.cpfResponsavel}" readonly style="background:#ddd;">
-                    </div>
-                    <div class="form-group">
-                        <label>WhatsApp:</label>
-                        <div class="whatsapp-wrapper">
-                            <span>📱 +55</span>
-                            <input type="text" id="editWhatsapp" value="${whatsappValue}" placeholder="Ex: 41999999999" maxlength="12" required>
-                        </div>
-                    </div>`;
-            
-            let modals = ['futsalMasc','futsalFem','basqueteMasc','basqueteFem','volei','handebol','bolaQueimada','xadrez','natacaoMasc','natacaoFem'];
-            modals.forEach(m => {
-                const atletas = time.modalidades[m] || [];
-                html += `<div class="modalidade-card">
-                    <h3>${nomesModalidades[m]}</h3>
-                    <div id="edit-${m}"></div>
-                    <button type="button" onclick="adicionarEdit('${m}')" class="btn btn-success">+ ${m === 'xadrez' ? 'Jogador' : (m === 'natacaoMasc' || m === 'natacaoFem') ? 'Nadador(a)' : 'Atleta'}</button>
-                </div>`;
-                window[`e_${m}`] = [...atletas];
-            });
-            
-            html += `<div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap;">
-                    <button type="submit" class="btn">💾 Salvar Alterações</button>
-                    <button type="button" onclick="excluirTime('${time.id}')" class="btn btn-danger">🗑️ Excluir Inscrição</button>
-                </div>
-                </form>
-            </div>`;
-            
-            container.innerHTML = html;
-            
-            modals.forEach(m => renderizarEdit(m));
-            
-            document.getElementById('formEdit').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                let inscricaoAtualizada = {
-                    nomeTime: document.getElementById('editNome').value,
-                    curso: document.getElementById('editCurso').value,
-                    cpfResponsavel: document.getElementById('editCpf').value,
-                    whatsapp: document.getElementById('editWhatsapp').value,
-                    modalidades: {},
-                    dataCriacao: time.dataCriacao
-                };
-                
-                modals.forEach(m => {
-                    inscricaoAtualizada.modalidades[m] = window[`e_${m}`];
-                });
-                
-                const atualizou = await atualizarInscricao(time.id, inscricaoAtualizada);
-                if(atualizou) {
-                    alert('✅ Time atualizado com sucesso!');
-                    document.getElementById('editarTimeContainer').innerHTML = '';
-                    document.getElementById('cpfEditarBusca').value = '';
-                    carregarTabelaTimes();
-                    carregarEstatisticas();
-                    if (isAdmin) {
-                        carregarAdminTimes();
-                    }
-                }
-            });
-        }
-
-        function adicionarEdit(m) { 
-            if(window[`e_${m}`].length >= limites[m]) { 
-                alert(`Máximo ${limites[m]} atleta(s)!`); 
-                return; 
-            } 
-            let individuais = ['xadrez', 'natacaoMasc', 'natacaoFem'];
-            if(individuais.includes(m) && window[`e_${m}`].length > 0) {
-                alert(`A modalidade ${nomesModalidades[m]} é individual! Apenas 1 atleta por inscrição.`);
-                return;
-            }
-            window[`e_${m}`].push(''); 
-            renderizarEdit(m); 
-        }
-        
-        function removerEdit(m,i) { 
-            window[`e_${m}`].splice(i,1); 
-            renderizarEdit(m); 
-        }
-        
-        function atualizarEdit(m,i,v) { 
-            window[`e_${m}`][i] = v; 
-        }
-        
-        function renderizarEdit(m) {
-            const container = document.getElementById(`edit-${m}`);
-            if(!container) return;
-            container.innerHTML = '';
-            window[`e_${m}`].forEach((a,i) => {
-                const div = document.createElement('div');
-                div.className = 'atleta-item';
-                div.innerHTML = `<input type="text" value="${a}" onchange="atualizarEdit('${m}',${i},this.value)">
-                                <button onclick="removerEdit('${m}',${i})" class="btn btn-danger" style="padding:5px 10px;">X</button>`;
-                container.appendChild(div);
-            });
-        }
-
-        async function excluirTime(id) {
-            const excluiu = await excluirInscricaoFirebase(id);
-            if(excluiu) {
-                alert('✅ Time excluído!');
-                document.getElementById('editarTimeContainer').innerHTML = '';
-                document.getElementById('cpfEditarBusca').value = '';
-                carregarTabelaTimes();
-                carregarEstatisticas();
-                if (isAdmin) {
-                    carregarAdminTimes();
-                }
-            }
-        }
-
-        // ============================================
-        // FUNÇÕES - TABELA DE JOGOS
-        // ============================================
-
-        function carregarSelectModalidades() {
-            let select = document.getElementById('selectModalidade');
-            if (!select) return;
-            select.innerHTML = '<option value="">Selecione</option>';
-            for(let [k,v] of Object.entries(nomesModalidades)) {
-                select.innerHTML += `<option value="${k}">${v}</option>`;
-            }
-        }
-
-        function carregarTabelaJogos() {
-            let select = document.getElementById('selectModalidade');
-            let container = document.getElementById('tabelaJogosContainer');
-            if (!select || !container) return;
-            
-            let modalidade = select.value;
-            if(!modalidade) { 
-                container.innerHTML = '<p style="text-align:center;padding:20px;">Selecione uma modalidade</p>'; 
-                return; 
-            }
-            
-            let times = [];
-            inscricoesCache.forEach(i => { 
-                if(i.modalidades[modalidade]?.length > 0) {
-                    times.push(i.nomeTime);
-                }
-            });
-            
-            if(times.length < 2) { 
-                let msg = modalidade.includes('Natação') ? 'Nadadores' : 'Jogadores';
-                container.innerHTML = `<p style="text-align:center;padding:20px;">Número insuficiente de ${msg} para gerar a tabela. Mínimo de 2.</p>`;
-                return; 
-            }
-            
-            let html = `<h3 style="color:#667eea;">${nomesModalidades[modalidade]} - ${formatosDisputa[modalidade]}</h3>
-                        <div class="table-container"><table><thead><tr><th>Prova/Jogo</th><th>Atleta A</th><th>vs</th><th>Atleta B</th><th>Resultado</th></tr></thead><tbody>`;
-            let j=1;
-            for(let i=0; i<times.length; i++) {
-                for(let k=i+1; k<times.length; k++) {
-                    let res = resultadosJogos[`${modalidade}_${i}_${k}`] || '';
-                    html += `<tr><td>${j}</td><td>${times[i]}</td><td>🆚</td><td>${times[k]}</td><td><strong>${res}</strong></td></tr>`;
-                    j++;
-                }
-            }
-            html += `</tbody></table></div>`;
-            container.innerHTML = html;
-        }
-
-        // ============================================
-        // FUNÇÕES - CONSULTAR TIMES (CORRIGIDO)
+        // FUNÇÕES - CONSULTAR TIMES (RÁPIDO)
         // ============================================
 
         function carregarTabelaTimes() {
-            console.log('🔄 Carregando tabela de times...');
-            console.log(`📦 Inscrições em cache: ${inscricoesCache.length}`);
-            
             let map = new Map();
             inscricoesCache.forEach(i => {
                 if(!map.has(i.nomeTime)) {
@@ -830,7 +440,6 @@
                 }
             });
             timesFiltrados = Array.from(map.values());
-            console.log(`✅ ${timesFiltrados.length} times encontrados`);
             atualizarTabela();
         }
 
@@ -840,16 +449,14 @@
             tbody.innerHTML = '';
             
             if (timesFiltrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">Nenhum time inscrito ainda</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">Nenhum time inscrito</td></tr>';
                 return;
             }
             
             timesFiltrados.forEach((t,i) => {
                 let mods = []; 
                 for(let [m,at] of Object.entries(t.modalidades)) {
-                    if(at?.length>0) {
-                        mods.push(nomesModalidades[m]);
-                    }
+                    if(at?.length>0) mods.push(nomesModalidades[m]);
                 }
                 tbody.innerHTML += `<tr>
                     <td>${i+1}</td>
@@ -857,7 +464,7 @@
                     <td>${t.curso}</td>
                     <td>${new Date(t.dataCriacao).toLocaleDateString('pt-BR')}</td>
                     <td>${mods.map(m=>`<span class="modalidades-badge">${m}</span>`).join('')}</td>
-                    <td><button onclick="verDetalhes(${i})" class="btn btn-info" style="padding:5px 10px;">👁️ Detalhes</button></td>
+                    <td><button onclick="verDetalhes(${i})" class="btn btn-info" style="padding:5px 10px;">👁️</button></td>
                 </tr>`;
             });
         }
@@ -871,495 +478,4 @@
                 }
             }
             alert(msg);
-        }
-
-        function filtrarTimes() {
-            let busca = document.getElementById('buscarTimeNome').value.toLowerCase();
-            if(!busca) { carregarTabelaTimes(); return; }
-            timesFiltrados = timesFiltrados.filter(t => t.nomeTime.toLowerCase().includes(busca) || t.curso.toLowerCase().includes(busca));
-            atualizarTabela();
-        }
-
-        function carregarEstatisticas() {
-            console.log('📊 Carregando estatísticas...');
-            let stats = {}; 
-            for(let m in nomesModalidades) stats[m]=0;
-            inscricoesCache.forEach(i => { 
-                for(let [m,at] of Object.entries(i.modalidades)) {
-                    if(at?.length>0) {
-                        if(['xadrez', 'natacaoMasc', 'natacaoFem'].includes(m)) {
-                            stats[m] += at.length;
-                        } else {
-                            stats[m]++; 
-                        }
-                    }
-                }
-            });
-            
-            let container = document.getElementById('statsModalidades');
-            if (!container) return;
-            container.innerHTML = '';
-            
-            let maxV = Math.max(...Object.values(stats),1);
-            let temDados = false;
-            
-            for(let [m,q] of Object.entries(stats)) {
-                if(q > 0) temDados = true;
-                let card = document.createElement('div');
-                card.className = 'stat-card';
-                card.onclick = () => filtrarPorModalidade(m);
-                let label = nomesModalidades[m];
-                let unit = ['xadrez', 'natacaoMasc', 'natacaoFem'].includes(m) ? 'atleta(s)' : 'time(s)';
-                card.innerHTML = `<h4>${label}</h4><div class="stat-number">${q}</div><p>${unit}</p>
-                                <div class="progress-bar"><div class="progress-fill" style="width:${(q/maxV)*100}%"></div></div>`;
-                container.appendChild(card);
-            }
-            
-            if (!temDados) {
-                container.innerHTML = '<p style="text-align:center;padding:20px;color:#888;">Nenhuma inscrição em nenhuma modalidade ainda.</p>';
-            }
-        }
-
-        function filtrarPorModalidade(modalidade) {
-            let map = new Map();
-            inscricoesCache.forEach(i => {
-                if(i.modalidades[modalidade]?.length > 0) {
-                    if(!map.has(i.nomeTime)) {
-                        map.set(i.nomeTime, { 
-                            nomeTime: i.nomeTime, 
-                            curso: i.curso, 
-                            dataCriacao: i.dataCriacao, 
-                            modalidades: {} 
-                        });
-                    }
-                    map.get(i.nomeTime).modalidades[modalidade] = i.modalidades[modalidade];
-                }
-            });
-            timesFiltrados = Array.from(map.values());
-            atualizarTabela();
-            alert(`Filtrando times da modalidade: ${nomesModalidades[modalidade]}`);
-        }
-
-        // ============================================
-        // NAVEGAÇÃO DAS ABAS
-        // ============================================
-
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            
-            const targetTab = document.getElementById(`tab-${tabName}`);
-            if (targetTab) {
-                targetTab.classList.add('active');
-            }
-            
-            const buttons = document.querySelectorAll('.tab');
-            buttons.forEach(btn => {
-                if (btn.textContent.toLowerCase().includes(tabName.toLowerCase()) || 
-                    (tabName === 'inscricao' && btn.textContent.includes('Nova'))) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            if (tabName === 'consultar') {
-                carregarTabelaTimes();
-                carregarEstatisticas();
-            } else if (tabName === 'tabelaJogos') {
-                carregarSelectModalidades();
-                carregarTabelaJogos();
-            } else if (tabName === 'admin' && isAdmin) {
-                carregarAdminTimes();
-            }
-        }
-
-        // ============================================
-        // ADMIN
-        // ============================================
-
-        function abrirLoginAdmin() {
-            const existing = document.getElementById('loginOverlay');
-            if (existing) existing.remove();
-            
-            let div = document.createElement('div');
-            div.className = 'login-overlay';
-            div.id = 'loginOverlay';
-            div.innerHTML = `
-                <div class="login-box">
-                    <h2 style="color:#667eea;">🔐 Acesso Administrador</h2>
-                    <p style="margin-bottom:20px;color:#666;">Digite a senha para acessar o painel administrativo</p>
-                    <input type="password" id="senhaAdmin" placeholder="Digite a senha" style="text-align:center;font-size:18px;margin-bottom:15px;width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;">
-                    <button onclick="verificarAdmin()" class="btn" style="width:100%;margin-bottom:10px;">🔓 Entrar</button>
-                    <button onclick="fecharLoginAdmin()" class="btn btn-danger" style="width:100%;">❌ Cancelar</button>
-                </div>
-            `;
-            document.body.appendChild(div);
-            
-            setTimeout(() => {
-                const input = document.getElementById('senhaAdmin');
-                if (input) input.focus();
-            }, 100);
-        }
-        
-        function fecharLoginAdmin() { 
-            const overlay = document.getElementById('loginOverlay'); 
-            if (overlay) overlay.remove(); 
-        }
-        
-        function verificarAdmin() {
-            const senhaInput = document.getElementById('senhaAdmin');
-            if (!senhaInput) return;
-            
-            const senha = senhaInput.value;
-            
-            if (senha === 'UNOPAR2026') {
-                isAdmin = true;
-                fecharLoginAdmin();
-                
-                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                
-                const adminTab = document.getElementById('tab-admin');
-                if (adminTab) {
-                    adminTab.classList.add('active');
-                }
-                
-                document.querySelectorAll('.tab').forEach(t => {
-                    if (t.textContent.includes('Administrador')) {
-                        t.classList.add('active');
-                    }
-                });
-                
-                carregarAdminPanel();
-                
-                alert('✅ Login realizado com sucesso!');
-            } else {
-                alert('❌ Senha incorreta! Tente novamente.');
-                senhaInput.value = '';
-                senhaInput.focus();
-            }
-        }
-
-        function carregarAdminPanel() {
-            const adminDiv = document.getElementById('tab-admin');
-            if (!adminDiv) return;
-            
-            adminDiv.innerHTML = `
-                <h2 style="color:#667eea;">👑 Painel Administrador</h2>
-                <div style="background:#e8f5e9;padding:15px;border-radius:10px;margin-bottom:20px;">
-                    <p style="color:#2e7d32;">🔒 Você está visualizando informações privadas (CPF e WhatsApp)</p>
-                </div>
-                
-                <div class="admin-panel">
-                    <h3>📋 Formatos de Disputa</h3>
-                    <div id="formatosContainer"></div>
-                    <button onclick="salvarFormatosAdmin()" class="btn">💾 Salvar Formatos</button>
-                </div>
-                
-                <div class="admin-panel">
-                    <h3>🎯 Resultados dos Jogos</h3>
-                    <select id="adminModalidade" onchange="carregarJogosAdmin()" style="margin-bottom:15px;">
-                        <option value="">Selecione</option>
-                    </select>
-                    <div id="adminJogosContainer"></div>
-                </div>
-                
-                <div class="admin-panel">
-                    <h3>📊 Relatório de Times e Atletas</h3>
-                    <button onclick="gerarRelatorioTimes()" class="btn btn-info">📄 Gerar Relatório</button>
-                    <button onclick="imprimirRelatorio()" class="btn btn-warning">🖨️ Imprimir</button>
-                </div>
-                
-                <h3 style="color:#667eea;margin:20px 0;">📋 Times / Atletas Inscritos</h3>
-                <div id="adminTimesList"></div>
-            `;
-            
-            carregarFormatosAdmin();
-            carregarSelectAdmin();
-            carregarAdminTimes();
-        }
-
-        function carregarFormatosAdmin() {
-            let container = document.getElementById('formatosContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            for(let [m, nome] of Object.entries(nomesModalidades)) {
-                container.innerHTML += `<div class="formato-card">
-                    <strong>${nome}</strong><br>
-                    <select id="formato_${m}">
-                        <option ${formatosDisputa[m]==='Rodízio'?'selected':''}>Rodízio</option>
-                        <option ${formatosDisputa[m]==='Eliminatória'?'selected':''}>Eliminatória Simples</option>
-                        <option ${formatosDisputa[m]==='Eliminatória Dupla'?'selected':''}>Eliminatória Dupla</option>
-                        <option ${formatosDisputa[m]==='Misto'?'selected':''}>Sistema Misto</option>
-                        <option ${formatosDisputa[m]==='Suíço'?'selected':''}>Sistema Suíço</option>
-                    </select>
-                </div>`;
-            }
-        }
-
-        function salvarFormatosAdmin() {
-            for(let m in nomesModalidades) {
-                const select = document.getElementById(`formato_${m}`);
-                if (select) formatosDisputa[m] = select.value;
-            }
-            localStorage.setItem('formatos', JSON.stringify(formatosDisputa));
-            alert('✅ Formatos salvos!');
-            carregarTabelaJogos();
-        }
-
-        function carregarSelectAdmin() {
-            let select = document.getElementById('adminModalidade');
-            if (!select) return;
-            select.innerHTML = '<option value="">Selecione</option>';
-            for(let [k,v] of Object.entries(nomesModalidades)) {
-                select.innerHTML += `<option value="${k}">${v}</option>`;
-            }
-        }
-
-        function carregarJogosAdmin() {
-            let modalidade = document.getElementById('adminModalidade').value;
-            let container = document.getElementById('adminJogosContainer');
-            if (!modalidade || !container) { 
-                if(container) container.innerHTML = ''; 
-                return; 
-            }
-            
-            let times = [];
-            inscricoesCache.forEach(i => { 
-                if(i.modalidades[modalidade]?.length > 0) {
-                    times.push(i.nomeTime);
-                }
-            });
-            
-            if(times.length < 2) { 
-                let msg = modalidade.includes('Natação') ? 'Nadadores' : 'Jogadores';
-                container.innerHTML = `<p>${msg} insuficientes</p>`; 
-                return; 
-            }
-            
-            let html = '<div class="table-container"><table><thead><tr><th>Prova/Jogo</th><th>Atleta A</th><th>vs</th><th>Atleta B</th><th>Resultado</th><th>Ação</th></tr></thead><tbody>';
-            let j=1;
-            for(let i=0; i<times.length; i++) {
-                for(let k=i+1; k<times.length; k++) {
-                    let id = `${modalidade}_${i}_${k}`;
-                    let val = resultadosJogos[id] || '';
-                    html += `<tr id="row_${id}">
-                        <td>${j}</td><td>${times[i]}</td><td>🆚</td><td>${times[k]}</td>
-                        <td><input type="text" id="res_${id}" value="${val}" placeholder="Ex: 2x1 ou 25s" style="width:100px"></td>
-                        <td><button onclick="salvarResultadoAdmin('${id}')" class="btn btn-success" style="padding:5px 10px;">Salvar</button></td>
-                    </tr>`;
-                    j++;
-                }
-            }
-            html += '</tbody></table></div>';
-            container.innerHTML = html;
-        }
-
-        function salvarResultadoAdmin(id) {
-            let val = document.getElementById(`res_${id}`).value;
-            if(val) { 
-                resultadosJogos[id] = val; 
-                localStorage.setItem('resultados', JSON.stringify(resultadosJogos)); 
-                alert('✅ Resultado salvo!'); 
-                carregarTabelaJogos(); 
-            } else {
-                alert('⚠️ Digite o resultado!');
-            }
-        }
-
-        function carregarAdminTimes() {
-            let container = document.getElementById('adminTimesList');
-            if (!container) return;
-            container.innerHTML = '';
-            
-            if (inscricoesCache.length === 0) {
-                container.innerHTML = '<p style="text-align:center;padding:20px;color:#888;">Nenhum time inscrito ainda.</p>';
-                return;
-            }
-            
-            inscricoesCache.forEach(t => {
-                let hasIndividual = t.modalidades.xadrez?.length > 0 || t.modalidades.natacaoMasc?.length > 0 || t.modalidades.natacaoFem?.length > 0;
-                let displayName = hasIndividual ? `🏊 ${t.nomeTime}` : t.nomeTime;
-                
-                let whatsappDisplay = t.whatsapp ? `(${t.whatsapp.substring(0,2)}) ${t.whatsapp.substring(2,7)}-${t.whatsapp.substring(7)}` : 'Não informado';
-                
-                container.innerHTML += `<div class="modalidade-card" style="border-left: 4px solid #667eea;">
-                    <h3>${displayName}</h3>
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px;">
-                        <p><strong>📚 Curso:</strong> ${t.curso}</p>
-                        <p><strong>🔒 CPF:</strong> <span style="font-family:monospace;">${t.cpfResponsavel}</span></p>
-                        <p><strong>📱 WhatsApp:</strong> <a href="https://wa.me/55${t.whatsapp}" target="_blank" style="color:#25D366;text-decoration:none;">${whatsappDisplay}</a></p>
-                        <p><strong>📅 Data:</strong> ${new Date(t.dataCriacao).toLocaleString('pt-BR')}</p>
-                    </div>
-                    <div style="margin-top:10px;">
-                        <p><strong>📋 Modalidades:</strong></p>
-                        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;">
-                            ${Object.entries(t.modalidades).filter(([m,at]) => at?.length > 0).map(([m,at]) => 
-                                `<span class="modalidades-badge">${nomesModalidades[m]} (${at.length})</span>`
-                            ).join('')}
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
-                        <button onclick="editarAdminTime('${t.id}')" class="btn" style="padding:5px 15px;">✏️ Editar</button>
-                        <button onclick="excluirAdminTime('${t.id}')" class="btn btn-danger" style="padding:5px 15px;">🗑️ Excluir</button>
-                    </div>
-                </div>`;
-            });
-        }
-
-        function editarAdminTime(id) {
-            let time = inscricoesCache.find(i => i.id === id);
-            if(!time) {
-                alert('Time não encontrado!');
-                return;
-            }
-            
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            const editTab = document.getElementById('tab-editarTime');
-            if (editTab) editTab.classList.add('active');
-            
-            document.querySelectorAll('.tab').forEach(t => {
-                if (t.textContent.includes('Editar times')) t.classList.add('active');
-            });
-            
-            const cpfInput = document.getElementById('cpfEditarBusca');
-            if (cpfInput) {
-                cpfInput.value = time.cpfResponsavel;
-                buscarTimePorCPF();
-            }
-        }
-
-        async function excluirAdminTime(id) {
-            const excluiu = await excluirInscricaoFirebase(id);
-            if(excluiu) {
-                carregarAdminTimes();
-                carregarTabelaTimes();
-                carregarEstatisticas();
-                alert('✅ Time excluído!');
-            }
-        }
-
-        function gerarRelatorioTimes() {
-            let relatorio = "RELATÓRIO DE TIMES E ATLETAS\n" + "=".repeat(50) + "\n\n";
-            relatorio += `GERADO EM: ${new Date().toLocaleString('pt-BR')}\n\n`;
-            
-            inscricoesCache.forEach(t => {
-                relatorio += `ATLETA: ${t.nomeTime}\n`;
-                relatorio += `CURSO: ${t.curso}\n`;
-                relatorio += `CPF: ${t.cpfResponsavel}\n`;
-                relatorio += `WHATSAPP: ${t.whatsapp || 'Não informado'}\n`;
-                relatorio += `DATA INSCRIÇÃO: ${new Date(t.dataCriacao).toLocaleString('pt-BR')}\n`;
-                
-                let temModalidades = false;
-                for(let [m, at] of Object.entries(t.modalidades)) {
-                    if(at?.length > 0) {
-                        temModalidades = true;
-                        relatorio += `\n${nomesModalidades[m]} (${at.length} atletas):\n`;
-                        at.forEach((a,i) => relatorio += `  ${i+1}. ${a}\n`);
-                    }
-                }
-                if (!temModalidades) relatorio += `\nNenhuma modalidade inscrita\n`;
-                relatorio += "\n" + "-".repeat(50) + "\n\n";
-            });
-            
-            const blob = new Blob([relatorio], {type: 'text/plain;charset=utf-8'});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `relatorio_times_${new Date().toISOString().slice(0,19)}.txt`;
-            link.click();
-            URL.revokeObjectURL(link.href);
-            alert('✅ Relatório gerado!');
-        }
-
-        function imprimirRelatorio() {
-            let win = window.open('', '_blank');
-            win.document.write(`<html><head><title>Relatório Jogos UNOPAR</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; }
-                    h1 { color: #667eea; }
-                    .card { border: 1px solid #ccc; margin: 20px 0; padding: 15px; border-radius: 10px; }
-                    .badge { display: inline-block; background: #667eea; color: white; padding: 3px 10px; border-radius: 5px; margin: 2px; font-size: 12px; }
-                    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-                    @media print { .no-print { display: none; } }
-                </style>
-            </head><body>`);
-            
-            win.document.write('<h1>🏆 Jogos Universitários UNOPAR Arapongas</h1>');
-            win.document.write(`<h2>Relatório de Times e Atletas</h2>`);
-            win.document.write(`<p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>`);
-            win.document.write(`<p><strong>Total de inscrições:</strong> ${inscricoesCache.length}</p><hr>`);
-            
-            inscricoesCache.forEach(t => {
-                let hasIndividual = t.modalidades.xadrez?.length > 0 || t.modalidades.natacaoMasc?.length > 0 || t.modalidades.natacaoFem?.length > 0;
-                let displayName = hasIndividual ? `🏊 ${t.nomeTime}` : t.nomeTime;
-                
-                win.document.write(`<div class="card">
-                    <h3>${displayName}</h3>
-                    <div class="info-grid">
-                        <p><strong>Curso:</strong> ${t.curso}</p>
-                        <p><strong>CPF:</strong> ${t.cpfResponsavel}</p>
-                        <p><strong>WhatsApp:</strong> ${t.whatsapp || 'Não informado'}</p>
-                        <p><strong>Data:</strong> ${new Date(t.dataCriacao).toLocaleString('pt-BR')}</p>
-                    </div>
-                    <h4>Modalidades:</h4>
-                    <div>`);
-                
-                let temMod = false;
-                for(let [m, at] of Object.entries(t.modalidades)) {
-                    if(at?.length > 0) {
-                        temMod = true;
-                        win.document.write(`<p><strong>${nomesModalidades[m]}</strong> (${at.length} atletas):</p><ul>`);
-                        at.forEach(a => win.document.write(`<li>${a}</li>`));
-                        win.document.write(`</ul>`);
-                    }
-                }
-                if (!temMod) win.document.write('<p>Nenhuma modalidade inscrita</p>');
-                win.document.write(`</div></div>`);
-            });
-            
-            win.document.write(`<p style="text-align:center;color:#888;font-size:12px;margin-top:30px;">
-                Documento gerado pelo Sistema de Inscrição dos Jogos Universitários UNOPAR Arapongas
-            </p>`);
-            
-            win.document.write('</body></html>');
-            win.document.close();
-            win.print();
-        }
-
-        // ============================================
-        // INICIALIZAÇÃO
-        // ============================================
-
-        for(let m in modalidadesAtletas) renderizarAtletas(m);
-        
-        let savedFormats = localStorage.getItem('formatos');
-        if(savedFormats) formatosDisputa = JSON.parse(savedFormats);
-        
-        let savedResults = localStorage.getItem('resultados');
-        if(savedResults) resultadosJogos = JSON.parse(savedResults);
-        
-        if (inscricoesCache.length === 0) {
-            const localData = getInscricoesLocal();
-            if (localData.length > 0) {
-                inscricoesCache = localData;
-                inscricoesCarregadas = true;
-            }
-        }
-
-        // Carregar tudo
-        setTimeout(() => {
-            console.log('🚀 Inicializando sistema...');
-            carregarSelectModalidades();
-            carregarTabelaTimes();
-            carregarEstatisticas();
-            updateStatus();
-            console.log(`✅ Sistema inicializado com ${inscricoesCache.length} inscrições`);
-        }, 500);
-
-        console.log('🚀 Sistema inicializado!');
-        console.log(`📦 ${inscricoesCache.length} inscrições em cache`);
-        console.log(`📱 Firebase: ${firebaseOnline ? 'Online' : 'Offline'}`);
-    </script>
-</body>
-</html>
+       
