@@ -38,7 +38,7 @@
         .atleta-item input { flex: 1; }
         .modalidade-card { border: 2px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
         .modalidade-card h3 { margin-bottom: 15px; color: #667eea; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-align: center; cursor: pointer; transition: transform 0.3s; }
         .stat-card:hover { transform: translateY(-5px); }
         .stat-number { font-size: 2.5em; font-weight: bold; }
@@ -60,29 +60,13 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .cache-info { font-size: 12px; color: #888; margin-top: 5px; }
-        .whatsapp-input { display: flex; gap: 10px; align-items: center; }
-        .whatsapp-input input { flex: 1; }
-        .whatsapp-prefix { background: #25D366; color: white; padding: 10px 15px; border-radius: 5px 0 0 5px; font-weight: bold; }
         .whatsapp-wrapper { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; }
         .whatsapp-wrapper span { background: #25D366; color: white; padding: 10px 12px; font-weight: bold; }
         .whatsapp-wrapper input { border: none; padding: 10px; flex: 1; }
         .whatsapp-wrapper input:focus { outline: none; }
-        @media (max-width: 768px) { .main-content { padding: 20px; } .atleta-item { flex-direction: column; } .btn { width: 100%; margin-top: 10px; } .tabs { flex-direction: column; } }
-        
-        /* Ocultar CPF e WhatsApp na tabela pública */
+        .privacy-badge { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 2px 10px; border-radius: 12px; font-size: 11px; margin-left: 5px; }
         .admin-only { display: none; }
-        .admin-visible .admin-only { display: table-cell; }
-        
-        /* Badge de privacidade */
-        .privacy-badge {
-            display: inline-block;
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            margin-left: 5px;
-        }
+        @media (max-width: 768px) { .main-content { padding: 20px; } .atleta-item { flex-direction: column; } .btn { width: 100%; margin-top: 10px; } .tabs { flex-direction: column; } }
     </style>
 </head>
 <body>
@@ -253,15 +237,43 @@
         let inscricoesCarregadas = false;
         let firebaseOnline = false;
         let isAdmin = false;
+        let databaseRef = null;
+
+        // ============================================
+        // FUNÇÕES DE UI
+        // ============================================
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        function updateStatus() {
+            const indicator = document.getElementById('statusIndicator');
+            if (indicator) {
+                if (firebaseOnline) {
+                    indicator.className = 'status online';
+                    indicator.textContent = '✅ Conectado ao Firebase (tempo real)';
+                } else {
+                    indicator.className = 'status offline';
+                    indicator.textContent = '⚠️ Offline - Usando dados em cache';
+                }
+            }
+            
+            const cacheInfo = document.getElementById('cacheInfo');
+            if (cacheInfo) {
+                cacheInfo.textContent = `📦 ${inscricoesCache.length} inscrições em cache | ${firebaseOnline ? 'Online' : 'Offline'}`;
+            }
+        }
 
         // ============================================
         // INICIALIZAR FIREBASE
         // ============================================
         try {
             firebase.initializeApp(firebaseConfig);
-            const database = firebase.database();
+            databaseRef = firebase.database();
             
-            database.ref('.info/connected').on('value', (snapshot) => {
+            databaseRef.ref('.info/connected').on('value', (snapshot) => {
                 firebaseOnline = snapshot.val() === true;
                 updateStatus();
                 if (firebaseOnline && !inscricoesCarregadas) {
@@ -269,12 +281,18 @@
                 }
             });
 
-            database.ref('inscricoes').on('value', (snapshot) => {
+            // Listener em tempo real
+            databaseRef.ref('inscricoes').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     inscricoesCache = Object.values(data);
                     inscricoesCarregadas = true;
+                    // Salvar no localStorage como backup
+                    localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
                     atualizarInterface();
+                } else {
+                    // Se não houver dados no Firebase, tentar do localStorage
+                    carregarDadosLocais();
                 }
             });
 
@@ -298,6 +316,7 @@
                     inscricoesCarregadas = true;
                     atualizarInterface();
                 }
+                updateStatus();
             } catch (e) {
                 console.warn('⚠️ Erro ao carregar dados locais:', e);
             }
@@ -306,12 +325,13 @@
         function carregarDadosIniciais() {
             showLoading(true);
             setTimeout(() => {
-                if (!inscricoesCarregadas) {
-                    firebase.database().ref('inscricoes').once('value').then((snapshot) => {
+                if (!inscricoesCarregadas && databaseRef) {
+                    databaseRef.ref('inscricoes').once('value').then((snapshot) => {
                         const data = snapshot.val();
                         if (data) {
                             inscricoesCache = Object.values(data);
                             inscricoesCarregadas = true;
+                            localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
                             atualizarInterface();
                         }
                         showLoading(false);
@@ -329,25 +349,22 @@
         // ============================================
         
         function atualizarInterface() {
-            const activeTab = document.querySelector('.tab-content.active');
-            if (activeTab) {
-                const id = activeTab.id;
-                if (id === 'tab-consultar') {
-                    carregarTabelaTimes();
-                    carregarEstatisticas();
-                } else if (id === 'tab-admin') {
-                    carregarAdminTimes();
-                } else if (id === 'tab-tabelaJogos') {
-                    carregarSelectModalidades();
-                    carregarTabelaJogos();
-                }
+            // Atualizar todas as abas com os dados em cache
+            carregarTabelaTimes();
+            carregarEstatisticas();
+            carregarSelectModalidades();
+            carregarTabelaJogos();
+            
+            // Se for admin, atualizar também
+            if (isAdmin) {
+                carregarAdminTimes();
             }
-            document.getElementById('cacheInfo').textContent = 
-                `📦 ${inscricoesCache.length} inscrições em cache | ${firebaseOnline ? 'Online' : 'Offline'}`;
+            
+            updateStatus();
         }
 
         // ============================================
-        // FUNÇÕES DE BANCO DE DADOS (USANDO CACHE)
+        // FUNÇÕES DE BANCO DE DADOS
         // ============================================
         
         function getInscricoes() {
@@ -363,31 +380,25 @@
             }
         }
 
-        function salvarInscricoesLocal(inscricoes) {
-            localStorage.setItem('inscricoes', JSON.stringify(inscricoes));
-        }
-
         async function salvarInscricao(inscricao) {
             showLoading(true);
             const id = Date.now().toString();
             inscricao.id = id;
             
             try {
-                if (firebaseOnline) {
-                    await firebase.database().ref('inscricoes/' + id).set(inscricao);
+                if (firebaseOnline && databaseRef) {
+                    await databaseRef.ref('inscricoes/' + id).set(inscricao);
                 }
-                const local = getInscricoesLocal();
-                local.push(inscricao);
-                salvarInscricoesLocal(local);
+                // Atualizar cache
+                inscricoesCache.push(inscricao);
+                localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
                 showLoading(false);
                 return true;
             } catch (error) {
                 console.error('❌ Erro ao salvar:', error);
-                const local = getInscricoesLocal();
-                local.push(inscricao);
-                salvarInscricoesLocal(local);
-                inscricoesCache = local;
-                atualizarInterface();
+                // Fallback local
+                inscricoesCache.push(inscricao);
+                localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
                 showLoading(false);
                 alert('⚠️ Dados salvos localmente (offline).');
                 return true;
@@ -397,13 +408,14 @@
         async function atualizarInscricao(id, inscricaoAtualizada) {
             showLoading(true);
             try {
-                if (firebaseOnline) {
-                    await firebase.database().ref('inscricoes/' + id).update(inscricaoAtualizada);
+                if (firebaseOnline && databaseRef) {
+                    await databaseRef.ref('inscricoes/' + id).update(inscricaoAtualizada);
                 }
+                // Atualizar cache
                 const idx = inscricoesCache.findIndex(i => i.id === id);
                 if (idx !== -1) {
                     inscricoesCache[idx] = { ...inscricaoAtualizada, id: id };
-                    salvarInscricoesLocal(inscricoesCache);
+                    localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
                 }
                 showLoading(false);
                 return true;
@@ -420,11 +432,11 @@
             
             showLoading(true);
             try {
-                if (firebaseOnline) {
-                    await firebase.database().ref('inscricoes/' + id).remove();
+                if (firebaseOnline && databaseRef) {
+                    await databaseRef.ref('inscricoes/' + id).remove();
                 }
                 inscricoesCache = inscricoesCache.filter(i => i.id !== id);
-                salvarInscricoesLocal(inscricoesCache);
+                localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
                 showLoading(false);
                 return true;
             } catch (error) {
@@ -432,25 +444,6 @@
                 showLoading(false);
                 alert('⚠️ Erro ao excluir. Tente novamente.');
                 return false;
-            }
-        }
-
-        // ============================================
-        // FUNÇÕES DE UI
-        // ============================================
-
-        function showLoading(show) {
-            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
-        }
-
-        function updateStatus() {
-            const indicator = document.getElementById('statusIndicator');
-            if (firebaseOnline) {
-                indicator.className = 'status online';
-                indicator.textContent = '✅ Conectado ao Firebase (tempo real)';
-            } else {
-                indicator.className = 'status offline';
-                indicator.textContent = '⚠️ Offline - Usando dados em cache';
             }
         }
 
@@ -498,7 +491,7 @@
         let timesFiltrados = [];
 
         // ============================================
-        // FUNÇÕES DO SISTEMA
+        // FUNÇÕES DO SISTEMA - INSCRIÇÃO
         // ============================================
 
         function renderizarAtletas(modalidade) {
@@ -579,15 +572,21 @@
                     xadrez:[], natacaoMasc:[], natacaoFem:[]
                 };
                 for(let m in modalidadesAtletas) renderizarAtletas(m);
+                // Atualizar a lista de times
+                carregarTabelaTimes();
+                carregarEstatisticas();
             }
         });
 
-        // Buscar time por CPF para edição - CORRIGIDO
+        // ============================================
+        // FUNÇÕES - EDITAR TIME
+        // ============================================
+
         function buscarTimePorCPF() {
             let cpf = document.getElementById('cpfEditarBusca').value.trim();
             if(!cpf || cpf.length!==11) return alert('Digite CPF válido!');
             
-            // Buscar em todos os dados, não apenas no cache
+            // Buscar em todos os dados
             const time = inscricoesCache.find(i => i.cpfResponsavel === cpf);
             if(!time) {
                 alert('Nenhum time encontrado com este CPF!');
@@ -599,7 +598,6 @@
         function carregarEdicao(time) {
             let container = document.getElementById('editarTimeContainer');
             
-            // Verificar se o time tem WhatsApp (para compatibilidade com dados antigos)
             const whatsappValue = time.whatsapp || '';
             
             let html = `<div style="background:#f0f4ff;padding:20px;border-radius:15px;">
@@ -714,7 +712,7 @@
         async function excluirTime(id) {
             const excluiu = await excluirInscricaoFirebase(id);
             if(excluiu) {
-                alert('Time excluído!');
+                alert('✅ Time excluído!');
                 document.getElementById('editarTimeContainer').innerHTML = '';
                 document.getElementById('cpfEditarBusca').value = '';
                 carregarTabelaTimes();
@@ -722,17 +720,29 @@
             }
         }
 
-        // Tabela de Jogos
+        // ============================================
+        // FUNÇÕES - TABELA DE JOGOS
+        // ============================================
+
         function carregarSelectModalidades() {
             let select = document.getElementById('selectModalidade');
+            if (!select) return;
             select.innerHTML = '<option value="">Selecione</option>';
-            for(let [k,v] of Object.entries(nomesModalidades)) select.innerHTML += `<option value="${k}">${v}</option>`;
+            for(let [k,v] of Object.entries(nomesModalidades)) {
+                select.innerHTML += `<option value="${k}">${v}</option>`;
+            }
         }
 
         function carregarTabelaJogos() {
-            let modalidade = document.getElementById('selectModalidade').value;
+            let select = document.getElementById('selectModalidade');
             let container = document.getElementById('tabelaJogosContainer');
-            if(!modalidade) { container.innerHTML = '<p>Selecione uma modalidade</p>'; return; }
+            if (!select || !container) return;
+            
+            let modalidade = select.value;
+            if(!modalidade) { 
+                container.innerHTML = '<p style="text-align:center;padding:20px;">Selecione uma modalidade</p>'; 
+                return; 
+            }
             
             let times = [];
             inscricoesCache.forEach(i => { 
@@ -743,11 +753,11 @@
             
             if(times.length < 2) { 
                 let msg = modalidade.includes('Natação') ? 'Nadadores' : 'Jogadores';
-                container.innerHTML = `<p>Número insuficiente de ${msg} para gerar a tabela. Mínimo de 2.</p>`;
+                container.innerHTML = `<p style="text-align:center;padding:20px;">Número insuficiente de ${msg} para gerar a tabela. Mínimo de 2.</p>`;
                 return; 
             }
             
-            let html = `<h3>${nomesModalidades[modalidade]} - ${formatosDisputa[modalidade]}</h3>
+            let html = `<h3 style="color:#667eea;">${nomesModalidades[modalidade]} - ${formatosDisputa[modalidade]}</h3>
                         <div class="table-container"><table><thead><tr><th>Prova/Jogo</th><th>Atleta A</th><th>vs</th><th>Atleta B</th><th>Resultado</th></tr></thead><tbody>`;
             let j=1;
             for(let i=0; i<times.length; i++) {
@@ -761,18 +771,25 @@
             container.innerHTML = html;
         }
 
-        // Consultar Times - SEM CPF e WhatsApp visíveis
+        // ============================================
+        // FUNÇÕES - CONSULTAR TIMES
+        // ============================================
+
         function carregarTabelaTimes() {
             let map = new Map();
             inscricoesCache.forEach(i => {
-                if(!map.has(i.nomeTime)) map.set(i.nomeTime, { 
-                    nomeTime:i.nomeTime, 
-                    curso:i.curso, 
-                    dataCriacao:i.dataCriacao, 
-                    modalidades:{}
-                });
+                if(!map.has(i.nomeTime)) {
+                    map.set(i.nomeTime, { 
+                        nomeTime: i.nomeTime, 
+                        curso: i.curso, 
+                        dataCriacao: i.dataCriacao, 
+                        modalidades: {}
+                    });
+                }
                 let t = map.get(i.nomeTime);
-                for(let [m,at] of Object.entries(i.modalidades)) if(at?.length>0) t.modalidades[m] = at;
+                for(let [m,at] of Object.entries(i.modalidades)) {
+                    if(at?.length>0) t.modalidades[m] = at;
+                }
             });
             timesFiltrados = Array.from(map.values());
             atualizarTabela();
@@ -780,7 +797,14 @@
 
         function atualizarTabela() {
             let tbody = document.getElementById('tabelaTimesBody');
+            if (!tbody) return;
             tbody.innerHTML = '';
+            
+            if (timesFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">Nenhum time inscrito ainda</td></tr>';
+                return;
+            }
+            
             timesFiltrados.forEach((t,i) => {
                 let mods = []; 
                 for(let [m,at] of Object.entries(t.modalidades)) {
@@ -792,7 +816,7 @@
                     <td>${i+1}</td>
                     <td><strong>${t.nomeTime}</strong></td>
                     <td>${t.curso}</td>
-                    <td>${new Date(t.dataCriacao).toLocaleDateString()}</td>
+                    <td>${new Date(t.dataCriacao).toLocaleDateString('pt-BR')}</td>
                     <td>${mods.map(m=>`<span class="modalidades-badge">${m}</span>`).join('')}</td>
                     <td><button onclick="verDetalhes(${i})" class="btn btn-info" style="padding:5px 10px;">👁️ Detalhes</button></td>
                 </tr>`;
@@ -801,7 +825,7 @@
 
         function verDetalhes(i) {
             let t = timesFiltrados[i];
-            let msg = `🏆 ${t.nomeTime}\n📚 Curso: ${t.curso}\n📅 Data: ${new Date(t.dataCriacao).toLocaleDateString()}\n\n📋 Atletas:\n`;
+            let msg = `🏆 ${t.nomeTime}\n📚 Curso: ${t.curso}\n📅 Data: ${new Date(t.dataCriacao).toLocaleDateString('pt-BR')}\n\n📋 Atletas:\n`;
             for(let [m,at] of Object.entries(t.modalidades)) {
                 if(at?.length>0) {
                     msg += `\n${nomesModalidades[m]}:\n${at.map((a,j)=>`  ${j+1}. ${a}`).join('\n')}\n`;
@@ -831,8 +855,11 @@
                     }
                 }
             });
+            
             let container = document.getElementById('statsModalidades');
+            if (!container) return;
             container.innerHTML = '';
+            
             let maxV = Math.max(...Object.values(stats),1);
             for(let [m,q] of Object.entries(stats)) {
                 let card = document.createElement('div');
@@ -850,7 +877,14 @@
             let map = new Map();
             inscricoesCache.forEach(i => {
                 if(i.modalidades[modalidade]?.length > 0) {
-                    if(!map.has(i.nomeTime)) map.set(i.nomeTime, { nomeTime:i.nomeTime, curso:i.curso, dataCriacao:i.dataCriacao, modalidades:{} });
+                    if(!map.has(i.nomeTime)) {
+                        map.set(i.nomeTime, { 
+                            nomeTime: i.nomeTime, 
+                            curso: i.curso, 
+                            dataCriacao: i.dataCriacao, 
+                            modalidades: {} 
+                        });
+                    }
                     map.get(i.nomeTime).modalidades[modalidade] = i.modalidades[modalidade];
                 }
             });
@@ -858,14 +892,40 @@
             atualizarTabela();
         }
 
-        function showTab(tab) {
+        // ============================================
+        // NAVEGAÇÃO DAS ABAS
+        // ============================================
+
+        function showTab(tabName) {
+            // Esconder todas as abas
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            if (event) event.target.classList.add('active');
-            if(tab === 'consultar') { carregarTabelaTimes(); carregarEstatisticas(); }
-            if(tab === 'tabelaJogos') { carregarSelectModalidades(); carregarTabelaJogos(); }
-            if(tab === 'admin') { carregarAdminTimes(); }
+            
+            // Mostrar a aba selecionada
+            const targetTab = document.getElementById(`tab-${tabName}`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+            
+            // Destacar o botão da aba
+            const buttons = document.querySelectorAll('.tab');
+            buttons.forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(tabName.toLowerCase()) || 
+                    (tabName === 'inscricao' && btn.textContent.includes('Nova'))) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Atualizar conteúdo específico da aba
+            if (tabName === 'consultar') {
+                carregarTabelaTimes();
+                carregarEstatisticas();
+            } else if (tabName === 'tabelaJogos') {
+                carregarSelectModalidades();
+                carregarTabelaJogos();
+            } else if (tabName === 'admin' && isAdmin) {
+                carregarAdminTimes();
+            }
         }
 
         // ============================================
@@ -873,6 +933,10 @@
         // ============================================
 
         function mostrarLoginAdmin() {
+            // Remover overlay existente
+            const existing = document.getElementById('loginOverlay');
+            if (existing) existing.remove();
+            
             let div = document.createElement('div');
             div.className = 'login-overlay';
             div.id = 'loginOverlay';
@@ -884,6 +948,11 @@
                 <button onclick="fecharLogin()" class="btn btn-danger" style="width:100%;margin-top:10px;">Cancelar</button>
             </div>`;
             document.body.appendChild(div);
+            
+            // Focar no campo de senha
+            setTimeout(() => {
+                document.getElementById('senhaAdmin').focus();
+            }, 100);
         }
         
         function fecharLogin() { 
@@ -897,11 +966,16 @@
                 isAdmin = true;
                 fecharLogin();
                 carregarAdminPanel();
+                
+                // Ativar aba do administrador
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.getElementById('tab-admin').classList.add('active');
+                
+                const adminTab = document.getElementById('tab-admin');
+                if (adminTab) adminTab.classList.add('active');
+                
                 document.querySelectorAll('.tab').forEach(t => {
-                    if(t.textContent.includes('Administrador')) t.classList.add('active');
+                    if (t.textContent.includes('Administrador')) t.classList.add('active');
                 });
             } else {
                 alert('❌ Senha incorreta! Tente novamente.');
@@ -911,7 +985,10 @@
         }
 
         function carregarAdminPanel() {
-            document.getElementById('tab-admin').innerHTML = `
+            const adminDiv = document.getElementById('tab-admin');
+            if (!adminDiv) return;
+            
+            adminDiv.innerHTML = `
                 <h2 style="color:#667eea;">👑 Painel Administrador</h2>
                 <div style="background:#e8f5e9;padding:15px;border-radius:10px;margin-bottom:20px;">
                     <p style="color:#2e7d32;">🔒 Você está visualizando informações privadas (CPF e WhatsApp)</p>
@@ -938,6 +1015,7 @@
                 <h3 style="color:#667eea;margin:20px 0;">📋 Times / Atletas Inscritos</h3>
                 <div id="adminTimesList"></div>
             `;
+            
             carregarFormatosAdmin();
             carregarSelectAdmin();
             carregarAdminTimes();
@@ -945,6 +1023,7 @@
 
         function carregarFormatosAdmin() {
             let container = document.getElementById('formatosContainer');
+            if (!container) return;
             container.innerHTML = '';
             for(let [m, nome] of Object.entries(nomesModalidades)) {
                 container.innerHTML += `<div class="formato-card"><strong>${nome}</strong><br>
@@ -968,14 +1047,20 @@
 
         function carregarSelectAdmin() {
             let select = document.getElementById('adminModalidade');
+            if (!select) return;
             select.innerHTML = '<option value="">Selecione</option>';
-            for(let [k,v] of Object.entries(nomesModalidades)) select.innerHTML += `<option value="${k}">${v}</option>`;
+            for(let [k,v] of Object.entries(nomesModalidades)) {
+                select.innerHTML += `<option value="${k}">${v}</option>`;
+            }
         }
 
         function carregarJogosAdmin() {
             let modalidade = document.getElementById('adminModalidade').value;
             let container = document.getElementById('adminJogosContainer');
-            if(!modalidade) { container.innerHTML = ''; return; }
+            if (!modalidade || !container) { 
+                if(container) container.innerHTML = ''; 
+                return; 
+            }
             
             let times = [];
             inscricoesCache.forEach(i => { 
@@ -1022,6 +1107,7 @@
 
         function carregarAdminTimes() {
             let container = document.getElementById('adminTimesList');
+            if (!container) return;
             container.innerHTML = '';
             
             if (inscricoesCache.length === 0) {
@@ -1033,7 +1119,6 @@
                 let hasIndividual = t.modalidades.xadrez?.length > 0 || t.modalidades.natacaoMasc?.length > 0 || t.modalidades.natacaoFem?.length > 0;
                 let displayName = hasIndividual ? `🏊 ${t.nomeTime}` : t.nomeTime;
                 
-                // WhatsApp seguro
                 let whatsappDisplay = t.whatsapp ? `(${t.whatsapp.substring(0,2)}) ${t.whatsapp.substring(2,7)}-${t.whatsapp.substring(7)}` : 'Não informado';
                 
                 container.innerHTML += `<div class="modalidade-card" style="border-left: 4px solid #667eea;">
@@ -1042,7 +1127,7 @@
                         <p><strong>📚 Curso:</strong> ${t.curso}</p>
                         <p><strong>🔒 CPF:</strong> <span style="font-family:monospace;">${t.cpfResponsavel}</span></p>
                         <p><strong>📱 WhatsApp:</strong> <a href="https://wa.me/55${t.whatsapp}" target="_blank" style="color:#25D366;text-decoration:none;">${whatsappDisplay}</a></p>
-                        <p><strong>📅 Data:</strong> ${new Date(t.dataCriacao).toLocaleString()}</p>
+                        <p><strong>📅 Data:</strong> ${new Date(t.dataCriacao).toLocaleString('pt-BR')}</p>
                     </div>
                     <div style="margin-top:10px;">
                         <p><strong>📋 Modalidades:</strong></p>
@@ -1091,14 +1176,14 @@
 
         function gerarRelatorioTimes() {
             let relatorio = "RELATÓRIO DE TIMES E ATLETAS\n" + "=".repeat(50) + "\n\n";
-            relatorio += `GERADO EM: ${new Date().toLocaleString()}\n\n`;
+            relatorio += `GERADO EM: ${new Date().toLocaleString('pt-BR')}\n\n`;
             
             inscricoesCache.forEach(t => {
                 relatorio += `ATLETA: ${t.nomeTime}\n`;
                 relatorio += `CURSO: ${t.curso}\n`;
                 relatorio += `CPF: ${t.cpfResponsavel}\n`;
                 relatorio += `WHATSAPP: ${t.whatsapp || 'Não informado'}\n`;
-                relatorio += `DATA INSCRIÇÃO: ${new Date(t.dataCriacao).toLocaleString()}\n`;
+                relatorio += `DATA INSCRIÇÃO: ${new Date(t.dataCriacao).toLocaleString('pt-BR')}\n`;
                 
                 let temModalidades = false;
                 for(let [m, at] of Object.entries(t.modalidades)) {
@@ -1136,7 +1221,7 @@
             
             win.document.write('<h1>🏆 Jogos Universitários UNOPAR Arapongas</h1>');
             win.document.write(`<h2>Relatório de Times e Atletas</h2>`);
-            win.document.write(`<p><strong>Gerado em:</strong> ${new Date().toLocaleString()}</p>`);
+            win.document.write(`<p><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>`);
             win.document.write(`<p><strong>Total de inscrições:</strong> ${inscricoesCache.length}</p><hr>`);
             
             inscricoesCache.forEach(t => {
@@ -1149,7 +1234,7 @@
                         <p><strong>Curso:</strong> ${t.curso}</p>
                         <p><strong>CPF:</strong> ${t.cpfResponsavel}</p>
                         <p><strong>WhatsApp:</strong> ${t.whatsapp || 'Não informado'}</p>
-                        <p><strong>Data:</strong> ${new Date(t.dataCriacao).toLocaleString()}</p>
+                        <p><strong>Data:</strong> ${new Date(t.dataCriacao).toLocaleString('pt-BR')}</p>
                     </div>
                     <h4>Modalidades:</h4>
                     <div>`);
@@ -1180,29 +1265,36 @@
         // INICIALIZAÇÃO
         // ============================================
 
+        // Inicializar os campos de atletas
         for(let m in modalidadesAtletas) renderizarAtletas(m);
         
+        // Carregar formatos e resultados salvos
         let savedFormats = localStorage.getItem('formatos');
         if(savedFormats) formatosDisputa = JSON.parse(savedFormats);
         
         let savedResults = localStorage.getItem('resultados');
         if(savedResults) resultadosJogos = JSON.parse(savedResults);
         
+        // Verificar se há dados em cache
         if (inscricoesCache.length === 0) {
             const localData = getInscricoesLocal();
             if (localData.length > 0) {
                 inscricoesCache = localData;
                 inscricoesCarregadas = true;
-                atualizarInterface();
             }
         }
 
-        carregarSelectModalidades();
-        carregarTabelaTimes();
-        carregarEstatisticas();
+        // Carregar dados iniciais
+        setTimeout(() => {
+            carregarSelectModalidades();
+            carregarTabelaTimes();
+            carregarEstatisticas();
+            updateStatus();
+        }, 500);
 
         console.log('🚀 Sistema inicializado!');
         console.log(`📦 ${inscricoesCache.length} inscrições em cache`);
+        console.log(`📱 Firebase: ${firebaseOnline ? 'Online' : 'Offline'}`);
     </script>
 </body>
 </html>
