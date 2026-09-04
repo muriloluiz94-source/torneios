@@ -72,6 +72,7 @@
         .admin-panel h3 { color: #667eea; margin-bottom: 15px; }
         .formato-card { background: #f7f7f7; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
         .formato-card select { margin-top: 10px; padding: 8px; width: 100%; border-radius: 5px; border: 1px solid #ddd; }
+        .data-atualizacao { font-size: 12px; color: #888; margin-top: 5px; }
         @media (max-width: 768px) { .main-content { padding: 20px; } .atleta-item { flex-direction: column; } .btn { width: 100%; margin-top: 10px; } .tabs { flex-direction: column; } }
     </style>
 </head>
@@ -301,7 +302,15 @@
                     inscricoesCache = Object.values(data);
                     inscricoesCarregadas = true;
                     localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
-                    atualizarInterface();
+                    // Atualizar todas as interfaces
+                    carregarTabelaTimes();
+                    carregarEstatisticas();
+                    carregarSelectModalidades();
+                    carregarTabelaJogos();
+                    if (isAdmin) {
+                        carregarAdminTimes();
+                    }
+                    updateStatus();
                 } else {
                     carregarDadosLocais();
                 }
@@ -325,9 +334,15 @@
                 if (data) {
                     inscricoesCache = JSON.parse(data);
                     inscricoesCarregadas = true;
-                    atualizarInterface();
+                    carregarTabelaTimes();
+                    carregarEstatisticas();
+                    carregarSelectModalidades();
+                    carregarTabelaJogos();
+                    if (isAdmin) {
+                        carregarAdminTimes();
+                    }
+                    updateStatus();
                 }
-                updateStatus();
             } catch (e) {
                 console.warn('⚠️ Erro ao carregar dados locais:', e);
             }
@@ -343,7 +358,14 @@
                             inscricoesCache = Object.values(data);
                             inscricoesCarregadas = true;
                             localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
-                            atualizarInterface();
+                            carregarTabelaTimes();
+                            carregarEstatisticas();
+                            carregarSelectModalidades();
+                            carregarTabelaJogos();
+                            if (isAdmin) {
+                                carregarAdminTimes();
+                            }
+                            updateStatus();
                         }
                         showLoading(false);
                     }).catch(() => {
@@ -352,24 +374,7 @@
                 } else {
                     showLoading(false);
                 }
-            }, 1000);
-        }
-
-        // ============================================
-        // ATUALIZAR INTERFACE
-        // ============================================
-        
-        function atualizarInterface() {
-            carregarTabelaTimes();
-            carregarEstatisticas();
-            carregarSelectModalidades();
-            carregarTabelaJogos();
-            
-            if (isAdmin) {
-                carregarAdminTimes();
-            }
-            
-            updateStatus();
+            }, 500);
         }
 
         // ============================================
@@ -400,12 +405,20 @@
                 }
                 inscricoesCache.push(inscricao);
                 localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
+                // Atualizar interfaces
+                carregarTabelaTimes();
+                carregarEstatisticas();
+                if (isAdmin) {
+                    carregarAdminTimes();
+                }
                 showLoading(false);
                 return true;
             } catch (error) {
                 console.error('❌ Erro ao salvar:', error);
                 inscricoesCache.push(inscricao);
                 localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
+                carregarTabelaTimes();
+                carregarEstatisticas();
                 showLoading(false);
                 alert('⚠️ Dados salvos localmente (offline).');
                 return true;
@@ -422,6 +435,11 @@
                 if (idx !== -1) {
                     inscricoesCache[idx] = { ...inscricaoAtualizada, id: id };
                     localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
+                }
+                carregarTabelaTimes();
+                carregarEstatisticas();
+                if (isAdmin) {
+                    carregarAdminTimes();
                 }
                 showLoading(false);
                 return true;
@@ -443,6 +461,11 @@
                 }
                 inscricoesCache = inscricoesCache.filter(i => i.id !== id);
                 localStorage.setItem('inscricoes', JSON.stringify(inscricoesCache));
+                carregarTabelaTimes();
+                carregarEstatisticas();
+                if (isAdmin) {
+                    carregarAdminTimes();
+                }
                 showLoading(false);
                 return true;
             } catch (error) {
@@ -580,6 +603,9 @@
                 for(let m in modalidadesAtletas) renderizarAtletas(m);
                 carregarTabelaTimes();
                 carregarEstatisticas();
+                if (isAdmin) {
+                    carregarAdminTimes();
+                }
             }
         });
 
@@ -672,6 +698,9 @@
                     document.getElementById('cpfEditarBusca').value = '';
                     carregarTabelaTimes();
                     carregarEstatisticas();
+                    if (isAdmin) {
+                        carregarAdminTimes();
+                    }
                 }
             });
         }
@@ -720,6 +749,9 @@
                 document.getElementById('cpfEditarBusca').value = '';
                 carregarTabelaTimes();
                 carregarEstatisticas();
+                if (isAdmin) {
+                    carregarAdminTimes();
+                }
             }
         }
 
@@ -775,10 +807,13 @@
         }
 
         // ============================================
-        // FUNÇÕES - CONSULTAR TIMES
+        // FUNÇÕES - CONSULTAR TIMES (CORRIGIDO)
         // ============================================
 
         function carregarTabelaTimes() {
+            console.log('🔄 Carregando tabela de times...');
+            console.log(`📦 Inscrições em cache: ${inscricoesCache.length}`);
+            
             let map = new Map();
             inscricoesCache.forEach(i => {
                 if(!map.has(i.nomeTime)) {
@@ -795,6 +830,7 @@
                 }
             });
             timesFiltrados = Array.from(map.values());
+            console.log(`✅ ${timesFiltrados.length} times encontrados`);
             atualizarTabela();
         }
 
@@ -845,6 +881,7 @@
         }
 
         function carregarEstatisticas() {
+            console.log('📊 Carregando estatísticas...');
             let stats = {}; 
             for(let m in nomesModalidades) stats[m]=0;
             inscricoesCache.forEach(i => { 
@@ -864,7 +901,10 @@
             container.innerHTML = '';
             
             let maxV = Math.max(...Object.values(stats),1);
+            let temDados = false;
+            
             for(let [m,q] of Object.entries(stats)) {
+                if(q > 0) temDados = true;
                 let card = document.createElement('div');
                 card.className = 'stat-card';
                 card.onclick = () => filtrarPorModalidade(m);
@@ -873,6 +913,10 @@
                 card.innerHTML = `<h4>${label}</h4><div class="stat-number">${q}</div><p>${unit}</p>
                                 <div class="progress-bar"><div class="progress-fill" style="width:${(q/maxV)*100}%"></div></div>`;
                 container.appendChild(card);
+            }
+            
+            if (!temDados) {
+                container.innerHTML = '<p style="text-align:center;padding:20px;color:#888;">Nenhuma inscrição em nenhuma modalidade ainda.</p>';
             }
         }
 
@@ -893,6 +937,7 @@
             });
             timesFiltrados = Array.from(map.values());
             atualizarTabela();
+            alert(`Filtrando times da modalidade: ${nomesModalidades[modalidade]}`);
         }
 
         // ============================================
@@ -928,11 +973,10 @@
         }
 
         // ============================================
-        // ADMIN - SEM DICA DE SENHA
+        // ADMIN
         // ============================================
 
         function abrirLoginAdmin() {
-            // Remover overlay existente
             const existing = document.getElementById('loginOverlay');
             if (existing) existing.remove();
             
@@ -971,7 +1015,6 @@
                 isAdmin = true;
                 fecharLoginAdmin();
                 
-                // Ativar a aba do administrador
                 document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 
@@ -986,7 +1029,6 @@
                     }
                 });
                 
-                // Carregar o painel admin
                 carregarAdminPanel();
                 
                 alert('✅ Login realizado com sucesso!');
@@ -1171,7 +1213,6 @@
                 return;
             }
             
-            // Abrir a aba de edição com o CPF preenchido
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             
@@ -1306,11 +1347,14 @@
             }
         }
 
+        // Carregar tudo
         setTimeout(() => {
+            console.log('🚀 Inicializando sistema...');
             carregarSelectModalidades();
             carregarTabelaTimes();
             carregarEstatisticas();
             updateStatus();
+            console.log(`✅ Sistema inicializado com ${inscricoesCache.length} inscrições`);
         }, 500);
 
         console.log('🚀 Sistema inicializado!');
